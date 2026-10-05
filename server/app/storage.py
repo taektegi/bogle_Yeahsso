@@ -33,7 +33,10 @@ class StorageError(Exception):
 
 class StorageClient(Protocol):
     def sign(self, paths: Sequence[str]) -> dict[str, SignedUrl]:
-        """객체 경로마다 서명 URL을 만든다. 하나라도 실패하면 StorageError."""
+        """객체 경로마다 서명 URL을 만든다. 없는 객체는 결과에서 빠진다.
+
+        Storage 요청 자체가 실패하면 StorageError.
+        """
         ...
 
     def upload(self, path: str, data: bytes, content_type: str) -> None:
@@ -82,16 +85,23 @@ class SupabaseStorage:
             raise StorageError(f"storage returned HTTP {response.status_code}")
 
         signed: dict[str, SignedUrl] = {}
+        unsigned: set[str] = set()
         for item in response.json():
             signed_path = item.get("signedURL")
             if item.get("error") or not signed_path:
-                raise StorageError(f"could not sign {item.get('path')}")
+                # 파일이 없거나 접근할 수 없는 객체는 HTTP 200 안에 항목별 오류로 온다.
+                # 하나 때문에 나머지를 막지 않도록 결과에서 빼고 호출한 쪽이 처리한다.
+                unsigned.add(item.get("path"))
+                continue
             signed[item["path"]] = SignedUrl(
                 url=f"{self._storage_url}{signed_path}", expires_at=expires_at
             )
-        missing = set(unique_paths) - signed.keys()
+        # 응답에 아예 없는 경로는 Storage가 이상하게 동작한 것이므로 실패로 본다.
+        missing = set(unique_paths) - signed.keys() - unsigned
         if missing:
-            raise StorageError(f"storage did not sign {len(missing)} path(s)")
+            raise StorageError(f"storage did not answer for {len(missing)} path(s)")
+        if unsigned:
+            logger.warning("storage could not sign %d object(s); skipping them", len(unsigned))
         return signed
 
     def upload(self, path: str, data: bytes, content_type: str) -> None:

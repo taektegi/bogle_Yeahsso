@@ -6,6 +6,7 @@ import zlib
 import pytest
 from fastapi.testclient import TestClient
 
+from app.config import Settings
 from app.db import Database, get_database
 from app.storage import get_storage
 from scripts import seed
@@ -187,7 +188,10 @@ def test_clean_then_seed_again_works(database, seed_conn, storage) -> None:
     assert len(created) == 3
 
 
-def test_cli_explains_missing_configuration(capsys) -> None:
+def test_cli_explains_missing_configuration(capsys, monkeypatch) -> None:
+    # 개발자의 server/.env(로컬 Supabase 값)가 있어도 "설정 없음" 상황을 그대로 재현한다.
+    monkeypatch.setattr("scripts.seed.get_settings", lambda: Settings(_env_file=None))
+    monkeypatch.delenv("DATABASE_URL", raising=False)
     assert seed.main(["--email", "someone@example.com"]) == 1
     assert "DATABASE_URL" in capsys.readouterr().err
 

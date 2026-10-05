@@ -40,7 +40,8 @@ class AssetRow:
 def image_refs(storage: StorageClient, assets: Iterable[AssetRow]) -> dict[UUID, ImageRef]:
     """에셋들의 서명 URL을 한 번에 만들어 `{assetId: ImageRef}`로 돌려준다.
 
-    서명에 실패하면 503(retryable)이다. 일부만 빼고 내려 주지 않는다.
+    Storage 요청이 실패하면 503(retryable)이다. 파일이 없어 서명하지 못한 에셋은 결과에서 빠지니,
+    필요한 에셋이 있는지는 호출한 쪽이 확인한다.
     """
     unique = {asset.id: asset for asset in assets}
     try:
@@ -58,4 +59,5 @@ def image_refs(storage: StorageClient, assets: Iterable[AssetRow]) -> dict[UUID,
             height=asset.height,
         )
         for asset_id, asset in unique.items()
+        if asset.storage_path in signed
     }

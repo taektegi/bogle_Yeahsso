@@ -22,13 +22,17 @@ class FakeStorage:
         self.uploaded: dict[str, tuple[bytes, str]] = {}
         # remove()가 호출되는 순간에 실행할 검사 (호출 순서를 확인할 때 쓴다)
         self.on_remove: Callable[[], None] | None = None
+        # Storage에 파일이 없는 경로. sign()은 이 경로를 결과에서 뺀다 (실제 Storage와 같다).
+        self.missing: set[str] = set()
 
     def sign(self, paths: Sequence[str]) -> dict[str, SignedUrl]:
         self.calls.append(list(paths))
         if self.fail:
             raise StorageError("storage is down")
         return {
-            p: SignedUrl(f"https://storage.test/signed/{p}?token=t", SIGNED_UNTIL) for p in paths
+            p: SignedUrl(f"https://storage.test/signed/{p}?token=t", SIGNED_UNTIL)
+            for p in paths
+            if p not in self.missing
         }
 
     def upload(self, path: str, data: bytes, content_type: str) -> None:
