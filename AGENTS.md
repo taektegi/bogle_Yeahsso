@@ -58,7 +58,7 @@
 ### API 형식 (NFR-10)
 - 경로는 `/v1` 접두어. JSON 필드는 **camelCase**. 시각은 UTC ISO 8601.
 - 오류 형식은 항상 `{"error": {"code", "message", "retryable", "fieldErrors", "requestId"}}`.
-- 생성 요청은 `Idempotency-Key`, 대화는 `clientMessageId`로 중복을 막는다. 같은 요청을 다시 받으면 이전 결과를 돌려준다.
+- 생성 요청은 `Idempotency-Key`, 대화는 `clientMessageId`로 중복을 막는다. 같은 요청을 다시 받으면 이전 결과를 돌려준다. 구현은 `app/idempotency.py`와 `docs/idempotency-design.md`를 따른다 (키를 리소스 행에 유일 값으로 저장하고, `insert_or_replay`를 리소스 생성과 **같은 트랜잭션**에서 쓴다).
 - API 계약의 기준은 FastAPI가 만드는 OpenAPI 문서(`/docs`)다. 요청·응답 모델은 Pydantic으로 명시하고, 계약을 바꾸면 팀 채널에 바로 알린다.
 - 사용자에게 보이는 문구와 오류 메시지는 한국어, 코드·식별자·로그 필드는 영어.
 
@@ -142,10 +142,10 @@ supabase db push      # 원격에 적용. supabase link로 프로젝트를 확�
 ```text
 aidlc-docs/   요구사항·분석 문서 (문서만 둔다)
 .github/     CI 설정 (workflows/ci.yml)
-docs/         프론트엔드와 주고받는 API 계약 등 협업 문서 (frontend-api-reply.md, flutter-repository-proposal.md)
+docs/         협업 문서 (frontend-api-reply.md, flutter-repository-proposal.md, idempotency-design.md)
 supabase/     DB 마이그레이션 (migrations/)과 DB 설명 (README.md)
 server/       FastAPI 서버
-  app/          main.py, config.py, auth.py, db.py, storage.py, assets.py, cleanup.py, rate_limit.py, errors.py, request_context.py, schemas.py
+  app/          main.py, config.py, auth.py, db.py, storage.py, assets.py, cleanup.py, rate_limit.py, idempotency.py, errors.py, request_context.py, schemas.py
   app/repositories/  DB 쿼리 (모든 함수가 user_id로 소유자를 거른다)
   app/routers/  기능별 라우터. __init__.py의 api_routers에 한 줄 추가해서 등록한다
   tests/        pytest. probe.py는 테스트 전용 라우터

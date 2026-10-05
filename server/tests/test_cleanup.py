@@ -132,6 +132,24 @@ def test_storage_failure_keeps_the_row_and_the_next_run_retries(database, seed_c
     assert not asset_exists(seed_conn, asset_id)
 
 
+def test_a_run_interrupted_after_removing_the_files_is_completed_by_the_next_one(
+    database, seed_conn, storage
+) -> None:
+    """서버가 정리 도중에 종료돼 파일만 지워지고 행이 남은 경우. 파일을 먼저 지우는 순서 덕에
+    다음 주기가 이미 없는 파일을 다시 지우려 하고(오류 아님) 행을 마저 지운다."""
+    user = make_user(seed_conn)
+    asset_id, path = make_asset(seed_conn, user, "source")
+    age(seed_conn, asset_id, 30)
+    storage.remove([path])  # 첫 실행: 파일은 지웠지만 행을 지우기 전에 끝났다
+    assert asset_exists(seed_conn, asset_id)
+
+    result = cleanup_assets(database, storage, RETENTION)
+
+    assert result == CleanupResult(deleted=1, incomplete=False)
+    assert not asset_exists(seed_conn, asset_id)
+    assert removed_paths(storage) == [path, path]  # 이미 없는 파일을 한 번 더 지우려 했다
+
+
 def test_files_of_a_deleted_character_are_cleaned_even_if_the_api_could_not_remove_them(
     app, client: TestClient, database, seed_conn
 ) -> None:
@@ -306,8 +324,9 @@ def test_the_periodic_task_cleans_and_stops_when_cancelled(database, seed_conn) 
                 database, storage, interval_seconds=0.05, retention=RETENTION, first_delay_seconds=0
             )
         )
-        for _ in range(100):
-            if storage.removed:
+        # 파일을 지운 뒤에 행을 지우므로, 행이 사라질 때까지 기다렸다가 멈춘다.
+        for _ in range(150):
+            if not asset_exists(seed_conn, asset_id):
                 break
             await asyncio.sleep(0.02)
         task.cancel()
