@@ -89,14 +89,16 @@ def test_unauthorized_is_a_storage_error_without_leaking_the_key() -> None:
     assert "service-role-key" not in str(excinfo.value)
 
 
-def test_item_level_error_is_a_storage_error() -> None:
+def test_object_that_cannot_be_signed_is_left_out_of_the_result() -> None:
     def handler(request: httpx2.Request) -> httpx2.Response:
-        return httpx2.Response(
-            200, json=[{"error": "Object not found", "path": "x/a.png", "signedURL": None}]
-        )
+        items = signed_items(["x/a.png"]) + [
+            {"error": "Object not found", "path": "x/gone.png", "signedURL": None}
+        ]
+        return httpx2.Response(200, json=items)
 
-    with pytest.raises(StorageError):
-        make_storage(handler).sign(["x/a.png"])
+    result = make_storage(handler).sign(["x/a.png", "x/gone.png"])
+
+    assert list(result) == ["x/a.png"]
 
 
 def test_response_missing_a_path_is_a_storage_error() -> None:

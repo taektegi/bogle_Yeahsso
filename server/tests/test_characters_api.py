@@ -132,6 +132,38 @@ def test_missing_source_is_null(app, client: TestClient, storage) -> None:
     assert character["art"] is not None
 
 
+def test_character_with_a_lost_art_file_is_left_out_of_the_list(app, client, storage) -> None:
+    broken, fine = record("깨진친구"), record("멀쩡한친구")
+    storage.missing = {broken.art.storage_path}
+    use(app, [broken, fine], storage)
+
+    response = client.get("/v1/characters", headers=bearer(hs256_token()))
+
+    assert response.status_code == 200
+    assert [c["name"] for c in response.json()["items"]] == ["멀쩡한친구"]
+
+
+def test_lost_source_file_only_makes_source_null(app, client, storage) -> None:
+    item = record()
+    storage.missing = {item.source.storage_path}
+    use(app, [item], storage)
+
+    [character] = client.get("/v1/characters", headers=bearer(hs256_token())).json()["items"]
+
+    assert character["source"] is None
+    assert character["art"]["assetId"] == str(item.art.id)
+
+
+def test_detail_of_a_character_with_a_lost_thumbnail_is_404(app, client, storage) -> None:
+    item = record()
+    storage.missing = {item.thumbnail.storage_path}
+    use(app, [item], storage)
+
+    response = client.get(f"/v1/characters/{item.id}", headers=bearer(hs256_token()))
+
+    assert response.status_code == 404
+
+
 def test_empty_list(app, client: TestClient, storage) -> None:
     use(app, [], storage)
 

@@ -50,7 +50,11 @@ class CharacterListOut(CamelModel):
     next_cursor: str | None = None
 
 
-def _to_out(record: CharacterRecord, refs: dict[UUID, ImageRef]) -> CharacterOut:
+def _to_out(record: CharacterRecord, refs: dict[UUID, ImageRef]) -> CharacterOut | None:
+    """아트·썸네일 파일을 열 수 없는 친구는 None이다 (원본만 없으면 source가 null)."""
+    if record.art.id not in refs or record.thumbnail.id not in refs:
+        logger.error("character %s has an unreadable art or thumbnail file", record.id)
+        return None
     return CharacterOut(
         id=record.id,
         name=record.name,
@@ -59,7 +63,7 @@ def _to_out(record: CharacterRecord, refs: dict[UUID, ImageRef]) -> CharacterOut
         introduction=record.introduction,
         favorite_things=record.favorite_things,
         speech_style=record.speech_style,
-        source=refs[record.source.id] if record.source else None,
+        source=refs.get(record.source.id) if record.source else None,
         art=refs[record.art.id],
         thumbnail=refs[record.thumbnail.id],
         accent_argb=record.accent_argb,
@@ -86,21 +90,26 @@ class SleepStatusOut(CamelModel):
 def list_characters(
     user: CurrentUserDep, repo: CharacterRepositoryDep, storage: StorageDep
 ) -> CharacterListOut:
-    """내 친구를 최신순으로 돌려준다. 친구가 없으면 빈 목록이다."""
+    """내 친구를 최신순으로 돌려준다. 친구가 없으면 빈 목록이다.
+
+    아트·썸네일 파일이 사라진 친구는 목록에서 빼고(오류 로그), 나머지는 정상으로 돌려준다.
+    """
     records = repo.list_for_user(user.id)
     refs = image_refs(storage, _assets_of(records))
-    return CharacterListOut(items=[_to_out(record, refs) for record in records])
+    outs = (_to_out(record, refs) for record in records)
+    return CharacterListOut(items=[out for out in outs if out is not None])
 
 
 @router.get("/{character_id}", response_model=CharacterOut, summary="친구 상세")
 def get_character(
     character_id: UUID, user: CurrentUserDep, repo: CharacterRepositoryDep, storage: StorageDep
 ) -> CharacterOut:
-    """없는 친구와 남의 친구는 똑같이 404다."""
+    """없는 친구와 남의 친구는 똑같이 404다. 아트·썸네일 파일이 사라진 친구도 목록과 같게 404다."""
     record = repo.get_for_user(user.id, character_id)
-    if record is None:
+    out = _to_out(record, image_refs(storage, _assets_of([record]))) if record else None
+    if out is None:
         raise ApiError(404, "not_found", "친구를 찾을 수 없어요.")
-    return _to_out(record, image_refs(storage, _assets_of([record])))
+    return out
 
 
 @router.get(
