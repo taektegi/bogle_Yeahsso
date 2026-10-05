@@ -47,6 +47,47 @@ Supabase CLI가 없으면 Docker로 PostgreSQL을 띄워도 됩니다:
 
 Supabase의 `auth`·`storage` 스키마는 `tests/sql/supabase_stub.sql`이 흉내 냅니다. 실제 Supabase와 완전히 같지는 않습니다.
 
+## 로컬 Supabase로 서버 확인하기
+
+> **실제 Supabase(Supabase CLI 2.117, 로컬 Docker)에서 확인함** (2026-10-05). 로그인 토큰 검증, Storage 서명·업로드·삭제, 친구 목록·삭제, 정리 작업, RLS가 가짜가 아닌 실제 Auth·Storage·PostgREST로 동작했습니다. 확인 내용은 `supabase/README.md`의 "로컬 검증 결과"에 있습니다.
+
+Docker Desktop을 켜 둔 상태에서 저장소 루트에서 실행합니다 (PowerShell).
+
+```powershell
+supabase start                       # 첫 실행은 이미지를 받느라 몇 분 걸립니다
+supabase status -o env               # API_URL, SERVICE_ROLE_KEY 등을 보여 줍니다 (값을 커밋·공유하지 마세요)
+```
+
+`server/.env`를 채웁니다. 로컬 Supabase는 **ES256 비대칭 키**로 토큰을 서명하므로 `SUPABASE_JWT_SECRET`은 비워 둬도 됩니다 (서버가 `SUPABASE_URL`의 JWKS로 검증합니다).
+
+```text
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_SERVICE_ROLE_KEY=<supabase status 의 SERVICE_ROLE_KEY>
+DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+```
+
+`.env`가 있으면 서버·시드 스크립트가 그 값을 읽습니다. 가입한 계정으로 시드 친구를 만들고 서버를 띄웁니다.
+
+```powershell
+cd server
+# 로컬 Auth 가입 (이메일 확인 없음). 앱의 Google 로그인 대신 개발용으로만 씁니다.
+$anon = (supabase status -o env | Select-String '^ANON_KEY=').ToString().Split('"')[1]
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:54321/auth/v1/signup `
+  -Headers @{ apikey = $anon } -ContentType 'application/json' `
+  -Body '{"email":"me@example.com","password":"Test-pass-1234!"}' | Out-Null
+
+python -m scripts.seed --email me@example.com
+uvicorn app.main:app --no-access-log
+```
+
+로그인 토큰은 `POST /auth/v1/token?grant_type=password`로 받을 수 있고, `Authorization: Bearer <access_token>`으로 `GET http://localhost:8000/v1/me`를 불러 확인합니다.
+
+가입하면 `public.profiles` 행이 트리거로 자동 생성되고 닉네임은 `그린고블린`입니다.
+
+### 연결 문자열
+- 로컬 DB 직접 연결: `postgresql://postgres:postgres@127.0.0.1:54322/postgres`
+- 로컬 pooler(transaction mode)를 쓰려면 `supabase/config.toml`의 `[db.pooler] enabled = true`로 바꾸고 다시 시작한 뒤 `postgresql://postgres.pooler-dev:postgres@127.0.0.1:54329/postgres`를 씁니다. 사용자 이름의 `pooler-dev`는 프로젝트 이름과 무관한 로컬 고정 값입니다. 서버는 prepared statement를 끄고 연결하므로 그대로 동작합니다.
+
 ## 폴더 구조
 
 ```text

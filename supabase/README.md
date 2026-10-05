@@ -80,6 +80,27 @@ supabase link --project-ref <project-ref>
 supabase db push
 ```
 
+### 로컬 설정 (`config.toml`)
+
+`config.toml`은 `supabase init`의 기본값에서 `project_id = "bogle"`만 바꿨습니다. 로컬 검증에 영향을 주는 기본값은 다음과 같습니다.
+
+- `[auth] enable_signup = true`, `[auth.email] enable_confirmations = false`: 이메일 가입이 바로 되고 확인 메일을 기다리지 않습니다 (로컬 전용 설정).
+- `[auth] jwt_expiry = 3600`: 액세스 토큰은 1시간입니다.
+- `[db.pooler] enabled = false`: pooler는 꺼져 있습니다. 필요하면 `true`로 바꾸고 `supabase stop` → `supabase start` 합니다.
+- Google OAuth(`[auth.external.google]`)는 켜지 않았습니다. 앱의 Google 로그인은 로컬에서 확인하지 못했습니다.
+
+### 로컬 검증 결과
+
+**실제 Supabase(CLI 2.117, Postgres 17, 로컬 Docker)에서 확인함** (2026-10-05).
+
+- `supabase db reset`으로 마이그레이션 4개가 오류 없이 적용됩니다.
+- `profiles`·`friends`·`assets` 모두 RLS가 켜져 있고, `authenticated`는 SELECT 정책만 있습니다. `anon`에는 권한이 없습니다. 사용자 토큰으로 PostgREST에 `POST`·`PATCH`·`DELETE`를 하면 403입니다.
+- `storage.buckets`에 `bogle-media`가 `public = false`로 있고, `bogle_media_select_own` 정책으로 내 폴더(`{userId}/...`)만 읽을 수 있습니다. 사용자 토큰으로는 업로드도 거부됩니다 (쓰기는 서버만).
+- `auth.users`에 `on_auth_user_created` 트리거가 붙어 있어 가입 직후 `profiles`가 생깁니다.
+- 로컬 Auth는 **ES256** 토큰을 발급하고 `iss`는 `http://127.0.0.1:54321/auth/v1`, `aud`는 `authenticated`입니다. 서버가 JWKS로 검증합니다.
+- Storage 실제 응답은 서버 가정과 같습니다: 서명은 `[{error, path, signedURL}]`(없는 객체는 HTTP 200에 `signedURL: null`), 업로드·삭제는 HTTP 200이고 이미 없는 객체 삭제는 `[]`입니다. 서명·업로드는 `Authorization`·`apikey` 중 하나만 있어도 되지만 둘 다 보냅니다. 객체 키는 한글·공백이 있으면 거부됩니다 (서버 경로는 ASCII UUID라 해당 없음).
+- Storage 파일 이름에 `x-upsert` 없이 같은 경로를 올리면 409(`Duplicate`)이고, 서버는 항상 `x-upsert: true`로 올립니다.
+
 ## 범위 밖
 
 요구사항 문서의 범위 밖 항목(돌봄 수치, 찜, 주문·결제, 푸시 알림 등)은 스키마에 추가하지 않습니다.
