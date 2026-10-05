@@ -118,8 +118,8 @@ class CharacterRepository:
         """내 친구를 삭제하고, 그 친구가 쓰던 에셋(원본·아트·썸네일)을 돌려준다. 없으면 None.
 
         **에셋 행과 Storage 파일은 지우지 않는다.** 호출하는 쪽이 파일을 먼저 지운 뒤
-        `delete_assets()`로 행을 지운다. 그러면 파일 삭제가 실패해도 행이 남아서
-        나중에 정리할 수 있다.
+        `delete_assets()`로 행을 지운다. 파일 삭제가 실패해도 행이 남고, 이 에셋들에는
+        삭제 요청 표시가 있어서 정리 작업(`app/cleanup.py`)이 곧바로 다시 지운다.
         친구에 딸린 대화·모션 기록은 각 테이블의 `on delete cascade`로 함께 지워지고, 프로필
         아바타는 DB가 기본값(null)으로 되돌린다.
         """
@@ -141,9 +141,12 @@ class CharacterRepository:
                 "delete from public.friends where id = %(character_id)s and user_id = %(user_id)s",
                 params,
             )
+            # 삭제를 요청했다고 표시한다. 파일 삭제가 실패해도 정리 작업이 나이와 상관없이
+            # 바로 다시 지운다 (app/cleanup.py).
             asset_rows = conn.execute(
-                "select id, storage_path, content_type, width, height from public.assets"
-                " where id = any(%(asset_ids)s) and user_id = %(user_id)s",
+                "update public.assets set delete_requested_at = now()"
+                " where id = any(%(asset_ids)s) and user_id = %(user_id)s"
+                " returning id, storage_path, content_type, width, height",
                 {"asset_ids": asset_ids, "user_id": user_id},
             ).fetchall()
         return [

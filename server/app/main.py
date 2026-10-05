@@ -1,23 +1,38 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import timedelta
 
 from fastapi import FastAPI
 
+from app.cleanup import background_cleanup
 from app.config import get_settings
 from app.db import create_database
-from app.errors import register_exception_handlers
+from app.errors import ApiError, register_exception_handlers
 from app.request_context import RequestContextMiddleware, configure_logging
 from app.routers import api_routers
+from app.storage import get_storage
 
 API_PREFIX = "/v1"
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    database = create_database(get_settings())
+    settings = get_settings()
+    database = create_database(settings)
     app.state.database = database
     try:
-        yield
+        storage = get_storage(settings)
+    except ApiError:  # SUPABASE_URL 또는 SUPABASE_SERVICE_ROLE_KEY가 없다
+        storage = None
+    try:
+        # 미사용 에셋을 주기적으로 정리한다. 서버가 종료되면 함께 멈춘다.
+        async with background_cleanup(
+            database,
+            storage,
+            interval_seconds=settings.cleanup_interval_seconds,
+            retention=timedelta(hours=settings.asset_retention_hours),
+        ):
+            yield
     finally:
         if database is not None:
             database.close()

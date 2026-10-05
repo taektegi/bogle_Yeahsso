@@ -62,6 +62,7 @@ server/
 │   ├── sleep.py            수면 시간 판정 (한국 시간 22:00–06:00)
 │   ├── clock.py            현재 시각 (테스트에서 고정할 수 있게 의존성으로 분리)
 │   ├── rate_limit.py       사용자별 요청 횟수 제한 (429). limit_generations 등을 라우터에 붙인다
+│   ├── cleanup.py          미사용 에셋 정리 (서버가 1시간마다 실행). 새 테이블이 에셋을 가리키면 ASSET_REFERENCES에 추가
 │   ├── errors.py           공통 오류 형식과 ApiError
 │   ├── request_context.py  requestId 부여, 접근 로그
 │   ├── schemas.py          CamelModel (JSON은 camelCase)
@@ -159,6 +160,8 @@ python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지
 | `SUPABASE_JWT_SECRET` | 레거시 HS256 토큰 검증 | HS256 토큰 거부 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Storage 서명 URL 생성 | 이미지를 돌려주는 API가 503 |
 | `DATABASE_URL` | Postgres 직접 연결 | DB를 쓰는 API가 503 (서버는 뜸) |
+| `CLEANUP_INTERVAL_SECONDS` | 미사용 에셋 정리 주기(초). 기본 3600, 0이면 끔 | 기본값 사용. DB·Storage 설정이 없으면 정리는 자동으로 꺼짐 |
+| `ASSET_RETENTION_HOURS` | 미사용 에셋 보관 시간. 기본 24 | 기본값 사용 |
 
 ## 아직 없는 것
 

@@ -25,6 +25,7 @@
   - `storage_path`: 비공개 bucket 안의 객체 경로. 항상 `{user_id}/`로 시작해야 하고 유일합니다.
   - `content_type`(`image/png`·`image/jpeg`·`image/gif`), `byte_size`, `width`, `height`: 업로드할 때 서버가 검사한 값을 기록합니다.
   - 앱에는 `assetId`와 만료되는 서명 URL로만 제공합니다.
+  - `delete_requested_at`: 친구를 삭제하면 그 친구의 에셋에 채워집니다. 파일 삭제가 실패해 행이 남더라도, 정리 작업이 이 표시가 있는 에셋을 나이와 상관없이 바로 다시 지웁니다.
 
 관계는 `auth.users -> profiles`, `auth.users -> assets`, `auth.users -> friends -> assets`입니다. 사용자를 삭제하면 프로필·에셋·친구가 함께 삭제됩니다. 친구를 삭제할 때 대화·모션 기록은 각 테이블이 `friends`를 `on delete cascade`로 참조해서 함께 지웁니다.
 
@@ -36,7 +37,9 @@
 3. Storage에서 파일을 삭제합니다.
 4. `assets` 행을 삭제합니다.
 
-계정 삭제(운영자가 시연 후 정리)도 같습니다: `auth.users`를 지우기 **전에** 그 사용자의 `assets.storage_path`를 조회해서 Storage 파일부터 지웁니다. 미사용 업로드 정리(FR-04.8)는 `assets_created_at_idx`로 오래된 에셋을 찾아 같은 방식으로 지웁니다.
+계정 삭제(운영자가 시연 후 정리)도 같습니다: `auth.users`를 지우기 **전에** 그 사용자의 `assets.storage_path`를 조회해서 Storage 파일부터 지웁니다. 미사용 업로드 정리(FR-04.8)는 서버가 1시간마다 자동으로 합니다(`server/app/cleanup.py`): 아무 친구도 쓰지 않는 에셋 중 **만든 지 24시간이 지난 것**과 **삭제 요청 표시가 있는 것**을 Storage 파일 → 행 순서로 지웁니다.
+
+> 다른 테이블이 에셋을 가리키게 되면(생성 작업, 모션 결과 등) `server/app/cleanup.py`의 `ASSET_REFERENCES`에 조건을 추가해야 합니다. 그렇지 않으면 그 에셋이 24시간 뒤에 지워집니다.
 
 ### 쓰기는 서버만 한다
 앱(`authenticated`)에는 `select` 권한과 "내 것만" 읽는 정책만 있습니다. 삽입·수정·삭제는 FastAPI 서버가 `service_role` 키로 합니다. 앱이 PostgREST로 직접 쓰려고 하면 권한 오류가 납니다.

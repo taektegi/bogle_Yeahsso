@@ -142,7 +142,7 @@ aidlc-docs/   요구사항·분석 문서 (문서만 둔다)
 docs/         프론트엔드와 주고받는 API 계약 등 협업 문서 (frontend-api-reply.md, flutter-repository-proposal.md)
 supabase/     DB 마이그레이션 (migrations/)과 DB 설명 (README.md)
 server/       FastAPI 서버
-  app/          main.py, config.py, auth.py, db.py, storage.py, assets.py, errors.py, request_context.py, schemas.py
+  app/          main.py, config.py, auth.py, db.py, storage.py, assets.py, cleanup.py, rate_limit.py, errors.py, request_context.py, schemas.py
   app/repositories/  DB 쿼리 (모든 함수가 user_id로 소유자를 거른다)
   app/routers/  기능별 라우터. __init__.py의 api_routers에 한 줄 추가해서 등록한다
   tests/        pytest. probe.py는 테스트 전용 라우터
@@ -152,6 +152,7 @@ server/       FastAPI 서버
 - 새 API는 `server/README.md`의 "새 API를 만들 때" 순서를 따른다. 로그인이 필요한 API는 `CurrentUserDep`을 받고, 사용자 ID는 `user.id`(토큰)만 쓴다.
 - **서버는 DB에 직접 연결해서 RLS가 적용되지 않는다.** repository의 모든 쿼리에 소유자(`user_id`) 조건을 직접 걸고, 남의 리소스를 요청하는 DB 테스트를 함께 쓴다.
 - 오류는 `ApiError`로 내고, 요청·응답 모델은 `CamelModel`을 상속한다.
+- 다른 테이블이 `assets`를 가리키게 만들면 `server/app/cleanup.py`의 `ASSET_REFERENCES`에 조건을 추가한다. 그렇지 않으면 정리 작업이 그 에셋을 24시간 뒤에 지운다.
 - 불필요한 파일(`.DS_Store`, `.env`, 빌드 산출물)은 커밋하지 않는다 (`.gitignore`에 설정돼 있다).
 
 ## 사람에게 먼저 물어볼 것

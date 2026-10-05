@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     # 앱에 주는 서명 URL의 유효 시간 (초). API 계약: 60분
     signed_url_ttl_seconds: int = 3600
 
+    # 미사용 에셋 정리 (app/cleanup.py). 간격 0이면 정리 작업을 돌리지 않는다.
+    cleanup_interval_seconds: int = 3600
+    # 업로드하고 친구로 저장하지 않은 에셋을 보관하는 시간. API 계약: 24시간
+    asset_retention_hours: int = 24
+
     @property
     def issuer(self) -> str | None:
         """Supabase 토큰의 iss 값. SUPABASE_URL이 없으면 검사하지 않는다."""
