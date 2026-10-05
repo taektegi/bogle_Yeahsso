@@ -9,7 +9,7 @@
 
 > **주의**: 아래 화면 이름과 메뉴 위치는 2026-10 기준으로 아는 구조입니다. Supabase·Google Cloud 콘솔은 자주 바뀌므로 이름이 조금 다르면 비슷한 항목을 찾으세요. 작성 당시 Supabase 공식 문서를 직접 열어 보지 못했습니다. 막히면 [Supabase의 Google 로그인 문서](https://supabase.com/docs/guides/auth/social-login/auth-google)를 확인하세요.
 >
-> 이 안내서는 **실제로 따라 해 본 것이 아닙니다.** 끝까지 해 본 뒤 달랐던 부분은 이 문서에 고쳐 주세요.
+> 1~2절과 6~8절은 이메일 계정으로 실제로 따라 해 봤습니다(맨 아래 "클라우드 검증 결과"). 3~5절(Google 로그인)은 **아직 따라 해 보지 않았습니다.** 해 본 뒤 달랐던 부분은 이 문서에 고쳐 주세요.
 
 ## 0. 먼저 알아 둘 것
 
@@ -35,9 +35,13 @@
 
 ```powershell
 supabase login
-supabase link --project-ref <project-ref>     # DB 비밀번호를 물어봅니다
+supabase link --project-ref <project-ref>     # CLI 2.117에서는 비밀번호를 묻지 않았습니다
+supabase migration list                       # 원격 칸이 비어 있고 로컬 4개만 있어야 정상
+supabase db push --dry-run                    # 적용될 목록만 미리 보기
 supabase db push                              # supabase/migrations/*.sql 적용
 ```
+
+- 확인한 CLI(2.117.0)에서는 `link`가 DB 비밀번호를 묻지 않았습니다. 로그인 토큰으로 프로젝트를 확인하고, 이후 `migration list`·`db push`는 CLI가 임시 로그인 역할을 만들어 접속했습니다. 이 방식에서는 DB 비밀번호가 `.env`의 `DATABASE_URL`에만 필요합니다.
 
 - `db reset`은 **원격에 절대 실행하지 않습니다.** 로컬 전용입니다.
 - 확인: 대시보드 **Table Editor**에 `profiles`, `friends`, `assets`가 있고, **Storage**에 `bogle-media`(비공개)가 있어야 합니다.
@@ -121,6 +125,9 @@ await Supabase.instance.client.auth.signInWithIdToken(
 
 `server/.env`를 채웁니다. **이 파일은 커밋하지 않습니다.**
 
+> 서버는 `server/`에서 실행하고 `.env`를 그 폴더 기준으로 읽습니다. 저장소 루트에 `.env`를 만들면 읽히지 않습니다.
+> 검증 중에 있었던 실수입니다. ① `SUPABASE_SERVICE_ROLE_KEY`에 키 대신 한글 안내 문구가 들어가 Storage 호출이 `UnicodeEncodeError`로 실패했습니다(서버 기동·`/v1/me`는 이 키를 쓰지 않아 정상이라 늦게 드러납니다). ② `SUPABASE_JWT_SECRET`에 서비스 키를 같이 넣었습니다. ES256 프로젝트에서는 비워 둡니다. ③ 마지막 줄 끝에 줄바꿈이 없는 `.env`에 `Add-Content`로 덧붙이면 앞 줄과 붙어 버립니다.
+
 | 이름 | 값을 얻는 곳 |
 |---|---|
 | `SUPABASE_URL` | `https://<project-ref>.supabase.co` |
@@ -130,7 +137,7 @@ await Supabase.instance.client.auth.signInWithIdToken(
 
 ### 서비스 키
 - 대시보드에 **레거시 `service_role` 키**(JWT 형태)와 새 **secret key**(`sb_secret_...` 형태)가 함께 보일 수 있습니다.
-- 서버는 Storage 호출에 이 키를 `Authorization`과 `apikey` 헤더 둘 다로 보냅니다. **새 secret key로 이 방식이 동작하는지는 확인하지 못했습니다.** 먼저 레거시 `service_role` 키로 확인하고, 새 키로 바꿀 때는 8절 확인을 다시 하세요.
+- 서버는 Storage 호출에 이 키를 `Authorization`과 `apikey` 헤더 둘 다로 보냅니다. 레거시 `service_role` 키로는 클라우드에서 동작을 확인했습니다. **새 secret key로 이 방식이 동작하는지는 확인하지 못했습니다.** 먼저 레거시 `service_role` 키로 확인하고, 새 키로 바꿀 때는 8절 확인을 다시 하세요.
 
 ### 연결 문자열
 - **직접 연결**(`db.<project-ref>.supabase.co:5432`)은 IPv6만 지원하는 경우가 있어 집·학교 네트워크에서 안 붙을 수 있습니다. **Pooler 문자열을 쓰세요.** 사용자 이름은 `postgres.<project-ref>` 형태입니다.
@@ -139,7 +146,7 @@ await Supabase.instance.client.auth.signInWithIdToken(
 
 ### JWT 서명 방식 확인
 - **Project Settings → JWT Keys(또는 JWT Settings)**에서 현재 서명 방식을 봅니다.
-  - 비대칭 키(ES256/RS256): `SUPABASE_URL`만 있으면 서버가 `https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json`에서 공개 키를 받습니다. 로컬에서 확인한 경로입니다.
+  - 비대칭 키(ES256/RS256): `SUPABASE_URL`만 있으면 서버가 `https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json`에서 공개 키를 받습니다. 로컬과 클라우드(ES256)에서 확인한 경로입니다.
   - 레거시 공유 비밀(HS256): `SUPABASE_JWT_SECRET`도 채웁니다. **이 경로는 실제 토큰으로는 아직 확인하지 못했습니다.**
 - 어느 쪽인지 모르겠으면 둘 다 채웁니다. 서버가 토큰 헤더의 알고리즘에 맞는 키만 씁니다.
 
@@ -193,3 +200,43 @@ Flutter 앱이 아직 없어도 확인할 수 있습니다. 순서대로 확인�
 - 8절 표의 결과 (특히 4번의 JWT 방식, 5번의 키 종류, 7번의 삭제)
 - 달랐던 화면 이름·절차: 이 문서를 고칩니다
 - 배포 환경이 정해지면 `.env`를 그곳의 비밀 저장소로 옮기는 방법
+
+## 클라우드 검증 결과
+
+| 항목 | 내용 |
+|---|---|
+| 확인한 날짜 | 2026-10-05 |
+| 대상 | 새로 만든 개발용 프로젝트(Free 플랜, Seoul). 프로젝트 ref와 주소는 문서에 쓰지 않는다 |
+| 마이그레이션 | 4개 모두 `db push`로 적용. `migration list`에서 원격과 로컬 일치 |
+| JWT 서명 방식 | **ES256**(비대칭). `SUPABASE_URL`의 JWKS로 검증됨. `SUPABASE_JWT_SECRET`은 비워 둠 |
+| 서비스 키 | **레거시 `service_role` 키**(JWT 형태). 새 `sb_secret_...` 키는 확인하지 않음 |
+| 연결 방식 | Supavisor **Transaction mode(6543)** 의 pooler 문자열 |
+| 확인 방법 | 이메일 계정 2개(A, B)로 서버(`uvicorn`)에 요청. 키·토큰은 환경변수에만 두고 출력하지 않는 확인용 스크립트로 실행 |
+
+### 8절 표 결과
+
+| # | 확인 | 결과 |
+|---|---|---|
+| 1 | Google 로그인 | **건너뜀**(앱·iOS 번들 ID가 있어야 함) |
+| 2 | Authentication → Users에 계정 있음 | 통과 |
+| 3 | `profiles` 자동 생성, 닉네임 `그린고블린` | 통과(대시보드에서 직접 확인) |
+| 4 | `GET /v1/me` | 통과(200, ES256) |
+| 5 | 시드 후 `GET /v1/characters` | 통과(친구 3명) |
+| 6 | `art.url` 열기 | 통과(200, `image/png`, PNG 시그니처) |
+| 7 | 삭제 | 통과(204, 재조회 404, `assets` 행 9→6, 옛 서명 URL이 열리지 않음, 대시보드 Storage에서 파일 감소 확인) |
+| 8 | 다른 계정으로 남의 친구 `GET`·`status`·`DELETE` | 통과(모두 404, A의 친구는 그대로) |
+| 9 | 토큰 없음·변조 | 통과(둘 다 401) |
+| - | `PATCH /v1/me` | 통과 |
+| - | 세 테이블 RLS, `on_auth_user_created`, 비공개 버킷 | 통과(대시보드에서 직접 확인) |
+
+### 확인하지 못한 것
+- Google OAuth 로그인(3~5절 전체)
+- 새 `sb_secret_...` 서비스 키
+- 레거시 HS256 토큰(이 프로젝트는 ES256)
+- 미사용 에셋 정리 작업(`cleanup`)의 클라우드 동작
+- Transaction mode 외의 Session mode(5432)
+
+### 안내서와 달랐던 점
+- `supabase link`가 DB 비밀번호를 묻지 않았다(2절에 반영).
+- `.env` 위치와 실수 사례를 6절에 적었다. 서비스 키 대신 다른 값이 들어가도 서버 기동과 `/v1/me`는 정상이라 시드나 Storage를 쓸 때에야 드러난다.
+- Windows PowerShell 5.1의 `Invoke-WebRequest`는 charset이 없는 JSON을 UTF-8로 읽지 못해 한글이 깨져 보인다. 서버 오류가 아니라 확인 스크립트 쪽 문제였고, 응답을 UTF-8로 직접 해석하면 해결된다.
