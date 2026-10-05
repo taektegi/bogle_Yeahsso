@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+
+# Secrets — never commit (OpenAI key, Supabase service_role key)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local data and build output
+node_modules/
+dist/
+build/
+*.log
+
+# Supabase CLI local state
+supabase/.branches/
+supabase/.temp/
+
+# Editors
+.idea/
+.vscode/
