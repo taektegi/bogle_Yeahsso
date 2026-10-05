@@ -6,7 +6,7 @@
 
 ## 데이터 구조
 
-공통 뼈대(`20261005000100_core_schema.sql`)가 만드는 테이블입니다. 업로드·생성 작업(담당 B), 대화·모션(담당 C) 테이블은 각 담당이 새 마이그레이션으로 추가합니다.
+공통 뼈대(`20261005000100_core_schema.sql`, `20261005000200_assets.sql`)가 만드는 테이블입니다. 생성 작업(담당 B), 대화·모션(담당 C) 테이블은 각 담당이 새 마이그레이션으로 추가합니다.
 
 - `profiles`: `auth.users`와 1:1인 아이 프로필 (FR-02). 처음 로그인하면 트리거(`handle_new_user`)가 자동으로 만들고 닉네임은 `그린고블린`입니다.
   - `nickname`: 공백을 제거한 1–12자
@@ -15,12 +15,28 @@
 - `friends`: 사용자가 만든 캐릭터 친구 (FR-05, FR-06).
   - 설정값: `name`, `personality_type`, `favorite_things`(1개 이상), `speech_style`(`~지요!` / `해요체` / `반말`)
   - `introduction`: 소개 문구(최대 70자). 생성에 실패하면 빈 문자열입니다.
-  - `source_path`, `art_path`, `thumbnail_path`: Storage 객체 경로. 항상 `{user_id}/`로 시작해야 합니다.
+  - `source_asset_id`(선택), `art_asset_id`, `thumbnail_asset_id`: `assets`의 행을 가리킵니다. 내 에셋만 가리킬 수 있고, 에셋 하나는 친구 한 명에게만 속합니다. 에셋의 `kind`가 맞는지는 API가 검사합니다.
   - `accent_argb`: 대표색 ARGB. 부호 없는 32비트라서 `bigint`입니다.
   - `generation_job_id`: 친구 생성 작업 ID. 유일하므로 작업 하나로는 친구 하나만 만들 수 있습니다. 작업 테이블이 생기면 담당 B가 외래 키를 추가합니다.
   - 친구 설정은 저장 후 바뀌지 않습니다 (D-24). 갱신되는 것은 `introduction`뿐입니다.
 
-관계는 `auth.users -> profiles`, `auth.users -> friends`이고, 사용자를 삭제하면 프로필과 친구가 함께 삭제됩니다. 친구를 삭제할 때 대화·모션 기록은 각 테이블이 `friends`를 `on delete cascade`로 참조해서 함께 지웁니다. **Storage 파일은 DB가 지우지 못하므로 서버가 Storage API로 직접 삭제합니다** (FR-06.3).
+- `assets`: 이미지 파일 한 건당 한 행. 업로드 원본, 생성된 캐릭터 아트·썸네일, 모션 GIF를 모두 여기서 관리합니다.
+  - `kind`: `source`(업로드 원본), `art`(생성된 투명 PNG), `thumbnail`, `motion`(담당 C)
+  - `storage_path`: 비공개 bucket 안의 객체 경로. 항상 `{user_id}/`로 시작해야 하고 유일합니다.
+  - `content_type`(`image/png`·`image/jpeg`·`image/gif`), `byte_size`, `width`, `height`: 업로드할 때 서버가 검사한 값을 기록합니다.
+  - 앱에는 `assetId`와 만료되는 서명 URL로만 제공합니다.
+
+관계는 `auth.users -> profiles`, `auth.users -> assets`, `auth.users -> friends -> assets`입니다. 사용자를 삭제하면 프로필·에셋·친구가 함께 삭제됩니다. 친구를 삭제할 때 대화·모션 기록은 각 테이블이 `friends`를 `on delete cascade`로 참조해서 함께 지웁니다.
+
+### 파일 삭제 순서
+**Storage 파일은 DB가 지우지 못하므로 서버가 Storage API로 직접 삭제합니다** (FR-06.3). 행을 지우면 경로를 잃으므로 순서를 지켜야 합니다.
+
+1. 지울 친구의 `assets`(원본·아트·썸네일·모션) 경로를 먼저 조회합니다.
+2. 친구를 삭제합니다. 친구가 참조 중인 에셋은 먼저 지울 수 없습니다.
+3. Storage에서 파일을 삭제합니다.
+4. `assets` 행을 삭제합니다.
+
+계정 삭제(운영자가 시연 후 정리)도 같습니다: `auth.users`를 지우기 **전에** 그 사용자의 `assets.storage_path`를 조회해서 Storage 파일부터 지웁니다. 미사용 업로드 정리(FR-04.8)는 `assets_created_at_idx`로 오래된 에셋을 찾아 같은 방식으로 지웁니다.
 
 ### 쓰기는 서버만 한다
 앱(`authenticated`)에는 `select` 권한과 "내 것만" 읽는 정책만 있습니다. 삽입·수정·삭제는 FastAPI 서버가 `service_role` 키로 합니다. 앱이 PostgREST로 직접 쓰려고 하면 권한 오류가 납니다.
