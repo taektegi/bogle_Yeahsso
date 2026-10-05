@@ -139,7 +139,7 @@ supabase db push      # 원격에 적용. supabase link로 프로젝트를 확�
 
 ```text
 aidlc-docs/   요구사항·분석 문서 (문서만 둔다)
-docs/         프론트엔드와 주고받는 API 계약 등 협업 문서 (frontend-api-reply.md)
+docs/         프론트엔드와 주고받는 API 계약 등 협업 문서 (frontend-api-reply.md, flutter-repository-proposal.md)
 supabase/     DB 마이그레이션 (migrations/)과 DB 설명 (README.md)
 server/       FastAPI 서버
   app/          main.py, config.py, auth.py, db.py, storage.py, assets.py, errors.py, request_context.py, schemas.py
