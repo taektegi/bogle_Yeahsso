@@ -19,6 +19,7 @@
 | 프로젝트는 몇 개? | **개발용 1개를 먼저** 만듭니다. 시연용은 따로 만들어 분리합니다 (NFR-11). 시연용 프로젝트는 시연이 가까워지면 만듭니다 |
 | 비용 | 무료(Free) 플랜으로 시작할 수 있습니다. **무료 프로젝트는 일정 기간(약 1주) 활동이 없으면 일시 중지될 수 있으니** 시연 전에 상태를 확인하세요 |
 | 클라우드 키는 누가 가지나? | 서버를 띄우는 사람(지금은 권희준)과 배포 환경만. 팀원에게 `service_role` 키를 나눠 주지 않습니다 |
+| 시연 기기는? | **아이패드 한 대(iOS)** 로 정했습니다. 그래서 Google에는 **Web 클라이언트와 iOS 클라이언트**만 만들고 Android 클라이언트(SHA-1)는 만들지 않습니다. 프론트에 Mac과 아이패드가 있어 iOS 빌드는 가능합니다 |
 
 ## 1. Supabase 프로젝트 만들기
 
@@ -60,23 +61,25 @@ supabase db push                              # supabase/migrations/*.sql 적용
 ### 3.2 클라이언트 ID 만들기
 **Clients(사용자 인증 정보) → Create client**에서 만듭니다.
 
-| 종류 | 언제 필요한가 | 입력값 |
+시연 기기가 아이패드이므로 아래 **두 개**를 만듭니다.
+
+| 종류 | 용도 | 입력값 |
 |---|---|---|
-| **Web application** | **항상 필요.** Supabase에 등록하는 ID이고, 앱이 `serverClientId`로 씁니다 | Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback` |
-| Android | Android 앱에서 네이티브 로그인할 때 | 패키지 이름 + 디버그/릴리스 **SHA-1 지문** |
-| iOS | iOS 앱에서 네이티브 로그인할 때 | 번들 ID |
+| **Web application** | Supabase에 등록하는 ID이고, 앱이 `serverClientId`로 씁니다 | Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback` |
+| **iOS** | 아이패드(iOS) 앱의 네이티브 로그인 | **번들 ID**(앱의 Bundle Identifier. 프론트에게 받습니다) |
 
 - Web application의 **Client ID와 Client secret**을 안전한 곳에 저장합니다. secret은 Supabase에만 넣고 앱·저장소에는 넣지 않습니다.
-- 앱 플랫폼(Android/iOS)은 프론트 개발자에게 확인한 뒤 필요한 것만 만듭니다. 시연 기기가 한 종류라면 그 종류만 만듭니다.
+- iOS 클라이언트를 만들면 **iOS URL scheme**(`com.googleusercontent.apps.…` 형태)이 함께 나옵니다. 앱의 `Info.plist`에 필요하므로 5절에 쓰기 위해 적어 둡니다.
+- Android 기기를 쓰게 되면 **Android 클라이언트**(패키지 이름 + 디버그/릴리스 SHA-1 지문)를 추가하고 4절 Client IDs에도 넣습니다.
 
 ## 4. Supabase에 Google 연결하기
 
 대시보드 **Authentication → Sign In / Providers(또는 Providers) → Google**:
 
 1. **Enable Sign in with Google**을 켭니다.
-2. **Client IDs**: Web application의 Client ID를 넣습니다. 네이티브 로그인을 쓰면 Android·iOS의 Client ID도 **쉼표로 구분해서 함께** 넣습니다.
-3. **Client Secret**: Web application의 secret을 넣습니다.
-4. iOS에서 네이티브 로그인을 쓰면 **Skip nonce check**를 켭니다.
+2. **Client IDs**: **Web application의 Client ID와 iOS Client ID를 쉼표로 구분해서 함께** 넣습니다 (예: `<web-id>,<ios-id>`).
+3. **Client Secret**: Web application의 secret을 넣습니다 (iOS 클라이언트에는 secret이 없습니다).
+4. **Skip nonce check**를 **켭니다.** iOS 네이티브 로그인이 이 설정 없이는 실패합니다.
 5. **Authentication → URL Configuration**
    - 앱이 브라우저를 거치는 OAuth 방식을 쓰면 앱의 **딥링크 주소**를 Redirect URLs에 추가합니다 (예: `io.supabase.bogle://login-callback`). 네이티브 로그인(`signInWithIdToken`)만 쓰면 필요 없습니다
    - Site URL은 앱이 쓰지 않으면 기본값으로 둡니다
@@ -87,14 +90,14 @@ supabase db push                              # supabase/migrations/*.sql 적용
 
 | 방식 | 설명 | 추천 |
 |---|---|---|
-| **네이티브 로그인** | `google_sign_in`으로 Google 계정을 고르고, 받은 ID 토큰을 `supabase.auth.signInWithIdToken`에 넘김 | 모바일에서 화면이 자연스러움. **추천** |
+| **네이티브 로그인** | `google_sign_in`으로 Google 계정을 고르고, 받은 ID 토큰을 `supabase.auth.signInWithIdToken`에 넘김 | 모바일에서 화면이 자연스러움. **추천** (프론트 확인 대기) |
 | 브라우저 OAuth | `supabase.auth.signInWithOAuth(OAuthProvider.google)` + 딥링크 | 설정이 적지만 브라우저가 한 번 열림 |
 
 ```dart
 // 네이티브 로그인 스케치 (supabase_flutter, google_sign_in)
 final googleSignIn = GoogleSignIn(
   serverClientId: '<Web application Client ID>',
-  clientId: '<iOS Client ID>', // iOS만
+  clientId: '<iOS Client ID>',
 );
 final account = await googleSignIn.signIn();
 final auth = await account!.authentication;
@@ -105,6 +108,12 @@ await Supabase.instance.client.auth.signInWithIdToken(
 );
 ```
 
+- **iOS 설정** (`ios/Runner/Info.plist`):
+  - `GIDClientID`: iOS Client ID
+  - `CFBundleURLTypes`의 `CFBundleURLSchemes`: 3.2절에서 적어 둔 iOS URL scheme (`com.googleusercontent.apps.…`)
+  - 앱의 Bundle Identifier가 3.2절의 iOS 클라이언트에 등록한 번들 ID와 **같아야** 합니다
+- `google_sign_in`의 API는 버전마다 다릅니다(예: 최신 버전은 `GoogleSignIn.instance.initialize(...)` 방식). 위 코드는 형태를 보여 주는 스케치이므로, 쓰는 버전의 문서를 따르세요.
+- 아이패드 실기기에 올리려면 Xcode에서 Apple ID로 서명하고, 기기에서 **개발자 모드**를 켜야 합니다 (설정 → 개인정보 보호 및 보안). 무료 Apple ID는 서명이 짧게 만료되므로 시연 직전에 다시 올려 두세요.
 - 앱에는 **Supabase 주소와 publishable(anon) 키만** 넣습니다. `service_role` 키와 Google secret은 넣지 않습니다 (NFR-03).
 - 서버 호출에는 `Authorization: Bearer <session.accessToken>`을 붙입니다. 401이 오면 SDK로 토큰을 갱신하고 한 번만 다시 요청합니다 (API 계약 v1 2절).
 
