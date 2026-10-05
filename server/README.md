@@ -134,6 +134,8 @@ server/
 4. 오류는 `raise ApiError(status_code, code, message)`로 낸다. 다른 사용자의 리소스는 404를 돌려준다.
    - **서버는 DB에 직접 연결하므로 RLS가 적용되지 않는다.** repository의 모든 쿼리는 `where user_id = %(user_id)s`처럼 **소유자 조건을 직접** 걸어야 하고, 남의 리소스를 요청하는 DB 테스트(`tests/test_characters_db.py` 참고)를 함께 쓴다.
    - 이미지를 돌려줄 때는 경로를 그대로 내보내지 말고 `app/assets.py`의 `image_refs()`로 서명 URL이 든 `ImageRef`로 바꾼다.
+   - **`image_refs()`의 결과에는 Storage에 파일이 없는 에셋이 빠져 있다.** 결과에서 `refs[asset.id]`로 바로 꺼내면 `KeyError`가 나므로, 꼭 필요한 이미지(아트·썸네일)가 없을 때의 처리(목록에서 빼기, 상세는 404 등)를 정해서 쓴다. 예: `routers/characters.py`의 `_to_out`.
+   - Storage 객체 경로는 **ASCII만** 쓴다. 한글·공백이 든 경로는 Storage가 거부한다. 업로드한 파일 이름을 경로에 넣지 말고 `{user_id}/{uuid}.png`처럼 UUID로 만든다.
 5. 라우터의 `responses=ERROR_RESPONSES`로 오류 형식을 문서에 드러낸다.
 
 ```python
@@ -211,4 +213,4 @@ python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지
 
 - 멱등 키의 **엔드포인트 연결**: 공통 코드(`app/idempotency.py`)와 `friends` 컬럼은 준비됐고, 생성 작업·친구 저장·대화 API를 만들 때 `docs/idempotency-design.md`를 따라 붙입니다.
 - 요청 횟수 제한은 만들어 두었지만(`app/rate_limit.py`) 아직 어떤 라우터에도 붙어 있지 않습니다. 업로드·생성·대화 API를 만들 때 `Depends(limit_uploads)`, `Depends(limit_generations)`, `Depends(limit_messages)`를 붙이세요. 기록을 서버 메모리에 두므로 서버 1개 기준입니다.
-- 실제 Supabase(Storage 서명·업로드·삭제, pooler 연결)로의 확인: 지금은 가짜 Storage 서버와 로컬 PostgreSQL로만 확인했습니다
+- 실제 Supabase로의 **나머지 확인**: 로컬 Supabase(Auth·Storage·PostgREST·pooler)에서는 확인했습니다. 아직 못 본 것은 Google OAuth 로그인, 레거시 HS256 토큰(실제 토큰), 클라우드 Supabase(Supavisor·Storage·이메일 확인 설정)입니다.

@@ -147,7 +147,7 @@ pytest                                              # 테스트
 DB (Supabase CLI):
 
 ```bash
-supabase start        # 로컬 Supabase 실행 (Docker 필요). 아직 supabase/config.toml이 없다
+supabase start        # 로컬 Supabase 실행 (Docker 필요). 설정은 supabase/config.toml, 실행 방법은 server/README.md
 supabase db reset     # 로컬 DB만 초기화. 원격 프로젝트에는 절대 실행하지 않는다
 supabase db push      # 원격에 적용. supabase link로 프로젝트를 확인한 뒤에만 실행
 ```
