@@ -29,6 +29,24 @@ ruff format .           # 포맷
 
 PR을 올리기 전에 세 가지가 모두 통과해야 합니다.
 
+PR을 올리면 GitHub Actions(CI)가 같은 검사를 자동으로 다시 돌립니다(임시 PostgreSQL 포함). PR 화면의 ✅/❌를 확인하세요. CI에서는 `TEST_DATABASE_URL`이 없으면 DB 테스트를 건너뛰지 않고 **실패**합니다.
+
+### DB 테스트
+친구·프로필처럼 DB를 쓰는 테스트(`tests/test_*_db.py`)는 **실제 PostgreSQL**에 마이그레이션을 적용해서 돌립니다.
+`TEST_DATABASE_URL`이 없으면 이 테스트들은 **건너뜁니다**(`pytest`가 통과해 보여도 소유권 테스트는 실행되지 않은 것입니다). PR 전에는 꼭 켜고 돌려 주세요.
+
+```bash
+# 데이터베이스를 만들 수 있는 계정의 연결 문자열. 테스트가 임시 DB를 만들고 끝나면 지웁니다.
+export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres   # supabase start 의 로컬 DB
+pytest
+```
+
+Supabase CLI가 없으면 Docker로 PostgreSQL을 띄워도 됩니다:
+`docker run --rm -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16` 후
+`TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/postgres`
+
+Supabase의 `auth`·`storage` 스키마는 `tests/sql/supabase_stub.sql`이 흉내 냅니다. 실제 Supabase와 완전히 같지는 않습니다.
+
 ## 폴더 구조
 
 ```text
@@ -39,23 +57,41 @@ server/
 │   ├── main.py             앱 생성, 미들웨어·오류 처리·라우터 연결
 │   ├── config.py           환경변수 설정 (Settings)
 │   ├── auth.py             Supabase 토큰 검증 → CurrentUserDep
+│   ├── db.py               Postgres 연결 풀 → DatabaseDep
+│   ├── storage.py          Storage 서명 URL·업로드·삭제 → StorageDep
+│   ├── assets.py           이미지를 앱에 내려 줄 때의 공통 모양 (ImageRef)
+│   ├── personality.py      성격 유형 목록
+│   ├── sleep.py            수면 시간 판정 (한국 시간 22:00–06:00)
+│   ├── clock.py            현재 시각 (테스트에서 고정할 수 있게 의존성으로 분리)
+│   ├── rate_limit.py       사용자별 요청 횟수 제한 (429). limit_generations 등을 라우터에 붙인다
+│   ├── cleanup.py          미사용 에셋 정리 (서버가 1시간마다 실행). 새 테이블이 에셋을 가리키면 ASSET_REFERENCES에 추가
 │   ├── errors.py           공통 오류 형식과 ApiError
 │   ├── request_context.py  requestId 부여, 접근 로그
 │   ├── schemas.py          CamelModel (JSON은 camelCase)
+│   ├── repositories/       SQL은 여기서만 쓴다. 모든 함수가 user_id를 받아 소유자로 거른다
 │   └── routers/
 │       ├── __init__.py     라우터 등록 (공용 파일)
-│       └── health.py       GET /v1/health
+│       ├── health.py       GET /v1/health
+│       ├── characters.py   보관함: 목록·상세·삭제, 수면 상태
+│       └── profile.py      GET·PATCH /v1/me
+├── scripts/
+│   └── seed.py             개발용 시드 친구 만들기·지우기
 └── tests/
+    ├── conftest.py         fixture (임시 PostgreSQL 포함)
+    ├── db_support.py       DB 테스트용 사용자·에셋·친구 생성 도우미, 가짜 Storage
+    ├── sql/                supabase_stub.sql (auth·storage 스키마 흉내)
     ├── probe.py            테스트 전용 라우터 (인증·오류·검증 확인용)
     └── test_*.py
 ```
 
 ## 새 API를 만들 때
 
-1. `app/routers/`에 라우터 파일을 만든다. 요청·응답 모델은 `CamelModel`을 상속한다.
+1. `app/routers/`에 라우터 파일을 만든다. 요청·응답 모델은 `CamelModel`을 상속한다. DB는 `app/repositories/`에 repository를 만들어 쓴다.
 2. `app/routers/__init__.py`의 `api_routers`에 **한 줄만** 추가한다. 경로는 자동으로 `/v1` 아래에 붙는다.
 3. 로그인이 필요한 API는 인자로 `user: CurrentUserDep`을 받는다. **사용자 ID는 `user.id`(토큰)만 쓰고**, 요청 본문·쿼리의 사용자 ID는 쓰지 않는다.
 4. 오류는 `raise ApiError(status_code, code, message)`로 낸다. 다른 사용자의 리소스는 404를 돌려준다.
+   - **서버는 DB에 직접 연결하므로 RLS가 적용되지 않는다.** repository의 모든 쿼리는 `where user_id = %(user_id)s`처럼 **소유자 조건을 직접** 걸어야 하고, 남의 리소스를 요청하는 DB 테스트(`tests/test_characters_db.py` 참고)를 함께 쓴다.
+   - 이미지를 돌려줄 때는 경로를 그대로 내보내지 말고 `app/assets.py`의 `image_refs()`로 서명 URL이 든 `ImageRef`로 바꾼다.
 5. 라우터의 `responses=ERROR_RESPONSES`로 오류 형식을 문서에 드러낸다.
 
 ```python
@@ -79,6 +115,22 @@ def get_friend(friend_id: str, user: CurrentUserDep) -> FriendOut:
     raise ApiError(404, "friend_not_found", "친구를 찾을 수 없어요.")
 ```
 
+## 시드 데이터 (테스트용 친구)
+
+다른 사람의 기능이 아직 없어도 내 기능을 테스트할 수 있도록, 내 계정에 테스트용 친구를 만듭니다.
+예를 들어 대화를 개발하는 사람은 친구 저장이 끝나기 전에 시드 친구로 작업할 수 있습니다.
+
+```bash
+cd server
+python -m scripts.seed --email you@example.com            # 시드 친구 3명 만들기
+python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지우기
+```
+
+- 계정은 **앱에서 Google로 한 번 로그인해서 만들어 둔 것**이어야 합니다. 스크립트는 계정을 만들지 않습니다.
+- `.env`에 `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`가 있어야 합니다. **어느 Supabase 프로젝트에 연결돼 있는지 확인하고 실행하세요** (개발용과 시연용이 분리돼 있습니다).
+- 이름이 `시드 `로 시작하는 친구 3명(`시드 구름이`, `시드 별이`, `시드 도토리`)과 단색 PNG 이미지가 만들어집니다. 여러 번 실행해도 이미 있는 친구는 다시 만들지 않습니다.
+- `--clean`은 시드 친구만 지웁니다 (Storage 경로가 `{user_id}/seed/`로 시작하는 친구). 직접 만든 친구는 건드리지 않습니다.
+
 ## 공통 규약
 
 | 항목 | 규칙 |
@@ -100,7 +152,21 @@ def get_friend(friend_id: str, user: CurrentUserDep) -> FriendOut:
 - **레거시 공유 비밀**(HS256)을 쓰면 `SUPABASE_JWT_SECRET`도 설정합니다.
 - 어느 쪽인지 모르겠으면 둘 다 채워도 됩니다. 토큰 헤더의 알고리즘에 맞는 키만 사용합니다.
 
+## 환경변수
+
+`.env.example`을 복사해서 채웁니다. 서버만 쓰는 값이며 `service_role` 키와 DB 연결 문자열은 **절대 커밋하지 않습니다.**
+
+| 이름 | 용도 | 없으면 |
+|---|---|---|
+| `SUPABASE_URL` | 토큰 검증(JWKS), Storage 호출 | 비대칭 키 토큰 검증 불가, 이미지 API 503 |
+| `SUPABASE_JWT_SECRET` | 레거시 HS256 토큰 검증 | HS256 토큰 거부 |
+| `SUPABASE_SERVICE_ROLE_KEY` | Storage 서명 URL 생성 | 이미지를 돌려주는 API가 503 |
+| `DATABASE_URL` | Postgres 직접 연결 | DB를 쓰는 API가 503 (서버는 뜸) |
+| `CLEANUP_INTERVAL_SECONDS` | 미사용 에셋 정리 주기(초). 기본 3600, 0이면 끔 | 기본값 사용. DB·Storage 설정이 없으면 정리는 자동으로 꺼짐 |
+| `ASSET_RETENTION_HOURS` | 미사용 에셋 보관 시간. 기본 24 | 기본값 사용 |
+
 ## 아직 없는 것
 
-- DB·Storage 접근 계층 (`service_role` 키로 쓰기). 첫 기능 API(보관함 목록)를 만들 때 함께 정합니다.
-- 멱등 키(`Idempotency-Key`) 처리, 사용자별 횟수 제한(429)
+- 멱등 키(`Idempotency-Key`) 처리
+- 요청 횟수 제한은 만들어 두었지만(`app/rate_limit.py`) 아직 어떤 라우터에도 붙어 있지 않습니다. 업로드·생성·대화 API를 만들 때 `Depends(limit_uploads)`, `Depends(limit_generations)`, `Depends(limit_messages)`를 붙이세요. 기록을 서버 메모리에 두므로 서버 1개 기준입니다.
+- 실제 Supabase(Storage 서명·업로드·삭제, pooler 연결)로의 확인: 지금은 가짜 Storage 서버와 로컬 PostgreSQL로만 확인했습니다

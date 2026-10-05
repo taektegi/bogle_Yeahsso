@@ -1,0 +1,64 @@
+# PR과 main에 올라온 변경이 서버 검사를 통과하는지 자동으로 확인한다.
+# 로컬에서 하는 검사와 같다: ruff(린트·포맷) + pytest(실제 PostgreSQL 포함).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# 같은 브랜치에 새로 푸시하면 이전 실행은 취소한다.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  server:
+    name: server
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # DB 테스트용 PostgreSQL. 테스트가 임시 DB를 만들어 마이그레이션을 적용하고 끝나면 지운다.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: server/pyproject.toml
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Format check
+        run: ruff format --check .
+
+      - name: Test (with PostgreSQL)
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        # -rs: 건너뛴 테스트를 로그에 보여 준다. CI에서는 DB 테스트가 건너뛰어지면 안 된다.
+        run: pytest -q -rs

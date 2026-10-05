@@ -8,13 +8,16 @@ dependencies = [
   "uvicorn[standard]>=0.32",
   "pydantic-settings>=2.6",
   "pyjwt[crypto]>=2.9",
+  "psycopg[binary,pool]>=3.2",
+  # Asia/Seoul 시간대. Windows에는 시스템 시간대 DB가 없어서 필요하다.
+  "tzdata>=2024.1",
+  # Supabase Storage REST 호출. 최신 Starlette의 TestClient도 이것을 요구한다 (httpx는 deprecated)
+  "httpx2>=2",
 ]
 
 [project.optional-dependencies]
 dev = [
   "pytest>=8",
-  # 최신 Starlette의 TestClient가 요구한다 (httpx는 deprecated)
-  "httpx2>=2",
   "ruff>=0.8",
 ]
 

@@ -118,11 +118,16 @@ pip install -e ".[dev]"                             # 최초 1회
 cp .env.example .env                                # 값을 채운다. .env는 커밋하지 않는다
 
 uvicorn app.main:app --reload --no-access-log       # 실행. 문서는 http://localhost:8000/docs
-pytest                                              # 테스트
 ruff check . && ruff format --check .               # 린트·포맷 검사 (고칠 때는 ruff format .)
+
+# DB 테스트까지 돌리려면 임시 DB를 만들 수 있는 연결 문자열이 필요하다 (supabase start 의 로컬 DB 예시)
+export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+pytest                                              # 테스트
 ```
 
-**PR을 올리기 전에 `pytest`와 `ruff`가 모두 통과해야 한다.**
+**PR을 올리기 전에 `TEST_DATABASE_URL`을 켠 채로 `pytest`와 `ruff`가 모두 통과해야 한다.** `TEST_DATABASE_URL`이 없으면 DB 테스트(소유권 차단 포함)가 건너뛰어진다.
+
+**CI**: PR을 올리거나 `main`에 푸시하면 GitHub Actions(`.github/workflows/ci.yml`)가 같은 검사(`ruff`, `pytest` + 실제 PostgreSQL)를 자동으로 돌린다. PR 화면에 ❌가 나오면 **머지하지 않고** 고친다. CI는 로컬에서 미리 돌려 보는 것을 대신하지 않는다 (CI는 실제 Supabase·Storage·OpenAI를 확인하지 못한다).
 
 DB (Supabase CLI):
 
@@ -136,17 +141,21 @@ supabase db push      # 원격에 적용. supabase link로 프로젝트를 확�
 
 ```text
 aidlc-docs/   요구사항·분석 문서 (문서만 둔다)
-docs/         프론트엔드와 주고받는 API 계약 등 협업 문서 (frontend-api-reply.md)
+.github/     CI 설정 (workflows/ci.yml)
+docs/         프론트엔드와 주고받는 API 계약 등 협업 문서 (frontend-api-reply.md, flutter-repository-proposal.md)
 supabase/     DB 마이그레이션 (migrations/)과 DB 설명 (README.md)
 server/       FastAPI 서버
-  app/          main.py, config.py, auth.py, errors.py, request_context.py, schemas.py
+  app/          main.py, config.py, auth.py, db.py, storage.py, assets.py, cleanup.py, rate_limit.py, errors.py, request_context.py, schemas.py
+  app/repositories/  DB 쿼리 (모든 함수가 user_id로 소유자를 거른다)
   app/routers/  기능별 라우터. __init__.py의 api_routers에 한 줄 추가해서 등록한다
   tests/        pytest. probe.py는 테스트 전용 라우터
 ```
 
 - 애플리케이션 코드는 저장소 루트 아래에 둔다. **`aidlc-docs/`에는 문서만** 둔다.
 - 새 API는 `server/README.md`의 "새 API를 만들 때" 순서를 따른다. 로그인이 필요한 API는 `CurrentUserDep`을 받고, 사용자 ID는 `user.id`(토큰)만 쓴다.
+- **서버는 DB에 직접 연결해서 RLS가 적용되지 않는다.** repository의 모든 쿼리에 소유자(`user_id`) 조건을 직접 걸고, 남의 리소스를 요청하는 DB 테스트를 함께 쓴다.
 - 오류는 `ApiError`로 내고, 요청·응답 모델은 `CamelModel`을 상속한다.
+- 다른 테이블이 `assets`를 가리키게 만들면 `server/app/cleanup.py`의 `ASSET_REFERENCES`에 조건을 추가한다. 그렇지 않으면 정리 작업이 그 에셋을 24시간 뒤에 지운다.
 - 불필요한 파일(`.DS_Store`, `.env`, 빌드 산출물)은 커밋하지 않는다 (`.gitignore`에 설정돼 있다).
 
 ## 사람에게 먼저 물어볼 것

@@ -1,0 +1,196 @@
+import json
+from datetime import UTC, datetime, timedelta
+
+import httpx2
+import pytest
+
+from app.storage import StorageError, SupabaseStorage
+
+NOW = datetime(2026, 10, 5, 5, 0, tzinfo=UTC)
+USER_ID = "11111111-2222-4333-8444-555555555555"
+
+
+def make_storage(handler) -> SupabaseStorage:
+    return SupabaseStorage(
+        supabase_url="https://proj.supabase.co/",
+        service_role_key="service-role-key",
+        bucket="bogle-media",
+        ttl_seconds=3600,
+        client=httpx2.Client(transport=httpx2.MockTransport(handler)),
+        clock=lambda: NOW,
+    )
+
+
+def signed_items(paths: list[str]) -> list[dict]:
+    return [
+        {"error": None, "path": p, "signedURL": f"/object/sign/bogle-media/{p}?token=abc"}
+        for p in paths
+    ]
+
+
+def test_signs_all_paths_in_one_request() -> None:
+    requests: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        requests.append(request)
+        paths = json.loads(request.content)["paths"]
+        return httpx2.Response(200, json=signed_items(paths))
+
+    result = make_storage(handler).sign([f"{USER_ID}/a.png", f"{USER_ID}/b.png"])
+
+    assert len(requests) == 1
+    request = requests[0]
+    assert request.method == "POST"
+    assert str(request.url) == "https://proj.supabase.co/storage/v1/object/sign/bogle-media"
+    assert request.headers["authorization"] == "Bearer service-role-key"
+    assert request.headers["apikey"] == "service-role-key"
+    assert json.loads(request.content) == {
+        "expiresIn": 3600,
+        "paths": [f"{USER_ID}/a.png", f"{USER_ID}/b.png"],
+    }
+    signed = result[f"{USER_ID}/a.png"]
+    assert signed.url == (
+        f"https://proj.supabase.co/storage/v1/object/sign/bogle-media/{USER_ID}/a.png?token=abc"
+    )
+    assert signed.expires_at == NOW + timedelta(hours=1)
+
+
+def test_duplicate_paths_are_requested_once() -> None:
+    sent: list[list[str]] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        paths = json.loads(request.content)["paths"]
+        sent.append(paths)
+        return httpx2.Response(200, json=signed_items(paths))
+
+    result = make_storage(handler).sign(["x/a.png", "x/b.png", "x/a.png"])
+
+    assert sent == [["x/a.png", "x/b.png"]]
+    assert set(result) == {"x/a.png", "x/b.png"}
+
+
+def test_no_paths_means_no_request() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise AssertionError("storage must not be called")
+
+    assert make_storage(handler).sign([]) == {}
+
+
+def test_http_error_is_a_storage_error() -> None:
+    storage = make_storage(lambda request: httpx2.Response(500, json={"message": "boom"}))
+    with pytest.raises(StorageError):
+        storage.sign(["x/a.png"])
+
+
+def test_unauthorized_is_a_storage_error_without_leaking_the_key() -> None:
+    storage = make_storage(lambda request: httpx2.Response(401, json={"message": "bad key"}))
+    with pytest.raises(StorageError) as excinfo:
+        storage.sign(["x/a.png"])
+    assert "service-role-key" not in str(excinfo.value)
+
+
+def test_item_level_error_is_a_storage_error() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(
+            200, json=[{"error": "Object not found", "path": "x/a.png", "signedURL": None}]
+        )
+
+    with pytest.raises(StorageError):
+        make_storage(handler).sign(["x/a.png"])
+
+
+def test_response_missing_a_path_is_a_storage_error() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(200, json=signed_items(["x/a.png"]))
+
+    with pytest.raises(StorageError):
+        make_storage(handler).sign(["x/a.png", "x/b.png"])
+
+
+def test_network_failure_is_a_storage_error() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise httpx2.ConnectError("connection refused")
+
+    with pytest.raises(StorageError):
+        make_storage(handler).sign(["x/a.png"])
+
+
+def test_remove_deletes_all_paths_in_one_request() -> None:
+    requests: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        requests.append(request)
+        return httpx2.Response(200, json=[])
+
+    make_storage(handler).remove([f"{USER_ID}/a.png", f"{USER_ID}/b.png", f"{USER_ID}/a.png"])
+
+    [request] = requests
+    assert request.method == "DELETE"
+    assert str(request.url) == "https://proj.supabase.co/storage/v1/object/bogle-media"
+    assert request.headers["authorization"] == "Bearer service-role-key"
+    assert json.loads(request.content) == {"prefixes": [f"{USER_ID}/a.png", f"{USER_ID}/b.png"]}
+
+
+def test_remove_with_no_paths_makes_no_request() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise AssertionError("storage must not be called")
+
+    make_storage(handler).remove([])
+
+
+def test_remove_treats_already_missing_objects_as_success() -> None:
+    # 이미 없는 객체는 응답 목록에서 빠질 뿐이다 (200, 빈 목록).
+    make_storage(lambda request: httpx2.Response(200, json=[])).remove(["x/gone.png"])
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 500, 503])
+def test_remove_http_error_is_a_storage_error(status: int) -> None:
+    storage = make_storage(lambda request: httpx2.Response(status, json={"message": "no"}))
+    with pytest.raises(StorageError) as excinfo:
+        storage.remove(["x/a.png"])
+    assert "service-role-key" not in str(excinfo.value)
+
+
+def test_remove_network_failure_is_a_storage_error() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise httpx2.ConnectError("connection refused")
+
+    with pytest.raises(StorageError):
+        make_storage(handler).remove(["x/a.png"])
+
+
+def test_upload_posts_the_bytes_with_content_type_and_upsert() -> None:
+    requests: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        requests.append(request)
+        return httpx2.Response(200, json={"Key": "bogle-media/x"})
+
+    make_storage(handler).upload(f"{USER_ID}/seed/a b.png", b"\x89PNG-bytes", "image/png")
+
+    [request] = requests
+    assert request.method == "POST"
+    # 경로의 특수문자는 URL 인코딩하고 폴더 구분자(/)는 그대로 둔다.
+    assert str(request.url) == (
+        f"https://proj.supabase.co/storage/v1/object/bogle-media/{USER_ID}/seed/a%20b.png"
+    )
+    assert request.content == b"\x89PNG-bytes"
+    assert request.headers["content-type"] == "image/png"
+    assert request.headers["x-upsert"] == "true"
+    assert request.headers["authorization"] == "Bearer service-role-key"
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 413, 500])
+def test_upload_http_error_is_a_storage_error(status: int) -> None:
+    storage = make_storage(lambda request: httpx2.Response(status, json={"message": "no"}))
+    with pytest.raises(StorageError) as excinfo:
+        storage.upload("x/a.png", b"data", "image/png")
+    assert "service-role-key" not in str(excinfo.value)
+
+
+def test_upload_network_failure_is_a_storage_error() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise httpx2.ConnectError("connection refused")
+
+    with pytest.raises(StorageError):
+        make_storage(handler).upload("x/a.png", b"data", "image/png")
