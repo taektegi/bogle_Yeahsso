@@ -109,22 +109,44 @@
 
 ## 명령어
 
-백엔드 코드가 아직 없다. 뼈대가 올라오면 이 섹션에 **설치·실행·테스트·린트 명령**을 채운다 (담당 A).
-
-현재 쓸 수 있는 명령 (Supabase CLI):
+API 서버 명령은 모두 `server/`에서 실행한다 (Python 3.11+). 자세한 설명은 `server/README.md`.
 
 ```bash
-supabase start        # 로컬 Supabase 실행 (Docker 필요)
+cd server
+python -m venv .venv && source .venv/bin/activate   # Windows PowerShell: .venv\Scripts\Activate.ps1
+pip install -e ".[dev]"                             # 최초 1회
+cp .env.example .env                                # 값을 채운다. .env는 커밋하지 않는다
+
+uvicorn app.main:app --reload --no-access-log       # 실행. 문서는 http://localhost:8000/docs
+pytest                                              # 테스트
+ruff check . && ruff format --check .               # 린트·포맷 검사 (고칠 때는 ruff format .)
+```
+
+**PR을 올리기 전에 `pytest`와 `ruff`가 모두 통과해야 한다.**
+
+DB (Supabase CLI):
+
+```bash
+supabase start        # 로컬 Supabase 실행 (Docker 필요). 아직 supabase/config.toml이 없다
 supabase db reset     # 로컬 DB만 초기화. 원격 프로젝트에는 절대 실행하지 않는다
 supabase db push      # 원격에 적용. supabase link로 프로젝트를 확인한 뒤에만 실행
 ```
 
 ## 폴더 구조
 
-현재 저장소에는 `supabase/`와 `aidlc-docs/`만 있다. FastAPI 서버 폴더는 담당 A가 뼈대를 만들 때 정하고, 정해지면 이 섹션을 갱신한다.
+```text
+aidlc-docs/   요구사항·분석 문서 (문서만 둔다)
+supabase/     DB 마이그레이션 (migrations/)과 DB 설명 (README.md)
+server/       FastAPI 서버
+  app/          main.py, config.py, auth.py, errors.py, request_context.py, schemas.py
+  app/routers/  기능별 라우터. __init__.py의 api_routers에 한 줄 추가해서 등록한다
+  tests/        pytest. probe.py는 테스트 전용 라우터
+```
 
 - 애플리케이션 코드는 저장소 루트 아래에 둔다. **`aidlc-docs/`에는 문서만** 둔다.
-- 불필요한 파일(`.DS_Store`, `.env`, 빌드 산출물)은 커밋하지 않는다. `.gitignore`는 첫 작업 PR에서 함께 만든다.
+- 새 API는 `server/README.md`의 "새 API를 만들 때" 순서를 따른다. 로그인이 필요한 API는 `CurrentUserDep`을 받고, 사용자 ID는 `user.id`(토큰)만 쓴다.
+- 오류는 `ApiError`로 내고, 요청·응답 모델은 `CamelModel`을 상속한다.
+- 불필요한 파일(`.DS_Store`, `.env`, 빌드 산출물)은 커밋하지 않는다 (`.gitignore`에 설정돼 있다).
 
 ## 사람에게 먼저 물어볼 것
 

@@ -6,13 +6,31 @@
 
 ## 데이터 구조
 
-작성 예정입니다. 스키마가 정해지면 이 섹션에 테이블과 관계를 적습니다.
+공통 뼈대(`20261005000100_core_schema.sql`)가 만드는 테이블입니다. 업로드·생성 작업(담당 B), 대화·모션(담당 C) 테이블은 각 담당이 새 마이그레이션으로 추가합니다.
+
+- `profiles`: `auth.users`와 1:1인 아이 프로필 (FR-02). 처음 로그인하면 트리거(`handle_new_user`)가 자동으로 만들고 닉네임은 `그린고블린`입니다.
+  - `nickname`: 공백을 제거한 1–12자
+  - `avatar_friend_id`: 내 친구 중 하나. `null`이면 기본 아바타이고, 지정한 친구가 삭제되면 `null`로 돌아갑니다.
+  - `friend_notifications`, `order_notifications`: 알림 설정값만 저장합니다.
+- `friends`: 사용자가 만든 캐릭터 친구 (FR-05, FR-06).
+  - 설정값: `name`, `personality_type`, `favorite_things`(1개 이상), `speech_style`(`~지요!` / `해요체` / `반말`)
+  - `introduction`: 소개 문구(최대 70자). 생성에 실패하면 빈 문자열입니다.
+  - `source_path`, `art_path`, `thumbnail_path`: Storage 객체 경로. 항상 `{user_id}/`로 시작해야 합니다.
+  - `accent_argb`: 대표색 ARGB. 부호 없는 32비트라서 `bigint`입니다.
+  - `generation_job_id`: 친구 생성 작업 ID. 유일하므로 작업 하나로는 친구 하나만 만들 수 있습니다. 작업 테이블이 생기면 담당 B가 외래 키를 추가합니다.
+  - 친구 설정은 저장 후 바뀌지 않습니다 (D-24). 갱신되는 것은 `introduction`뿐입니다.
+
+관계는 `auth.users -> profiles`, `auth.users -> friends`이고, 사용자를 삭제하면 프로필과 친구가 함께 삭제됩니다. 친구를 삭제할 때 대화·모션 기록은 각 테이블이 `friends`를 `on delete cascade`로 참조해서 함께 지웁니다. **Storage 파일은 DB가 지우지 못하므로 서버가 Storage API로 직접 삭제합니다** (FR-06.3).
+
+### 쓰기는 서버만 한다
+앱(`authenticated`)에는 `select` 권한과 "내 것만" 읽는 정책만 있습니다. 삽입·수정·삭제는 FastAPI 서버가 `service_role` 키로 합니다. 앱이 PostgREST로 직접 쓰려고 하면 권한 오류가 납니다.
 
 ## Storage
 
-- 파일은 **비공개 bucket**에 둡니다. 앱에는 만료되는 서명 URL로만 제공합니다 (FR-01.5).
-- 객체 경로는 `{user_id}/...`로 시작합니다 (FR-03.4). 경로의 첫 폴더가 `auth.uid()`와 같은 경우에만 접근할 수 있습니다.
-- bucket 이름과 세부 경로 규칙은 스키마를 작성할 때 정하고 이 문서에 적습니다.
+- bucket `bogle-media`는 **비공개**입니다. 앱에는 서버가 만든 만료되는 서명 URL로만 제공합니다 (FR-01.5).
+- 객체 경로는 `{user_id}/...`로 시작합니다 (FR-03.4). 경로의 첫 폴더가 `auth.uid()`와 같은 경우에만 읽을 수 있습니다.
+- 업로드와 삭제는 서버가 Storage API로 합니다. 앱에는 쓰기 정책이 없습니다.
+- 경로의 나머지 규칙(예: `{user_id}/{friend_id}/...`)은 업로드를 만드는 담당 B가 정하고 이 문서에 적습니다.
 
 ## RLS 원칙
 
