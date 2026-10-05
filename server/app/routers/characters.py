@@ -10,10 +10,12 @@ from fastapi import APIRouter
 
 from app.assets import ImageRef, image_refs
 from app.auth import CurrentUserDep
+from app.clock import NowDep
 from app.errors import ERROR_RESPONSES, ApiError
 from app.personality import personality_label
 from app.repositories.characters import CharacterRecord, CharacterRepositoryDep
 from app.schemas import CamelModel
+from app.sleep import sleep_status
 from app.storage import StorageDep
 
 router = APIRouter(prefix="/characters", tags=["characters"], responses=ERROR_RESPONSES)
@@ -66,6 +68,13 @@ def _assets_of(records: list[CharacterRecord]):
         yield record.thumbnail
 
 
+class SleepStatusOut(CamelModel):
+    asleep: bool
+    next_change_at: datetime
+    # 앱이 기기 시계 오차를 보정할 수 있도록 서버 시각을 함께 준다.
+    server_time: datetime
+
+
 @router.get("", response_model=CharacterListOut, summary="내 친구 목록 (보관함)")
 def list_characters(
     user: CurrentUserDep, repo: CharacterRepositoryDep, storage: StorageDep
@@ -85,3 +94,20 @@ def get_character(
     if record is None:
         raise ApiError(404, "not_found", "친구를 찾을 수 없어요.")
     return _to_out(record, image_refs(storage, _assets_of([record])))
+
+
+@router.get(
+    "/{character_id}/status",
+    response_model=SleepStatusOut,
+    summary="친구의 수면 상태",
+)
+def get_status(
+    character_id: UUID, user: CurrentUserDep, repo: CharacterRepositoryDep, now: NowDep
+) -> SleepStatusOut:
+    """한국 시간 22:00–06:00에는 잔다. 판정은 서버 시각 기준이다 (FR-08)."""
+    if not repo.exists_for_user(user.id, character_id):
+        raise ApiError(404, "not_found", "친구를 찾을 수 없어요.")
+    status = sleep_status(now)
+    return SleepStatusOut(
+        asleep=status.asleep, next_change_at=status.next_change_at, server_time=now
+    )

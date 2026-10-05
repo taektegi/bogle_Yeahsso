@@ -104,6 +104,16 @@ class CharacterRepository:
             ).fetchone()
         return _record(row) if row else None
 
+    def exists_for_user(self, user_id: UUID, character_id: UUID) -> bool:
+        """내 친구인지만 확인한다 (이미지 서명이 필요 없는 API용)."""
+        with self._db.connection() as conn:
+            row = conn.execute(
+                "select 1 from public.friends"
+                " where id = %(character_id)s and user_id = %(user_id)s",
+                {"user_id": user_id, "character_id": character_id},
+            ).fetchone()
+        return row is not None
+
 
 def get_character_repository(db: DatabaseDep) -> CharacterRepository:
     return CharacterRepository(db)

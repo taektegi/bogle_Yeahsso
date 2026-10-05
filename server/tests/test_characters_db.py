@@ -154,3 +154,15 @@ def test_repository_filters_by_owner_in_sql(database: Database, seed_conn) -> No
     assert repo.list_for_user(b) == []
     assert repo.get_for_user(a, a_character) is not None
     assert repo.get_for_user(b, a_character) is None
+
+
+def test_status_of_another_users_character_is_404(api, seed_conn) -> None:
+    owner, intruder = make_user(seed_conn), make_user(seed_conn)
+    character_id = make_character(seed_conn, owner, "자는 친구")
+
+    own = api.get(f"/v1/characters/{character_id}/status", headers=token_for(owner))
+    stolen = api.get(f"/v1/characters/{character_id}/status", headers=token_for(intruder))
+
+    assert own.status_code == 200
+    assert set(own.json()) == {"asleep", "nextChangeAt", "serverTime"}
+    assert stolen.status_code == 404

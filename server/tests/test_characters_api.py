@@ -10,6 +10,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.assets import AssetRow
+from app.clock import get_now
 from app.config import Settings, get_settings
 from app.repositories.characters import CharacterRecord, get_character_repository
 from app.storage import get_storage
@@ -55,6 +56,9 @@ class FakeRepository:
 
     def get_for_user(self, user_id: UUID, character_id: UUID) -> CharacterRecord | None:
         return next((r for r in self.records if r.id == character_id), None)
+
+    def exists_for_user(self, user_id: UUID, character_id: UUID) -> bool:
+        return self.get_for_user(user_id, character_id) is not None
 
 
 @pytest.fixture
@@ -217,3 +221,49 @@ def test_openapi_documents_the_character_endpoints(client: TestClient) -> None:
     paths = client.get("/openapi.json").json()["paths"]
     assert "get" in paths["/v1/characters"]
     assert "get" in paths["/v1/characters/{character_id}"]
+
+
+def freeze_time(app, iso: str) -> None:
+    app.dependency_overrides[get_now] = lambda: datetime.fromisoformat(iso)
+
+
+def test_status_while_asleep(app, client: TestClient, storage) -> None:
+    item = record()
+    use(app, [item], storage)
+    freeze_time(app, "2026-10-05T13:00:00+00:00")  # 22:00 KST
+
+    response = client.get(f"/v1/characters/{item.id}/status", headers=bearer(hs256_token()))
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "asleep": True,
+        "nextChangeAt": "2026-10-05T21:00:00Z",  # 다음 날 06:00 KST
+        "serverTime": "2026-10-05T13:00:00Z",
+    }
+
+
+def test_status_while_awake(app, client: TestClient, storage) -> None:
+    item = record()
+    use(app, [item], storage)
+    freeze_time(app, "2026-10-05T05:00:00+00:00")  # 14:00 KST
+
+    response = client.get(f"/v1/characters/{item.id}/status", headers=bearer(hs256_token()))
+
+    assert response.json() == {
+        "asleep": False,
+        "nextChangeAt": "2026-10-05T13:00:00Z",  # 22:00 KST
+        "serverTime": "2026-10-05T05:00:00Z",
+    }
+
+
+def test_status_of_unknown_character_is_404(app, client: TestClient, storage) -> None:
+    use(app, [], storage)
+
+    response = client.get(f"/v1/characters/{uuid4()}/status", headers=bearer(hs256_token()))
+
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "not_found"
+
+
+def test_status_requires_login(client: TestClient) -> None:
+    assert client.get(f"/v1/characters/{uuid4()}/status").status_code == 401
