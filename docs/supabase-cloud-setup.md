@@ -9,7 +9,7 @@
 
 > **주의**: 아래 화면 이름과 메뉴 위치는 2026-10 기준으로 아는 구조입니다. Supabase·Google Cloud 콘솔은 자주 바뀌므로 이름이 조금 다르면 비슷한 항목을 찾으세요. 작성 당시 Supabase 공식 문서를 직접 열어 보지 못했습니다. 막히면 [Supabase의 Google 로그인 문서](https://supabase.com/docs/guides/auth/social-login/auth-google)를 확인하세요.
 >
-> 1~2절과 6~8절은 이메일 계정으로 실제로 따라 해 봤습니다(맨 아래 "클라우드 검증 결과"). 3~5절(Google 로그인)은 **아직 따라 해 보지 않았습니다.** 해 본 뒤 달랐던 부분은 이 문서에 고쳐 주세요.
+> 1~2절과 6~8절은 이메일 계정으로, 3~4절은 **Web 클라이언트와 브라우저 방식으로** 실제로 따라 해 봤습니다(맨 아래 "클라우드 검증 결과"). **iOS 클라이언트와 5절(앱의 네이티브 로그인)은 아직 따라 해 보지 않았습니다.** 해 본 뒤 달랐던 부분은 이 문서에 고쳐 주세요.
 
 ## 0. 먼저 알아 둘 것
 
@@ -58,6 +58,7 @@ supabase db push                              # supabase/migrations/*.sql 적용
    - 대상(Audience): **External(외부)**
    - 게시 상태: **Testing(테스트)** 로 둡니다. 시연용 계정만 쓰므로 심사받을 필요가 없습니다
    - **Test users**에 **시연·개발에 쓸 Google 계정을 모두 추가**합니다. 목록에 없는 계정은 로그인이 거부됩니다
+   - **실제로 존재하고 활성 상태인 Google 계정만** 추가됩니다. 만들지 않은 주소(예: 짐작한 `이름@gmail.com`)를 넣으면 "이메일 주소는 활성 상태인 Google 계정 … 연결되어 있어야 합니다"라는 오류가 나고 저장되지 않습니다. 개발 확인에는 **본인 계정 하나**로 충분하고, 시연용 계정은 시연 전에 만들어서 추가합니다
 3. 범위(scope)는 기본인 `openid`, `email`, `profile`이면 충분합니다. 민감한 범위를 추가하지 않습니다.
 
 > Testing 상태에서는 로그인 유지(리프레시 토큰)가 약 7일 뒤 끊길 수 있습니다. 시연 직전에 다시 로그인해 두세요.
@@ -72,7 +73,11 @@ supabase db push                              # supabase/migrations/*.sql 적용
 | **Web application** | Supabase에 등록하는 ID이고, 앱이 `serverClientId`로 씁니다 | Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback` |
 | **iOS** | 아이패드(iOS) 앱의 네이티브 로그인 | **번들 ID**(앱의 Bundle Identifier. 프론트에게 받습니다) |
 
-- Web application의 **Client ID와 Client secret**을 안전한 곳에 저장합니다. secret은 Supabase에만 넣고 앱·저장소에는 넣지 않습니다.
+> **애플리케이션 유형을 반드시 "웹 애플리케이션"으로 고릅니다.** "데스크톱 앱" 등 다른 유형으로 만들면 **승인된 리디렉션 URI 칸이 없고**, 로그인할 때 `400 redirect_uri_mismatch`가 납니다(실제로 겪은 실수). 클라이언트 상세 화면 제목이 "웹 애플리케이션의 클라이언트 ID"인지 확인하세요. 유형은 나중에 바꿀 수 없으므로 잘못 만들었으면 새로 만들고 Supabase의 Client ID·secret도 새 값으로 바꿉니다.
+
+- **승인된 리디렉션 URI**에는 4절에서 복사한 Supabase의 **Callback URL**을 붙여 넣습니다. 끝에 `/`나 공백이 붙지 않게 하고, **승인된 JavaScript 원본**은 비워 둡니다. 설정이 반영되는 데 몇 분이 걸릴 수 있습니다.
+- "This client will be used by an AI-powered agent" 체크박스는 체크하지 않습니다.
+- Web application의 **Client ID와 Client secret**을 안전한 곳에 저장합니다. 클라이언트 상세 화면에서 secret의 복사 버튼으로 나중에도 복사할 수 있습니다. secret은 Supabase에만 넣고 앱·저장소·채팅에는 넣지 않습니다.
 - iOS 클라이언트를 만들면 **iOS URL scheme**(`com.googleusercontent.apps.…` 형태)이 함께 나옵니다. 앱의 `Info.plist`에 필요하므로 5절에 쓰기 위해 적어 둡니다.
 - Android 기기를 쓰게 되면 **Android 클라이언트**(패키지 이름 + 디버그/릴리스 SHA-1 지문)를 추가하고 4절 Client IDs에도 넣습니다.
 
@@ -80,8 +85,9 @@ supabase db push                              # supabase/migrations/*.sql 적용
 
 대시보드 **Authentication → Sign In / Providers(또는 Providers) → Google**:
 
+0. 이 화면의 **Callback URL (for OAuth)** 을 복사 버튼으로 복사해 둡니다. 3.2절의 승인된 리디렉션 URI에 그대로 붙여 넣는 값입니다. 직접 타이핑하면 오타가 나기 쉽습니다.
 1. **Enable Sign in with Google**을 켭니다.
-2. **Client IDs**: **Web application의 Client ID와 iOS Client ID를 쉼표로 구분해서 함께** 넣습니다 (예: `<web-id>,<ios-id>`).
+2. **Client IDs**: **Web application의 Client ID와 iOS Client ID를 쉼표로 구분해서 함께** 넣습니다 (예: `<web-id>,<ios-id>`). iOS ID가 아직 없으면 Web ID만 먼저 넣고, 나중에 쉼표로 추가합니다.
 3. **Client Secret**: Web application의 secret을 넣습니다 (iOS 클라이언트에는 secret이 없습니다).
 4. **Skip nonce check**를 **켭니다.** iOS 네이티브 로그인이 이 설정 없이는 실패합니다.
 5. **Authentication → URL Configuration**
@@ -183,7 +189,30 @@ Flutter 앱이 아직 없어도 확인할 수 있습니다. 순서대로 확인�
 
 ### 앱 없이 로그인하기 (Flutter가 아직 없을 때)
 - **Authentication → Users**에서 직접 사용자를 만들 수 있지만, 그것은 Google 로그인이 아닙니다 (이메일·비밀번호 계정). 서버·DB·Storage 확인(4~9번)에는 충분합니다.
-- 진짜 Google 로그인(1번)은 앱 또는 **브라우저 OAuth** 테스트로만 볼 수 있습니다. 가장 간단한 방법은 임시 Flutter 화면이나 작은 웹 페이지(supabase-js)에서 `signInWithOAuth`를 호출해 로그인한 뒤 액세스 토큰을 복사하는 것입니다. 이 경우 3.2의 Web client redirect URI와 4의 Redirect URLs에 그 페이지 주소를 추가해야 합니다.
+- **Google 로그인은 브라우저만으로 확인할 수 있습니다** (실제로 해 본 방법). Web 클라이언트(3.2절)와 Supabase 연결(4절)이 끝났다면:
+  1. **시크릿 창**에서 `https://<project-ref>.supabase.co/auth/v1/authorize?provider=google`을 엽니다.
+  2. Test users에 넣은 계정으로 로그인하고 동의합니다.
+  3. 로그인 후 Supabase의 Site URL(기본값 `http://localhost:3000`)로 돌아옵니다. **페이지가 열리지 않고 "사이트에 연결할 수 없음(ERR_CONNECTION_REFUSED)"이 떠도 정상입니다.** 주소창에 `#access_token=…`이 붙어 있으면 로그인에 성공한 것입니다.
+  4. 대시보드 **Authentication → Users**와 **Table Editor → profiles**에 행이 생겼는지 봅니다.
+- **주소창의 `access_token`과 `refresh_token`은 1시간 동안 내 계정으로 쓸 수 있는 비밀입니다.** 주소 전체를 채팅·PR에 붙이지 말고, 확인이 끝나면 창을 닫습니다.
+- 이 토큰으로 서버를 확인하려면 토큰을 명령 기록에 남기지 않도록 `Read-Host`를 씁니다.
+
+```powershell
+$u = Read-Host "주소창의 주소 전체를 붙여넣기"
+$t = ($u -split 'access_token=')[1].Split('&')[0]
+Invoke-RestMethod http://localhost:8000/v1/me -Headers @{ Authorization = "Bearer $t" }
+```
+
+### Google 로그인 오류와 원인 (실제로 겪은 것 포함)
+
+| 증상 | 원인 | 해결 |
+|---|---|---|
+| `400 redirect_uri_mismatch` | ① 클라이언트를 **웹 애플리케이션이 아닌 유형**(예: 데스크톱 앱)으로 만듦 ② 등록한 리디렉션 URI가 Supabase의 Callback URL과 다름 | ① 웹 애플리케이션으로 새로 만들고 Supabase의 Client ID·secret을 바꿉니다 ② Callback URL을 복사 버튼으로 복사해 다시 등록합니다 |
+| "액세스 차단됨 / 앱이 테스트 중" | 그 계정이 Test users에 없음 | 3.1절에서 계정을 추가합니다 |
+| Test users 저장 시 "활성 상태인 Google 계정과 연결되어 있어야 합니다" | 존재하지 않는 계정 주소 | 실제 Google 계정을 넣습니다 |
+| `Unable to exchange external code` | Client ID나 secret 오타 | 4절 값을 다시 붙여 넣고 저장합니다 |
+| 설정을 바꿨는데도 같은 오류 | Google 설정 반영 지연, 브라우저가 이전 상태를 기억 | 몇 분 기다린 뒤 **시크릿 창**에서 다시 시도합니다 |
+| 오류 화면의 "오류 세부정보"에 주소가 안 나옴 | 이 화면은 `flowName`만 보여 줌 | Supabase의 Callback URL과 Google의 승인된 리디렉션 URI를 직접 비교합니다 |
 
 ## 9. 보안 점검
 
@@ -217,7 +246,7 @@ Flutter 앱이 아직 없어도 확인할 수 있습니다. 순서대로 확인�
 
 | # | 확인 | 결과 |
 |---|---|---|
-| 1 | Google 로그인 | **건너뜀**(앱·iOS 번들 ID가 있어야 함) |
+| 1 | Google 로그인 | **통과**(Web 클라이언트, 브라우저 방식. 로그인 후 `localhost:3000/#access_token=…`으로 돌아오고 ES256 토큰 발급, 대시보드에서 확인). **iOS 네이티브 로그인은 건너뜀**(앱·iOS 번들 ID가 있어야 함) |
 | 2 | Authentication → Users에 계정 있음 | 통과 |
 | 3 | `profiles` 자동 생성, 닉네임 `그린고블린` | 통과(대시보드에서 직접 확인) |
 | 4 | `GET /v1/me` | 통과(200, ES256) |
@@ -230,7 +259,8 @@ Flutter 앱이 아직 없어도 확인할 수 있습니다. 순서대로 확인�
 | - | 세 테이블 RLS, `on_auth_user_created`, 비공개 버킷 | 통과(대시보드에서 직접 확인) |
 
 ### 확인하지 못한 것
-- Google OAuth 로그인(3~5절 전체)
+- **iOS 클라이언트와 아이패드 앱의 네이티브 로그인**(`google_sign_in` + `signInWithIdToken`), `Skip nonce check`의 효과, 5절 전체
+- Google 로그인으로 받은 토큰으로 서버 `GET /v1/me` 호출 (서버는 이메일 계정 토큰으로만 확인했다. 같은 ES256 토큰 방식이라 같은 경로이지만 Google 토큰으로 직접 호출한 기록은 없다)
 - 새 `sb_secret_...` 서비스 키
 - 레거시 HS256 토큰(이 프로젝트는 ES256)
 - 미사용 에셋 정리 작업(`cleanup`)의 클라우드 동작
@@ -239,4 +269,5 @@ Flutter 앱이 아직 없어도 확인할 수 있습니다. 순서대로 확인�
 ### 안내서와 달랐던 점
 - `supabase link`가 DB 비밀번호를 묻지 않았다(2절에 반영).
 - `.env` 위치와 실수 사례를 6절에 적었다. 서비스 키 대신 다른 값이 들어가도 서버 기동과 `/v1/me`는 정상이라 시드나 Storage를 쓸 때에야 드러난다.
+- Google 로그인 설정에서 겪은 것을 3.1·3.2·8절에 반영했다: Test users에는 실제 계정만 들어간다, 클라이언트 유형은 반드시 웹 애플리케이션이어야 한다(데스크톱 앱으로 만들어 `redirect_uri_mismatch`가 났다), 로그인 성공 후 `localhost:3000` 연결 오류는 정상이다, 클라이언트 secret은 상세 화면에서 나중에도 복사할 수 있다.
 - Windows PowerShell 5.1의 `Invoke-WebRequest`는 charset이 없는 JSON을 UTF-8로 읽지 못해 한글이 깨져 보인다. 서버 오류가 아니라 확인 스크립트 쪽 문제였고, 응답을 UTF-8로 직접 해석하면 해결된다.
