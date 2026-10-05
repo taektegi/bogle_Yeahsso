@@ -127,6 +127,8 @@ pytest                                              # 테스트
 
 **PR을 올리기 전에 `TEST_DATABASE_URL`을 켠 채로 `pytest`와 `ruff`가 모두 통과해야 한다.** `TEST_DATABASE_URL`이 없으면 DB 테스트(소유권 차단 포함)가 건너뛰어진다.
 
+**CI**: PR을 올리거나 `main`에 푸시하면 GitHub Actions(`.github/workflows/ci.yml`)가 같은 검사(`ruff`, `pytest` + 실제 PostgreSQL)를 자동으로 돌린다. PR 화면에 ❌가 나오면 **머지하지 않고** 고친다. CI는 로컬에서 미리 돌려 보는 것을 대신하지 않는다 (CI는 실제 Supabase·Storage·OpenAI를 확인하지 못한다).
+
 DB (Supabase CLI):
 
 ```bash
@@ -139,6 +141,7 @@ supabase db push      # 원격에 적용. supabase link로 프로젝트를 확�
 
 ```text
 aidlc-docs/   요구사항·분석 문서 (문서만 둔다)
+.github/     CI 설정 (workflows/ci.yml)
 docs/         프론트엔드와 주고받는 API 계약 등 협업 문서 (frontend-api-reply.md, flutter-repository-proposal.md)
 supabase/     DB 마이그레이션 (migrations/)과 DB 설명 (README.md)
 server/       FastAPI 서버

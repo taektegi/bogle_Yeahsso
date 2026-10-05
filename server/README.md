@@ -29,6 +29,8 @@ ruff format .           # 포맷
 
 PR을 올리기 전에 세 가지가 모두 통과해야 합니다.
 
+PR을 올리면 GitHub Actions(CI)가 같은 검사를 자동으로 다시 돌립니다(임시 PostgreSQL 포함). PR 화면의 ✅/❌를 확인하세요. CI에서는 `TEST_DATABASE_URL`이 없으면 DB 테스트를 건너뛰지 않고 **실패**합니다.
+
 ### DB 테스트
 친구·프로필처럼 DB를 쓰는 테스트(`tests/test_*_db.py`)는 **실제 PostgreSQL**에 마이그레이션을 적용해서 돌립니다.
 `TEST_DATABASE_URL`이 없으면 이 테스트들은 **건너뜁니다**(`pytest`가 통과해 보여도 소유권 테스트는 실행되지 않은 것입니다). PR 전에는 꼭 켜고 돌려 주세요.

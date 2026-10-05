@@ -57,6 +57,9 @@ def client(app: FastAPI) -> TestClient:
 def database_url() -> Iterator[str]:
     admin_url = os.environ.get("TEST_DATABASE_URL")
     if not admin_url:
+        if os.environ.get("CI"):
+            # CI에서 DB 테스트가 조용히 건너뛰어지면 소유권 테스트를 안 돌린 채 통과해 버린다.
+            pytest.fail("CI에서는 TEST_DATABASE_URL이 반드시 있어야 합니다", pytrace=False)
         pytest.skip("TEST_DATABASE_URL이 없어 DB 테스트를 건너뜁니다")
 
     name = f"bogle_test_{uuid4().hex[:10]}"
