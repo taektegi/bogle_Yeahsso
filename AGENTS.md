@@ -157,7 +157,7 @@ supabase db push      # 원격에 적용. supabase link로 프로젝트를 확�
 ```text
 aidlc-docs/   요구사항·분석 문서 (문서만 둔다)
 .github/     CI 설정 (workflows/ci.yml)
-docs/         협업 문서 (frontend-api-reply.md, flutter-repository-proposal.md, idempotency-design.md)
+docs/         협업 문서 (frontend-api-reply.md, flutter-repository-proposal.md, idempotency-design.md, supabase-cloud-setup.md)
 supabase/     DB 마이그레이션 (migrations/)과 DB 설명 (README.md)
 server/       FastAPI 서버
   app/          main.py, config.py, auth.py, db.py, storage.py, assets.py, cleanup.py, rate_limit.py, idempotency.py, errors.py, request_context.py, schemas.py

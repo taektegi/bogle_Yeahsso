@@ -74,7 +74,7 @@ supabase db reset
 
 `db reset`은 로컬 개발 DB에만 사용하세요. 연결된 원격 프로젝트에는 실행하지 않습니다.
 
-원격 프로젝트에 적용하려면 먼저 프로젝트 ref를 확인하고 연결한 뒤 실행합니다. 개발용과 시연용 프로젝트는 분리합니다 (NFR-11).
+원격 프로젝트에 적용하려면 먼저 프로젝트 ref를 확인하고 연결한 뒤 실행합니다. 개발용과 시연용 프로젝트는 분리합니다 (NFR-11). 클라우드 프로젝트와 Google 로그인 설정 순서는 `docs/supabase-cloud-setup.md`를 보세요.
 
 ```bash
 supabase link --project-ref <project-ref>
