@@ -61,6 +61,7 @@ server/
 │   ├── personality.py      성격 유형 목록
 │   ├── sleep.py            수면 시간 판정 (한국 시간 22:00–06:00)
 │   ├── clock.py            현재 시각 (테스트에서 고정할 수 있게 의존성으로 분리)
+│   ├── rate_limit.py       사용자별 요청 횟수 제한 (429). limit_generations 등을 라우터에 붙인다
 │   ├── errors.py           공통 오류 형식과 ApiError
 │   ├── request_context.py  requestId 부여, 접근 로그
 │   ├── schemas.py          CamelModel (JSON은 camelCase)
@@ -143,5 +144,6 @@ def get_friend(friend_id: str, user: CurrentUserDep) -> FriendOut:
 
 ## 아직 없는 것
 
-- 멱등 키(`Idempotency-Key`) 처리, 사용자별 횟수 제한(429)
+- 멱등 키(`Idempotency-Key`) 처리
+- 요청 횟수 제한은 만들어 두었지만(`app/rate_limit.py`) 아직 어떤 라우터에도 붙어 있지 않습니다. 업로드·생성·대화 API를 만들 때 `Depends(limit_uploads)`, `Depends(limit_generations)`, `Depends(limit_messages)`를 붙이세요. 기록을 서버 메모리에 두므로 서버 1개 기준입니다.
 - 실제 Supabase(Storage 서명·pooler 연결)로의 확인: 지금은 가짜 Storage와 로컬 PostgreSQL로만 확인했습니다
