@@ -114,6 +114,57 @@ class CharacterRepository:
             ).fetchone()
         return row is not None
 
+    def delete_for_user(self, user_id: UUID, character_id: UUID) -> list[AssetRow] | None:
+        """내 친구를 삭제하고, 그 친구가 쓰던 에셋(원본·아트·썸네일)을 돌려준다. 없으면 None.
+
+        **에셋 행과 Storage 파일은 지우지 않는다.** 호출하는 쪽이 파일을 먼저 지운 뒤
+        `delete_assets()`로 행을 지운다. 그러면 파일 삭제가 실패해도 행이 남아서
+        나중에 정리할 수 있다.
+        친구에 딸린 대화·모션 기록은 각 테이블의 `on delete cascade`로 함께 지워지고, 프로필
+        아바타는 DB가 기본값(null)으로 되돌린다.
+        """
+        params = {"user_id": user_id, "character_id": character_id}
+        with self._db.connection() as conn:
+            row = conn.execute(
+                "select source_asset_id, art_asset_id, thumbnail_asset_id from public.friends"
+                " where id = %(character_id)s and user_id = %(user_id)s for update",
+                params,
+            ).fetchone()
+            if row is None:
+                return None
+            asset_ids = [
+                row[column]
+                for column in ("source_asset_id", "art_asset_id", "thumbnail_asset_id")
+                if row[column] is not None
+            ]
+            conn.execute(
+                "delete from public.friends where id = %(character_id)s and user_id = %(user_id)s",
+                params,
+            )
+            asset_rows = conn.execute(
+                "select id, storage_path, content_type, width, height from public.assets"
+                " where id = any(%(asset_ids)s) and user_id = %(user_id)s",
+                {"asset_ids": asset_ids, "user_id": user_id},
+            ).fetchall()
+        return [
+            AssetRow(
+                id=a["id"],
+                storage_path=a["storage_path"],
+                content_type=a["content_type"],
+                width=a["width"],
+                height=a["height"],
+            )
+            for a in asset_rows
+        ]
+
+    def delete_assets(self, user_id: UUID, asset_ids: list[UUID]) -> None:
+        """Storage 파일을 지운 뒤 에셋 행을 지운다. 소유자 조건으로 남의 에셋은 건드리지 않는다."""
+        with self._db.connection() as conn:
+            conn.execute(
+                "delete from public.assets where id = any(%(asset_ids)s) and user_id = %(user_id)s",
+                {"asset_ids": asset_ids, "user_id": user_id},
+            )
+
 
 def get_character_repository(db: DatabaseDep) -> CharacterRepository:
     return CharacterRepository(db)

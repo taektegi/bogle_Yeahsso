@@ -3,20 +3,27 @@
 API 계약은 docs/frontend-api-reply.md 4절.
 """
 
+import logging
 from datetime import datetime
 from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 
-from app.assets import ImageRef, image_refs
+from app.assets import AssetRow, ImageRef, image_refs
 from app.auth import CurrentUserDep
 from app.clock import NowDep
 from app.errors import ERROR_RESPONSES, ApiError
 from app.personality import personality_label
-from app.repositories.characters import CharacterRecord, CharacterRepositoryDep
+from app.repositories.characters import (
+    CharacterRecord,
+    CharacterRepository,
+    CharacterRepositoryDep,
+)
 from app.schemas import CamelModel
 from app.sleep import sleep_status
-from app.storage import StorageDep
+from app.storage import StorageClient, StorageDep, StorageError
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/characters", tags=["characters"], responses=ERROR_RESPONSES)
 
@@ -111,3 +118,37 @@ def get_status(
     return SleepStatusOut(
         asleep=status.asleep, next_change_at=status.next_change_at, server_time=now
     )
+
+
+def _remove_files(
+    repo: CharacterRepository, storage: StorageClient, user_id: UUID, assets: list[AssetRow]
+) -> None:
+    """파일을 지우고 에셋 행을 지운다. 실패해도 친구는 이미 삭제됐으므로 예외를 내지 않는다.
+
+    실패하면 에셋 행이 남는다. 행이 남아 있으면 경로를 알 수 있어서 나중에 다시 정리할 수 있다.
+    """
+    if not assets:
+        return
+    try:
+        storage.remove([asset.storage_path for asset in assets])
+        repo.delete_assets(user_id, [asset.id for asset in assets])
+    except (StorageError, ApiError) as exc:
+        logger.warning(
+            "deleted a character but left %d asset row(s) for cleanup: %s", len(assets), exc
+        )
+
+
+@router.delete("/{character_id}", status_code=204, summary="친구 삭제 (영구)")
+def delete_character(
+    character_id: UUID, user: CurrentUserDep, repo: CharacterRepositoryDep, storage: StorageDep
+) -> Response:
+    """즉시 영구 삭제한다. 되돌릴 수 없다 (FR-06.3, D-21).
+
+    친구, 대화·모션 기록, 원본·캐릭터 아트·썸네일 파일이 함께 지워지고, 아바타였다면 기본값으로
+    돌아간다. 없는 친구와 남의 친구는 똑같이 404다. 이미 지운 친구를 다시 지워도 404다.
+    """
+    assets = repo.delete_for_user(user.id, character_id)
+    if assets is None:
+        raise ApiError(404, "not_found", "친구를 찾을 수 없어요.")
+    _remove_files(repo, storage, user.id, assets)
+    return Response(status_code=204)

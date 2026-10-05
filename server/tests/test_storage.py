@@ -113,3 +113,47 @@ def test_network_failure_is_a_storage_error() -> None:
 
     with pytest.raises(StorageError):
         make_storage(handler).sign(["x/a.png"])
+
+
+def test_remove_deletes_all_paths_in_one_request() -> None:
+    requests: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        requests.append(request)
+        return httpx2.Response(200, json=[])
+
+    make_storage(handler).remove([f"{USER_ID}/a.png", f"{USER_ID}/b.png", f"{USER_ID}/a.png"])
+
+    [request] = requests
+    assert request.method == "DELETE"
+    assert str(request.url) == "https://proj.supabase.co/storage/v1/object/bogle-media"
+    assert request.headers["authorization"] == "Bearer service-role-key"
+    assert json.loads(request.content) == {"prefixes": [f"{USER_ID}/a.png", f"{USER_ID}/b.png"]}
+
+
+def test_remove_with_no_paths_makes_no_request() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise AssertionError("storage must not be called")
+
+    make_storage(handler).remove([])
+
+
+def test_remove_treats_already_missing_objects_as_success() -> None:
+    # 이미 없는 객체는 응답 목록에서 빠질 뿐이다 (200, 빈 목록).
+    make_storage(lambda request: httpx2.Response(200, json=[])).remove(["x/gone.png"])
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 500, 503])
+def test_remove_http_error_is_a_storage_error(status: int) -> None:
+    storage = make_storage(lambda request: httpx2.Response(status, json={"message": "no"}))
+    with pytest.raises(StorageError) as excinfo:
+        storage.remove(["x/a.png"])
+    assert "service-role-key" not in str(excinfo.value)
+
+
+def test_remove_network_failure_is_a_storage_error() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise httpx2.ConnectError("connection refused")
+
+    with pytest.raises(StorageError):
+        make_storage(handler).remove(["x/a.png"])

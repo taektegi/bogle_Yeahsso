@@ -59,6 +59,8 @@ server/
 │   ├── storage.py          Storage 서명 URL → StorageDep
 │   ├── assets.py           이미지를 앱에 내려 줄 때의 공통 모양 (ImageRef)
 │   ├── personality.py      성격 유형 목록
+│   ├── sleep.py            수면 시간 판정 (한국 시간 22:00–06:00)
+│   ├── clock.py            현재 시각 (테스트에서 고정할 수 있게 의존성으로 분리)
 │   ├── errors.py           공통 오류 형식과 ApiError
 │   ├── request_context.py  requestId 부여, 접근 로그
 │   ├── schemas.py          CamelModel (JSON은 camelCase)
@@ -66,7 +68,8 @@ server/
 │   └── routers/
 │       ├── __init__.py     라우터 등록 (공용 파일)
 │       ├── health.py       GET /v1/health
-│       └── characters.py   GET /v1/characters, GET /v1/characters/{id}
+│       ├── characters.py   보관함: 목록·상세·삭제, 수면 상태
+│       └── profile.py      GET·PATCH /v1/me
 └── tests/
     ├── conftest.py         fixture (임시 PostgreSQL 포함)
     ├── db_support.py       DB 테스트용 사용자·에셋·친구 생성 도우미, 가짜 Storage

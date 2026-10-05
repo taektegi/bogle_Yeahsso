@@ -1,6 +1,6 @@
 """DB 테스트에서 사용자·에셋·친구를 만드는 도우미."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import datetime
 from uuid import UUID, uuid4
 
@@ -14,9 +14,13 @@ SIGNED_UNTIL = datetime.fromisoformat("2026-10-05T06:00:00+00:00")
 class FakeStorage:
     """Storage 서명을 흉내 낸다. 어떤 경로들로 호출됐는지 기록한다."""
 
-    def __init__(self, fail: bool = False) -> None:
+    def __init__(self, fail: bool = False, fail_remove: bool = False) -> None:
         self.fail = fail
+        self.fail_remove = fail_remove
         self.calls: list[list[str]] = []
+        self.removed: list[list[str]] = []
+        # remove()가 호출되는 순간에 실행할 검사 (호출 순서를 확인할 때 쓴다)
+        self.on_remove: Callable[[], None] | None = None
 
     def sign(self, paths: Sequence[str]) -> dict[str, SignedUrl]:
         self.calls.append(list(paths))
@@ -25,6 +29,13 @@ class FakeStorage:
         return {
             p: SignedUrl(f"https://storage.test/signed/{p}?token=t", SIGNED_UNTIL) for p in paths
         }
+
+    def remove(self, paths: Sequence[str]) -> None:
+        if self.on_remove:
+            self.on_remove()
+        if self.fail_remove:
+            raise StorageError("storage is down")
+        self.removed.append(list(paths))
 
 
 def make_user(conn: psycopg.Connection) -> UUID:

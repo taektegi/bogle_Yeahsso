@@ -166,3 +166,142 @@ def test_status_of_another_users_character_is_404(api, seed_conn) -> None:
     assert own.status_code == 200
     assert set(own.json()) == {"asleep", "nextChangeAt", "serverTime"}
     assert stolen.status_code == 404
+
+
+def asset_count(conn, user_id) -> int:
+    return conn.execute(
+        "select count(*) as n from public.assets where user_id = %s", (user_id,)
+    ).fetchone()["n"]
+
+
+def character_exists(conn, character_id) -> bool:
+    return (
+        conn.execute("select 1 from public.friends where id = %s", (character_id,)).fetchone()
+        is not None
+    )
+
+
+def test_delete_removes_the_character_files_and_asset_rows(api, seed_conn, storage) -> None:
+    user = make_user(seed_conn)
+    character_id = make_character(seed_conn, user, "지울 친구")
+    paths = [
+        r["storage_path"]
+        for r in seed_conn.execute(
+            "select storage_path from public.assets where user_id = %s", (user,)
+        ).fetchall()
+    ]
+
+    response = api.delete(f"/v1/characters/{character_id}", headers=token_for(user))
+
+    assert response.status_code == 204
+    assert response.content == b""
+    assert not character_exists(seed_conn, character_id)
+    assert asset_count(seed_conn, user) == 0
+    [removed] = storage.removed
+    assert sorted(removed) == sorted(paths)
+    assert api.get(f"/v1/characters/{character_id}", headers=token_for(user)).status_code == 404
+    assert api.get("/v1/characters", headers=token_for(user)).json()["items"] == []
+
+
+def test_files_are_removed_after_the_character_row_is_gone(api, seed_conn, storage) -> None:
+    user = make_user(seed_conn)
+    character_id = make_character(seed_conn, user, "순서 확인")
+    seen: list[bool] = []
+    storage.on_remove = lambda: seen.append(character_exists(seed_conn, character_id))
+
+    api.delete(f"/v1/characters/{character_id}", headers=token_for(user))
+
+    assert seen == [False]
+
+
+def test_delete_without_a_source_asset(api, seed_conn, storage) -> None:
+    user = make_user(seed_conn)
+    character_id = make_character(seed_conn, user, "원본 없음", with_source=False)
+
+    response = api.delete(f"/v1/characters/{character_id}", headers=token_for(user))
+
+    assert response.status_code == 204
+    assert len(storage.removed[0]) == 2
+    assert asset_count(seed_conn, user) == 0
+
+
+def test_delete_of_another_users_character_is_404_and_changes_nothing(
+    api, seed_conn, storage
+) -> None:
+    owner, intruder = make_user(seed_conn), make_user(seed_conn)
+    character_id = make_character(seed_conn, owner, "지키는 친구")
+
+    response = api.delete(f"/v1/characters/{character_id}", headers=token_for(intruder))
+
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "not_found"
+    assert character_exists(seed_conn, character_id)
+    assert asset_count(seed_conn, owner) == 3
+    assert storage.removed == []
+
+
+def test_delete_of_an_unknown_character_is_404(api, seed_conn, storage) -> None:
+    user = make_user(seed_conn)
+
+    response = api.delete(f"/v1/characters/{uuid4()}", headers=token_for(user))
+
+    assert response.status_code == 404
+    assert storage.removed == []
+
+
+def test_deleting_twice_is_404_the_second_time(api, seed_conn, storage) -> None:
+    user = make_user(seed_conn)
+    character_id = make_character(seed_conn, user, "한 번만")
+
+    first = api.delete(f"/v1/characters/{character_id}", headers=token_for(user))
+    second = api.delete(f"/v1/characters/{character_id}", headers=token_for(user))
+
+    assert (first.status_code, second.status_code) == (204, 404)
+    assert len(storage.removed) == 1
+
+
+def test_delete_leaves_other_characters_and_users_alone(api, seed_conn, storage) -> None:
+    me, other = make_user(seed_conn), make_user(seed_conn)
+    doomed = make_character(seed_conn, me, "지울 친구")
+    sibling = make_character(seed_conn, me, "남는 친구")
+    others = make_character(seed_conn, other, "남의 친구")
+
+    api.delete(f"/v1/characters/{doomed}", headers=token_for(me))
+
+    assert character_exists(seed_conn, sibling)
+    assert character_exists(seed_conn, others)
+    assert asset_count(seed_conn, me) == 3
+    assert asset_count(seed_conn, other) == 3
+    assert [c["id"] for c in api.get("/v1/characters", headers=token_for(me)).json()["items"]] == [
+        str(sibling)
+    ]
+
+
+def test_storage_failure_still_deletes_the_character_and_keeps_rows_for_cleanup(
+    app, api, seed_conn
+) -> None:
+    user = make_user(seed_conn)
+    character_id = make_character(seed_conn, user, "파일 삭제 실패")
+    app.dependency_overrides[get_storage] = lambda: FakeStorage(fail_remove=True)
+
+    response = api.delete(f"/v1/characters/{character_id}", headers=token_for(user))
+
+    assert response.status_code == 204
+    assert not character_exists(seed_conn, character_id)
+    # 파일 삭제가 실패했으므로 경로를 알 수 있게 에셋 행이 남아 있다 (나중에 정리).
+    assert asset_count(seed_conn, user) == 3
+    assert api.get("/v1/characters", headers=token_for(user)).json()["items"] == []
+
+
+def test_deleting_the_avatar_character_resets_the_avatar(api, seed_conn) -> None:
+    user = make_user(seed_conn)
+    character_id = make_character(seed_conn, user, "아바타 친구")
+    api.patch("/v1/me", json={"avatarCharacterId": str(character_id)}, headers=token_for(user))
+
+    api.delete(f"/v1/characters/{character_id}", headers=token_for(user))
+
+    assert api.get("/v1/me", headers=token_for(user)).json()["avatarCharacterId"] is None
+
+
+def test_delete_requires_login(client: TestClient) -> None:
+    assert client.delete(f"/v1/characters/{uuid4()}").status_code == 401

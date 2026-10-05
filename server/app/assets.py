@@ -12,7 +12,7 @@ from uuid import UUID
 
 from app.errors import service_unavailable
 from app.schemas import CamelModel
-from app.storage import StorageError, StorageSigner
+from app.storage import StorageClient, StorageError
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class AssetRow:
     height: int
 
 
-def image_refs(storage: StorageSigner, assets: Iterable[AssetRow]) -> dict[UUID, ImageRef]:
+def image_refs(storage: StorageClient, assets: Iterable[AssetRow]) -> dict[UUID, ImageRef]:
     """에셋들의 서명 URL을 한 번에 만들어 `{assetId: ImageRef}`로 돌려준다.
 
     서명에 실패하면 503(retryable)이다. 일부만 빼고 내려 주지 않는다.

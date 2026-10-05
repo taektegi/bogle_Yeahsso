@@ -1,4 +1,4 @@
-"""Supabase Storage 서명 URL (FR-01.5).
+"""Supabase Storage: 서명 URL 만들기와 파일 삭제 (FR-01.5, FR-06.3).
 
 파일은 비공개 bucket에 있고, 앱에는 서버가 만든 만료되는 서명 URL로만 준다.
 `service_role` 키로 Storage REST API를 부른다. 이 키는 서버 밖으로 나가면 안 된다 (NFR-03).
@@ -27,12 +27,16 @@ class SignedUrl:
 
 
 class StorageError(Exception):
-    """서명 URL을 만들지 못함. 호출하는 쪽에서 503으로 바꾼다."""
+    """Storage 작업 실패. 호출하는 쪽이 상황에 맞게 503으로 바꾸거나 기록하고 넘어간다."""
 
 
-class StorageSigner(Protocol):
+class StorageClient(Protocol):
     def sign(self, paths: Sequence[str]) -> dict[str, SignedUrl]:
         """객체 경로마다 서명 URL을 만든다. 하나라도 실패하면 StorageError."""
+        ...
+
+    def remove(self, paths: Sequence[str]) -> None:
+        """객체를 삭제한다. 이미 없는 객체는 무시한다. 요청이 실패하면 StorageError."""
         ...
 
 
@@ -85,6 +89,23 @@ class SupabaseStorage:
             raise StorageError(f"storage did not sign {len(missing)} path(s)")
         return signed
 
+    def remove(self, paths: Sequence[str]) -> None:
+        unique_paths = list(dict.fromkeys(paths))
+        if not unique_paths:
+            return
+        try:
+            response = self._client.request(
+                "DELETE",
+                f"{self._storage_url}/object/{self._bucket}",
+                headers=self._headers,
+                json={"prefixes": unique_paths},
+            )
+        except httpx2.HTTPError as exc:
+            raise StorageError(f"storage request failed: {type(exc).__name__}") from None
+        # 이미 없는 객체는 응답 목록에서 빠질 뿐 오류가 아니다. 200이면 성공으로 본다.
+        if response.status_code != 200:
+            raise StorageError(f"storage returned HTTP {response.status_code}")
+
 
 @lru_cache
 def _supabase_storage(
@@ -98,7 +119,7 @@ def _supabase_storage(
     )
 
 
-def get_storage(settings: Annotated[Settings, Depends(get_settings)]) -> StorageSigner:
+def get_storage(settings: Annotated[Settings, Depends(get_settings)]) -> StorageClient:
     if not settings.supabase_url or settings.supabase_service_role_key is None:
         logger.error("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set")
         raise service_unavailable()
@@ -110,4 +131,4 @@ def get_storage(settings: Annotated[Settings, Depends(get_settings)]) -> Storage
     )
 
 
-StorageDep = Annotated[StorageSigner, Depends(get_storage)]
+StorageDep = Annotated[StorageClient, Depends(get_storage)]
