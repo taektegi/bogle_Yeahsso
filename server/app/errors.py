@@ -45,6 +45,7 @@ ERROR_RESPONSES: dict[int | str, dict] = {
     401: {"model": ErrorResponse, "description": "로그인이 필요하거나 토큰이 올바르지 않음"},
     404: {"model": ErrorResponse, "description": "없거나 내 것이 아닌 리소스"},
     422: {"model": ErrorResponse, "description": "입력값 검증 실패"},
+    503: {"model": ErrorResponse, "description": "DB·저장소를 잠시 쓸 수 없음 (retryable)"},
 }
 
 
@@ -68,6 +69,16 @@ class ApiError(Exception):
         self.retryable = retryable
         self.field_errors = field_errors or {}
         self.headers = headers
+
+
+def service_unavailable() -> ApiError:
+    """DB·Storage 같은 의존 서비스를 쓸 수 없을 때. 잠시 뒤 다시 시도하면 성공할 수 있다."""
+    return ApiError(
+        503,
+        "service_unavailable",
+        "서비스를 잠시 사용할 수 없어요. 잠시 후 다시 시도해 주세요.",
+        retryable=True,
+    )
 
 
 _HTTP_ERRORS: dict[int, tuple[str, str]] = {
