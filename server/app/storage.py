@@ -1,4 +1,4 @@
-"""Supabase Storage: 서명 URL 만들기와 파일 삭제 (FR-01.5, FR-06.3).
+"""Supabase Storage: 서명 URL 만들기, 파일 업로드·삭제 (FR-01.5, FR-06.3).
 
 파일은 비공개 bucket에 있고, 앱에는 서버가 만든 만료되는 서명 URL로만 준다.
 `service_role` 키로 Storage REST API를 부른다. 이 키는 서버 밖으로 나가면 안 된다 (NFR-03).
@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from typing import Annotated, Protocol
+from urllib.parse import quote
 
 import httpx2
 from fastapi import Depends
@@ -33,6 +34,10 @@ class StorageError(Exception):
 class StorageClient(Protocol):
     def sign(self, paths: Sequence[str]) -> dict[str, SignedUrl]:
         """객체 경로마다 서명 URL을 만든다. 하나라도 실패하면 StorageError."""
+        ...
+
+    def upload(self, path: str, data: bytes, content_type: str) -> None:
+        """객체를 올린다. 같은 경로가 있으면 덮어쓴다. 실패하면 StorageError."""
         ...
 
     def remove(self, paths: Sequence[str]) -> None:
@@ -88,6 +93,18 @@ class SupabaseStorage:
         if missing:
             raise StorageError(f"storage did not sign {len(missing)} path(s)")
         return signed
+
+    def upload(self, path: str, data: bytes, content_type: str) -> None:
+        try:
+            response = self._client.post(
+                f"{self._storage_url}/object/{self._bucket}/{quote(path)}",
+                headers={**self._headers, "Content-Type": content_type, "x-upsert": "true"},
+                content=data,
+            )
+        except httpx2.HTTPError as exc:
+            raise StorageError(f"storage request failed: {type(exc).__name__}") from None
+        if response.status_code != 200:
+            raise StorageError(f"storage returned HTTP {response.status_code}")
 
     def remove(self, paths: Sequence[str]) -> None:
         unique_paths = list(dict.fromkeys(paths))

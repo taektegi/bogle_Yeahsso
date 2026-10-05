@@ -56,7 +56,7 @@ server/
 │   ├── config.py           환경변수 설정 (Settings)
 │   ├── auth.py             Supabase 토큰 검증 → CurrentUserDep
 │   ├── db.py               Postgres 연결 풀 → DatabaseDep
-│   ├── storage.py          Storage 서명 URL → StorageDep
+│   ├── storage.py          Storage 서명 URL·업로드·삭제 → StorageDep
 │   ├── assets.py           이미지를 앱에 내려 줄 때의 공통 모양 (ImageRef)
 │   ├── personality.py      성격 유형 목록
 │   ├── sleep.py            수면 시간 판정 (한국 시간 22:00–06:00)
@@ -71,6 +71,8 @@ server/
 │       ├── health.py       GET /v1/health
 │       ├── characters.py   보관함: 목록·상세·삭제, 수면 상태
 │       └── profile.py      GET·PATCH /v1/me
+├── scripts/
+│   └── seed.py             개발용 시드 친구 만들기·지우기
 └── tests/
     ├── conftest.py         fixture (임시 PostgreSQL 포함)
     ├── db_support.py       DB 테스트용 사용자·에셋·친구 생성 도우미, 가짜 Storage
@@ -110,6 +112,22 @@ def get_friend(friend_id: str, user: CurrentUserDep) -> FriendOut:
     raise ApiError(404, "friend_not_found", "친구를 찾을 수 없어요.")
 ```
 
+## 시드 데이터 (테스트용 친구)
+
+다른 사람의 기능이 아직 없어도 내 기능을 테스트할 수 있도록, 내 계정에 테스트용 친구를 만듭니다.
+예를 들어 대화를 개발하는 사람은 친구 저장이 끝나기 전에 시드 친구로 작업할 수 있습니다.
+
+```bash
+cd server
+python -m scripts.seed --email you@example.com            # 시드 친구 3명 만들기
+python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지우기
+```
+
+- 계정은 **앱에서 Google로 한 번 로그인해서 만들어 둔 것**이어야 합니다. 스크립트는 계정을 만들지 않습니다.
+- `.env`에 `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`가 있어야 합니다. **어느 Supabase 프로젝트에 연결돼 있는지 확인하고 실행하세요** (개발용과 시연용이 분리돼 있습니다).
+- 이름이 `시드 `로 시작하는 친구 3명(`시드 구름이`, `시드 별이`, `시드 도토리`)과 단색 PNG 이미지가 만들어집니다. 여러 번 실행해도 이미 있는 친구는 다시 만들지 않습니다.
+- `--clean`은 시드 친구만 지웁니다 (Storage 경로가 `{user_id}/seed/`로 시작하는 친구). 직접 만든 친구는 건드리지 않습니다.
+
 ## 공통 규약
 
 | 항목 | 규칙 |
@@ -146,4 +164,4 @@ def get_friend(friend_id: str, user: CurrentUserDep) -> FriendOut:
 
 - 멱등 키(`Idempotency-Key`) 처리
 - 요청 횟수 제한은 만들어 두었지만(`app/rate_limit.py`) 아직 어떤 라우터에도 붙어 있지 않습니다. 업로드·생성·대화 API를 만들 때 `Depends(limit_uploads)`, `Depends(limit_generations)`, `Depends(limit_messages)`를 붙이세요. 기록을 서버 메모리에 두므로 서버 1개 기준입니다.
-- 실제 Supabase(Storage 서명·pooler 연결)로의 확인: 지금은 가짜 Storage와 로컬 PostgreSQL로만 확인했습니다
+- 실제 Supabase(Storage 서명·업로드·삭제, pooler 연결)로의 확인: 지금은 가짜 Storage 서버와 로컬 PostgreSQL로만 확인했습니다

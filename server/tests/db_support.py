@@ -19,6 +19,7 @@ class FakeStorage:
         self.fail_remove = fail_remove
         self.calls: list[list[str]] = []
         self.removed: list[list[str]] = []
+        self.uploaded: dict[str, tuple[bytes, str]] = {}
         # remove()가 호출되는 순간에 실행할 검사 (호출 순서를 확인할 때 쓴다)
         self.on_remove: Callable[[], None] | None = None
 
@@ -29,6 +30,9 @@ class FakeStorage:
         return {
             p: SignedUrl(f"https://storage.test/signed/{p}?token=t", SIGNED_UNTIL) for p in paths
         }
+
+    def upload(self, path: str, data: bytes, content_type: str) -> None:
+        self.uploaded[path] = (data, content_type)
 
     def remove(self, paths: Sequence[str]) -> None:
         if self.on_remove:

@@ -157,3 +157,40 @@ def test_remove_network_failure_is_a_storage_error() -> None:
 
     with pytest.raises(StorageError):
         make_storage(handler).remove(["x/a.png"])
+
+
+def test_upload_posts_the_bytes_with_content_type_and_upsert() -> None:
+    requests: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        requests.append(request)
+        return httpx2.Response(200, json={"Key": "bogle-media/x"})
+
+    make_storage(handler).upload(f"{USER_ID}/seed/a b.png", b"\x89PNG-bytes", "image/png")
+
+    [request] = requests
+    assert request.method == "POST"
+    # 경로의 특수문자는 URL 인코딩하고 폴더 구분자(/)는 그대로 둔다.
+    assert str(request.url) == (
+        f"https://proj.supabase.co/storage/v1/object/bogle-media/{USER_ID}/seed/a%20b.png"
+    )
+    assert request.content == b"\x89PNG-bytes"
+    assert request.headers["content-type"] == "image/png"
+    assert request.headers["x-upsert"] == "true"
+    assert request.headers["authorization"] == "Bearer service-role-key"
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 413, 500])
+def test_upload_http_error_is_a_storage_error(status: int) -> None:
+    storage = make_storage(lambda request: httpx2.Response(status, json={"message": "no"}))
+    with pytest.raises(StorageError) as excinfo:
+        storage.upload("x/a.png", b"data", "image/png")
+    assert "service-role-key" not in str(excinfo.value)
+
+
+def test_upload_network_failure_is_a_storage_error() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise httpx2.ConnectError("connection refused")
+
+    with pytest.raises(StorageError):
+        make_storage(handler).upload("x/a.png", b"data", "image/png")
