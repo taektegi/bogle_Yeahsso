@@ -29,6 +29,32 @@ class Settings(BaseSettings):
     # 업로드하고 친구로 저장하지 않은 에셋을 보관하는 시간. API 계약: 24시간
     asset_retention_hours: int = 24
 
+    # OpenAI (캐릭터 그림·얼굴 위치·소개 문구·대화·검열). 서버에서만 쓰는 비밀이다 (NFR-03).
+    openai_api_key: SecretStr | None = None
+    # 아이 그림을 캐릭터로 바꾸는 모델. 투명 배경 PNG를 낼 수 있어야 한다.
+    openai_image_model: str = "gpt-image-1"
+    openai_image_quality: str = "medium"
+    # 그림을 보고 얼굴 위치를 말하는 모델, 소개 문구·대화 모델 (이미지 입력과 JSON 출력 지원)
+    openai_vision_model: str = "gpt-4.1-mini"
+    openai_chat_model: str = "gpt-4.1-mini"
+    openai_moderation_model: str = "omni-moderation-latest"
+
+    # 캐릭터 그림을 만드는 방식. openai: OpenAI 이미지 모델 / passthrough: 아이 그림을 그대로
+    # 다듬어 쓴다 (OpenAI 키 없이 개발·시연할 때). 어느 쪽이든 후처리와 얼굴 지도는 같다.
+    generation_provider: str = "openai"
+    # 생성 작업 최대 시간(초)과 동시에 처리할 작업 수. API 계약: 4분
+    generation_timeout_seconds: int = 240
+    generation_workers: int = 2
+    # 작업을 찾는 간격(초). 0이면 생성·모션 작업 처리기를 돌리지 않는다 (테스트).
+    worker_poll_seconds: float = 1.0
+
+    # 그림 모션 서버(Animated Drawings, 앱 저장소의 motion_server). 비우면 모션 클립 없이
+    # 앱 기본 모션만 쓴다.
+    motion_service_url: str = ""
+    # 모션 작업 최대 시간(초)과 일시 오류 재시도 횟수. API 계약: 5분, 2번
+    motion_timeout_seconds: int = 300
+    motion_retries: int = 2
+
     @property
     def issuer(self) -> str | None:
         """Supabase 토큰의 iss 값. SUPABASE_URL이 없으면 검사하지 않는다."""

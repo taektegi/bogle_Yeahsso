@@ -1,13 +1,11 @@
 """friends 테이블에 멱등 키 헬퍼를 붙였을 때의 동작 (실제 PostgreSQL, 마이그레이션 적용)."""
 
-from uuid import uuid4
-
 import psycopg
 import pytest
 
 from app.errors import ApiError
 from app.idempotency import fingerprint, insert_or_replay
-from tests.db_support import make_asset, make_character, make_user
+from tests.db_support import make_asset, make_character, make_generation_job, make_user
 
 UNIQUE = ("user_id", "idempotency_key")
 
@@ -93,7 +91,7 @@ def test_a_second_key_for_the_same_generation_job_hits_the_job_constraint(
     이 오류를 409로 바꾸는 것은 호출하는 쪽이다.
     """
     user = make_user(seed_conn)
-    job = uuid4()
+    job = make_generation_job(seed_conn, user)
     create(database, friend_values(seed_conn, user, "key-00000001", job=job))
 
     with pytest.raises(psycopg.errors.UniqueViolation) as excinfo:
@@ -107,7 +105,7 @@ def test_a_resend_with_the_same_key_is_not_blocked_by_the_job_constraint(
     database, seed_conn
 ) -> None:
     user = make_user(seed_conn)
-    job = uuid4()
+    job = make_generation_job(seed_conn, user)
     values = friend_values(seed_conn, user, "key-00000001", job=job)
     first, _ = create(database, values)
 

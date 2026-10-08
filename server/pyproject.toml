@@ -13,6 +13,13 @@ dependencies = [
   "tzdata>=2024.1",
   # Supabase Storage REST 호출. 최신 Starlette의 TestClient도 이것을 요구한다 (httpx는 deprecated)
   "httpx2>=2",
+  # 업로드 multipart 읽기
+  "python-multipart>=0.0.18",
+  # 이미지 검사·후처리(배경 제거·자르기·썸네일·대표색·얼굴 위치 검증)
+  "pillow>=11",
+  "numpy>=2",
+  # 캐릭터 그림·얼굴 위치·소개 문구·대화·검열
+  "openai>=1.60",
 ]
 
 [project.optional-dependencies]

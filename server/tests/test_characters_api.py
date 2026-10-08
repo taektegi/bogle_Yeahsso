@@ -84,6 +84,8 @@ def test_list_response_shape_is_camel_case(app, client: TestClient, storage) -> 
     assert set(character) == {
         "id", "name", "personalityType", "personalityLabel", "introduction", "favoriteThings",
         "speechStyle", "source", "art", "thumbnail", "accentArgb", "createdAt",
+        # junsang: 앱 기능을 위해 더한 값
+        "personality", "face", "bedtime", "wakeTime",
     }  # fmt: skip
     assert character["id"] == str(item.id)
     assert character["name"] == "구름이"

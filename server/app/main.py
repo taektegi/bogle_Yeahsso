@@ -11,6 +11,7 @@ from app.errors import ApiError, register_exception_handlers
 from app.request_context import RequestContextMiddleware, configure_logging
 from app.routers import api_routers
 from app.storage import get_storage
+from app.workers import background_workers
 
 API_PREFIX = "/v1"
 
@@ -26,11 +27,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         storage = None
     try:
         # 미사용 에셋을 주기적으로 정리한다. 서버가 종료되면 함께 멈춘다.
-        async with background_cleanup(
-            database,
-            storage,
-            interval_seconds=settings.cleanup_interval_seconds,
-            retention=timedelta(hours=settings.asset_retention_hours),
+        async with (
+            background_cleanup(
+                database,
+                storage,
+                interval_seconds=settings.cleanup_interval_seconds,
+                retention=timedelta(hours=settings.asset_retention_hours),
+            ),
+            # 캐릭터 생성·모션 작업 처리기
+            background_workers(database, storage, settings),
         ):
             yield
     finally:

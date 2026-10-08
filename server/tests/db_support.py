@@ -14,9 +14,12 @@ SIGNED_UNTIL = datetime.fromisoformat("2026-10-05T06:00:00+00:00")
 class FakeStorage:
     """Storage 서명을 흉내 낸다. 어떤 경로들로 호출됐는지 기록한다."""
 
-    def __init__(self, fail: bool = False, fail_remove: bool = False) -> None:
+    def __init__(
+        self, fail: bool = False, fail_remove: bool = False, fail_upload: bool = False
+    ) -> None:
         self.fail = fail
         self.fail_remove = fail_remove
+        self.fail_upload = fail_upload
         self.calls: list[list[str]] = []
         self.removed: list[list[str]] = []
         self.uploaded: dict[str, tuple[bytes, str]] = {}
@@ -36,7 +39,14 @@ class FakeStorage:
         }
 
     def upload(self, path: str, data: bytes, content_type: str) -> None:
+        if self.fail_upload:
+            raise StorageError("storage is down")
         self.uploaded[path] = (data, content_type)
+
+    def download(self, path: str) -> bytes:
+        if self.fail or path not in self.uploaded:
+            raise StorageError("not found")
+        return self.uploaded[path][0]
 
     def remove(self, paths: Sequence[str]) -> None:
         if self.on_remove:
@@ -102,3 +112,46 @@ def make_character(
         ),
     )
     return character_id
+
+
+def make_generation_job(
+    conn: psycopg.Connection,
+    user_id: UUID,
+    *,
+    status: str = "succeeded",
+    source_type: str = "drawing",
+    key: str | None = None,
+    face: dict | None = None,
+) -> UUID:
+    """생성 작업 하나. 성공한 작업이면 결과 에셋(아트·썸네일)과 대표색도 채운다."""
+    import json
+
+    job_id = uuid4()
+    source_id = make_asset(conn, user_id, "source")[0]
+    art_id = thumbnail_id = accent = None
+    if status == "succeeded":
+        art_id = make_asset(conn, user_id, "art")[0]
+        thumbnail_id = make_asset(conn, user_id, "thumbnail")[0]
+        accent = 4289974783
+    error_code, retryable = ("generation_unavailable", True) if status == "failed" else (None, None)
+    conn.execute(
+        "insert into public.generation_jobs (id, user_id, source_asset_id, source_type, status,"
+        " art_asset_id, thumbnail_asset_id, accent_argb, face, error_code, error_retryable,"
+        " idempotency_key, request_fingerprint)"
+        " values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'fp')",
+        (
+            job_id,
+            user_id,
+            source_id,
+            source_type,
+            status,
+            art_id,
+            thumbnail_id,
+            accent,
+            json.dumps(face) if face is not None else None,
+            error_code,
+            retryable,
+            key or f"job-{job_id.hex[:12]}",
+        ),
+    )
+    return job_id

@@ -37,6 +37,11 @@ logger = logging.getLogger(__name__)
 ASSET_REFERENCES: list[str] = [
     "exists (select 1 from public.friends f"
     " where f.source_asset_id = a.id or f.art_asset_id = a.id or f.thumbnail_asset_id = a.id)",
+    # 아직 처리 중인 생성 작업의 원본
+    "exists (select 1 from public.generation_jobs j"
+    " where j.source_asset_id = a.id and j.status in ('queued', 'processing'))",
+    # 친구의 모션 클립 GIF
+    "exists (select 1 from public.motion_jobs m where a.id = any(m.asset_ids))",
 ]
 
 BATCH_SIZE = 100
@@ -81,8 +86,22 @@ def _delete_rows(db: Database, asset_ids: list) -> int:
     return deleted
 
 
+def _delete_old_jobs(db: Database, retention: timedelta) -> None:
+    """끝난 지 오래된 생성 작업 기록을 지운다 (API 계약 8절: 작업 조회는 생성 후 24시간).
+
+    친구가 된 작업은 친구 쪽 참조만 null이 된다. 결과 에셋은 아래 에셋 정리가 지운다.
+    """
+    with db.connection() as conn:
+        conn.execute(
+            "delete from public.generation_jobs"
+            " where created_at < now() - %(retention)s and status not in ('queued', 'processing')",
+            {"retention": retention},
+        )
+
+
 def cleanup_assets(db: Database, storage: StorageClient, retention: timedelta) -> CleanupResult:
     """미사용 에셋을 한 번 정리한다. 동기 함수라서 스레드에서 실행한다."""
+    _delete_old_jobs(db, retention)
     deleted = 0
     for _ in range(MAX_BATCHES_PER_RUN):
         batch = _select_batch(db, retention)

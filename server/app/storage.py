@@ -43,6 +43,10 @@ class StorageClient(Protocol):
         """객체를 올린다. 같은 경로가 있으면 덮어쓴다. 실패하면 StorageError."""
         ...
 
+    def download(self, path: str) -> bytes:
+        """객체를 내려받는다. 없거나 요청이 실패하면 StorageError."""
+        ...
+
     def remove(self, paths: Sequence[str]) -> None:
         """객체를 삭제한다. 이미 없는 객체는 무시한다. 요청이 실패하면 StorageError."""
         ...
@@ -115,6 +119,19 @@ class SupabaseStorage:
             raise StorageError(f"storage request failed: {type(exc).__name__}") from None
         if response.status_code != 200:
             raise StorageError(f"storage returned HTTP {response.status_code}")
+
+    def download(self, path: str) -> bytes:
+        try:
+            response = self._client.get(
+                f"{self._storage_url}/object/{self._bucket}/{quote(path)}",
+                headers=self._headers,
+                timeout=30.0,
+            )
+        except httpx2.HTTPError as exc:
+            raise StorageError(f"storage request failed: {type(exc).__name__}") from None
+        if response.status_code != 200:
+            raise StorageError(f"storage returned HTTP {response.status_code}")
+        return response.content
 
     def remove(self, paths: Sequence[str]) -> None:
         unique_paths = list(dict.fromkeys(paths))

@@ -5,10 +5,14 @@
 
 from fastapi import APIRouter
 
-from app.routers import characters, health, profile
+from app.routers import assets, characters, generations, health, profile
 
 api_routers: list[APIRouter] = [
     health.router,
     characters.router,
     profile.router,
+    # junsang: 업로드·생성·성격 유형 목록
+    assets.router,
+    generations.router,
+    characters.types_router,
 ]
