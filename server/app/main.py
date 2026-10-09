@@ -8,6 +8,7 @@ from app.cleanup import background_cleanup
 from app.config import get_settings
 from app.db import create_database
 from app.errors import ApiError, register_exception_handlers
+from app.generation_worker import background_generations
 from app.request_context import RequestContextMiddleware, configure_logging
 from app.routers import api_routers
 from app.storage import get_storage
@@ -26,11 +27,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         storage = None
     try:
         # 미사용 에셋을 주기적으로 정리한다. 서버가 종료되면 함께 멈춘다.
-        async with background_cleanup(
-            database,
-            storage,
-            interval_seconds=settings.cleanup_interval_seconds,
-            retention=timedelta(hours=settings.asset_retention_hours),
+        async with (
+            background_generations(database, storage, settings),
+            background_cleanup(
+                database,
+                storage,
+                interval_seconds=settings.cleanup_interval_seconds,
+                retention=timedelta(hours=settings.asset_retention_hours),
+            ),
         ):
             yield
     finally:

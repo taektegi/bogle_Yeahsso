@@ -3,6 +3,7 @@
 | 항목 | 내용 |
 |---|---|
 | 작성일 | 2026-10-05 |
+| 친구 만들기 변경 | 2026-10-09 사용자 결정: OpenRouter 1단계 생성, 성격 4개, 기존 소개 문구 8개. 구현은 `docs/friend-creation-implementation.md` 참고 |
 | 상태 | **백엔드 확정안 (v1)** — 프론트엔드 확인 요청 |
 | 대상 | 프론트엔드 개발자 (요청서: 생성 작업·친구·프로필·집·모션·주문 API 요청) |
 | 근거 문서 | `aidlc-docs/inception/requirements/requirements.md` (이하 `D-xx`, `FR-xx`, `OI-xx`는 이 문서의 번호) |
@@ -179,7 +180,7 @@
 ```
 
 - 같은 `Idempotency-Key`로 다시 보내면 **같은 작업**을 `200`으로, 그 시점의 상태와 함께 돌려줍니다. 중복 클릭, 백그라운드 복귀 후 재요청에서도 작업은 하나만 생깁니다.
-- 서버가 이미지를 보내는 OpenRouter 및 선택 모델의 처리 제공자는 시연용 계정 한정으로 허용된 상태입니다 (D-11, D-25).
+- 외부 AI는 OpenRouter의 OpenAI 제공자를 통해 한 번 호출합니다. 모델은 `openai/gpt-image-2.5-flare`, 품질은 `medium`, 정사각형·투명 배경입니다 (2026-10-09 결정). 시연용 계정 한정입니다 (D-11).
 
 **조회** `GET /v1/generations/{jobId}`
 
@@ -230,6 +231,10 @@
 | `invalid_source_image` | AI가 입력 이미지를 읽을 수 없음 | false |
 | `generation_timeout` | 서버 작업 시간 초과 | true |
 | `generation_unavailable` | 일시적 서버·외부 서비스 장애 | true |
+| `generation_interrupted` | 서버 재시작 등으로 처리 중 작업이 중단됨 | true |
+| `generation_invalid_result` | 결과가 손상되거나 투명 PNG 검사를 통과하지 못함 | true |
+
+키·결제·권한 설정 오류의 `generation_unavailable`은 `retryable: false`입니다. 설정을 바로잡아야 합니다.
 
 - 모델이 못 만드는 경우(`generation_rejected`)와 서버 장애(`generation_unavailable`)는 코드로 구분됩니다.
 - **재시도 방법**: `retryable: true`면 같은 `sourceAssetId`로 **새 `Idempotency-Key`를 붙여 `POST /v1/generations`를 다시** 호출합니다 (새 작업이 만들어짐). 같은 키로 재호출하면 같은(실패한) 작업이 그대로 돌아옵니다. 실패한 작업을 다시 돌리는 별도 API는 없습니다 (FR-04.7).
@@ -239,7 +244,7 @@
 - 응답 `200`은 서버가 판단한 **최종 상태**입니다: `{"jobId": "...", "status": "cancelled" | "succeeded" | "failed"}`.
 - 취소와 완료가 동시에 일어나면 `succeeded`가 올 수 있습니다. 이때 앱은 **사용자가 취소한 시도의 늦은 결과로 다음 화면에 넘어가지 않아야** 합니다 (FR-04.5). 이미 끝난 작업을 취소해도 오류 없이 현재 최종 상태를 돌려줍니다.
 - 앱이 화면을 떠난 것과 서버 작업 취소는 별개입니다. 서버는 `cancel`을 받았을 때만 작업을 취소합니다.
-- 취소하면 해당 작업이 만든 결과 파일은 즉시 삭제됩니다 (8절).
+- 취소 후 도착한 결과는 성공으로 게시하지 않고 삭제 대상으로 표시합니다. 정리 작업이 파일 삭제를 재시도합니다. 이미 성공한 작업은 취소 API로 결과를 지우지 않습니다.
 
 **시간 한도**
 - 서버 작업 최대 시간은 **4분**입니다. 처리 시작 후 4분이 지나면 `failed`(`generation_timeout`, `retryable: true`)로 끝납니다.
@@ -264,18 +269,16 @@
 | ~~복구~~ | ❌ | D-21 |
 
 ### 성격 유형 목록
-`GET /v1/personality-types` → `{"items": [{"code": "cheerful", "label": "활발하고 씩씩해요"}, ...]}`
+`GET /v1/personality-types` → `{"items": [{"code": "cheerful_curious", "label": "활발하고 호기심이 많아요"}, ...]}`
 
-초기 목록은 아래 6개입니다. 순서가 곧 화면 표시 순서입니다.
+2026-10-09 사용자 결정으로 현재 앱의 아래 4개를 사용합니다. 순서가 곧 화면 표시 순서입니다.
 
 | `code` | `label` |
 |---|---|
-| `cheerful` | 활발하고 씩씩해요 |
-| `gentle` | 다정하고 따뜻해요 |
-| `curious` | 호기심이 많아요 |
-| `shy` | 수줍음이 많아요 |
-| `calm` | 느긋하고 차분해요 |
-| `playful` | 장난꾸러기예요 |
+| `cheerful_curious` | 활발하고 호기심이 많아요 |
+| `quiet_brave` | 조용하지만 용감해요 |
+| `gentle_smiling` | 다정하고 잘 웃어요 |
+| `imaginative` | 엉뚱한 상상가예요 |
 
 - 목록은 **서버가 관리**하므로 문구와 항목이 바뀔 수 있습니다. 앱은 **응답 목록을 그대로 표시**하고 `code`를 하드코딩하지 마세요. 항목이 바뀌어도 이미 만든 친구의 `personalityType`은 그대로이며, 응답의 `personalityLabel`로 표시 문구를 받을 수 있습니다.
 
@@ -285,7 +288,7 @@
 {
   "generationJobId": "9b1d...",
   "name": "구름이",
-  "personalityType": "calm",
+  "personalityType": "imaginative",
   "favoriteThings": ["구름", "사과"],
   "speechStyle": "해요체"
 }
@@ -309,9 +312,9 @@
 {
   "id": "5d0e...",
   "name": "구름이",
-  "personalityType": "calm",
-  "personalityLabel": "느긋하고 차분해요",
-  "introduction": "하늘 위에서 놀다 왔어!",
+  "personalityType": "imaginative",
+  "personalityLabel": "엉뚱한 상상가예요",
+  "introduction": "안녕! 이제부터 내가 너의 친구야~",
   "favoriteThings": ["구름", "사과"],
   "speechStyle": "해요체",
   "source":    {"assetId": "...", "url": "...", "expiresAt": "...", "contentType": "image/jpeg", "width": 1200, "height": 900},
@@ -325,7 +328,7 @@
 
 - 요청서 제안에서 **빠진 필드**: `level`, `memories`, `sleepSchedule`, `isFavorite`, `revision` (모두 범위 밖).
 - `source`(업로드 원본)는 **항상 포함**됩니다(서버에서 만든 친구는 항상 값이 있고, 원본이 없는 데이터만 `null`입니다). 집 벽의 그림 등으로 쓰셔도 되고, 안 쓰면 무시하면 됩니다 (요청서가 물은 원본의 용도에 대한 답: 서버는 원본을 친구가 있는 동안 보관하고 화면 사용을 막지 않습니다).
-- `introduction`은 저장 직후 서버가 소개 문구(**최대 70자**)를 AI로 만들어 응답에 넣습니다. 서버의 대기 한도는 **10초**이며, **실패하면 친구 저장은 성공하고 `introduction`은 빈 문자열**입니다. 앱은 빈 문자열이면 기본 소개문을 보여 주세요 (FR-05.4). 그래서 `POST /v1/characters`는 **최대 약 10초 이상** 걸릴 수 있으니 앱의 요청 시간 한도는 **20초 이상**으로 잡아 주세요.
+- `introduction`은 현재 앱의 기존 문구 8개 중 서버가 한 번 골라 친구와 같은 트랜잭션으로 저장합니다. 소개 AI 호출과 별도 10초 대기는 없습니다. 저장 재전송은 같은 문구를 반환합니다 (2026-10-09 결정, FR-05.4).
 - 이미지 URL은 60분 뒤 만료되므로 3.1절의 갱신 방법을 따르세요.
 - `face`는 생성 결과와 같은 저장값이며 다시 분석하지 않습니다. 분석 실패 시 `null`이고 친구 저장·조회에는 영향이 없습니다.
 
@@ -335,7 +338,7 @@
 |---|---|
 | 성공 | `201` + Character |
 | 같은 `Idempotency-Key` 재요청 | `200` + 같은 친구 (두 번 만들어지지 않음) |
-| 같은 키 재요청이 소개문 생성 중에 도착 | `200` + 그 시점의 친구 (`introduction`이 비어 있을 수 있음. 앱은 빈 문자열이면 기본 소개문을 보여 주면 됨) |
+| 같은 키 요청이 동시에 도착 | 저장 트랜잭션이 끝난 뒤 `200` + 같은 친구·소개 문구 |
 | 작업이 아직 `succeeded`가 아님 | 409 `generation_not_ready` |
 | 다른 키로 이미 사용한 작업 | 409 `generation_job_already_used` |
 | 남의 작업, 없는 작업 | 404 `not_found` |
@@ -463,7 +466,7 @@
 | 생성 작업 서버 최대 시간 | 4분 (앱 UI 한도 5분과 별개) |
 | 생성 조회 간격 `pollAfterMs` | 2000 |
 | 작업 조회 가능·미사용 파일 보관 | 24시간 |
-| 소개문 생성 대기 | 10초 (실패 시 빈 문자열) |
+| 소개문 생성 대기 | 없음 (기존 8개 중 한 번 골라 저장) |
 | 대화 AI 대기 | 15초 (초과 시 스크립트 대사) |
 | 대화 입력 길이 | 공백 제거 후 1–200자 |
 | 대화 AI 문맥 | 최근 20개 메시지 |
@@ -475,7 +478,7 @@
 | 소개문 | 최대 70자 |
 | 좋아하는 것 | 1–8개, 현재 앱 선택지 8개 |
 | 말투 | `~지요!`, `해요체`, `반말` |
-| 성격 유형 | 서버 목록 6개 (`GET /v1/personality-types`) |
+| 성격 유형 | 서버 목록 4개 (`GET /v1/personality-types`) |
 | 수면 | 한국 시간 22:00–06:00 고정, 서버 판정 |
 | 얼굴 좌표 분석 | 생성 PNG 직후 1회, 실패 시 `face: null`로 계속 진행 |
 

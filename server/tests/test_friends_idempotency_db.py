@@ -13,6 +13,15 @@ UNIQUE = ("user_id", "idempotency_key")
 
 
 def friend_values(conn, user, key: str | None, *, name: str = "구름이", job=None) -> dict:
+    if job is not None:
+        source = make_asset(conn, user, "source")[0]
+        conn.execute(
+            "insert into public.generation_jobs "
+            "(id,user_id,source_asset_id,source_type,idempotency_key,"
+            "request_fingerprint,model,prompt_version) "
+            "values (%s,%s,%s,'drawing',%s,'test','test','test') on conflict(id) do nothing",
+            (job, user, source, str(job)),
+        )
     values = {
         "user_id": user,
         "name": name,
