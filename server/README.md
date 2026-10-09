@@ -219,7 +219,7 @@ python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지
 | `SUPABASE_JWT_SECRET` | 레거시 HS256 토큰 검증 | HS256 토큰 거부 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Storage 서명 URL 생성 | 이미지를 돌려주는 API가 503 |
 | `DATABASE_URL` | Postgres 직접 연결 | DB를 쓰는 API가 503 (서버는 뜸) |
-| `OPENROUTER_API_KEY` | 이미지·대화·소개 생성과 얼굴 분석 | 얼굴 분석 비활성 |
+| `OPENROUTER_API_KEY` | 이미지·대화 생성과 얼굴 분석. 소개는 기존 문구 선택 | 새 친구 생성 요청 거부, 얼굴 분석 비활성 |
 | `OPENROUTER_FACE_MODEL` | 얼굴 분석용 이미지 입력 모델 ID. 기본 `openai/gpt-6-luna` | 기본값 사용 |
 | `FACE_ANALYSIS_TIMEOUT_SECONDS` | 얼굴 분석 제한 시간. 기본 120초 | 기본값 사용 |
 | `CLEANUP_INTERVAL_SECONDS` | 미사용 에셋 정리 주기(초). 기본 3600, 0이면 끔 | 기본값 사용. DB·Storage 설정이 없으면 정리는 자동으로 꺼짐 |
