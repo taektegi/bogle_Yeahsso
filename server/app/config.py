@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     # Postgres 직접 연결 문자열. Supabase 대시보드의 Connection string(pooler)을 쓴다.
     database_url: SecretStr | None = None
 
+    # 이미지·대화·소개 생성은 OpenRouter를 쓴다 (D-25). 얼굴 분석은 OI-03에서
+    # 확정한 모델을 쓰며, 키가 없으면 얼굴 분석만 건너뛴다.
+    openrouter_api_key: SecretStr | None = None
+    openrouter_face_model: str = "openai/gpt-6-luna"
+    face_analysis_timeout_seconds: float = 120.0
+
     storage_bucket: str = "bogle-media"
     # 앱에 주는 서명 URL의 유효 시간 (초). API 계약: 60분
     signed_url_ttl_seconds: int = 3600

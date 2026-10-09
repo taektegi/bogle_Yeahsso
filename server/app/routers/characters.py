@@ -13,6 +13,7 @@ from app.assets import AssetRow, ImageRef, image_refs
 from app.auth import CurrentUserDep
 from app.clock import NowDep
 from app.errors import ERROR_RESPONSES, ApiError
+from app.face_analysis import FaceMap
 from app.personality import personality_label
 from app.repositories.characters import (
     CharacterRecord,
@@ -41,6 +42,8 @@ class CharacterOut(CamelModel):
     art: ImageRef
     thumbnail: ImageRef
     accent_argb: int
+    # 분석 실패·미설정이면 null이고, 친구 조회는 정상이다.
+    face: FaceMap | None
     created_at: datetime
 
 
@@ -67,6 +70,7 @@ def _to_out(record: CharacterRecord, refs: dict[UUID, ImageRef]) -> CharacterOut
         art=refs[record.art.id],
         thumbnail=refs[record.thumbnail.id],
         accent_argb=record.accent_argb,
+        face=record.face,
         created_at=record.created_at,
     )
 
