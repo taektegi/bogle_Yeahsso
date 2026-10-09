@@ -3,9 +3,15 @@
 FastAPI로 만든 보글 백엔드 서버입니다. 기준 문서는 `aidlc-docs/inception/requirements/requirements.md`입니다.
 API 계약의 기준은 서버를 띄우면 열리는 **`/docs`(OpenAPI)** 입니다.
 
+친구 만들기(FR-03~05)의 구현·설정·작업 정책은 [친구 만들기 구현 문서](../docs/friend-creation-implementation.md)를 참고하세요.
+원본 업로드, OpenRouter 이미지 생성, 상태·취소, 성격 목록과 친구 저장 API가 추가되었습니다.
+`server/.env`에 `OPENROUTER_API_KEY`를 입력합니다. 기존 `openrouter_key`도 인식합니다.
+내부 워커와 메모리 횟수 제한을 위해 서버는 **`--workers 1`**로 실행하세요.
+`uv sync --locked --extra dev`로 잠금 파일의 의존성을 설치할 수 있습니다.
+
 ## AI 연결 기준
 
-- 이미지·대화·소개 생성과 생성 PNG의 얼굴 좌표 분석은 서버에서 **OpenRouter**를 통해 호출합니다(D-25).
+- 이미지·대화 생성과 생성 PNG의 얼굴 좌표 분석은 서버에서 **OpenRouter**를 통해 호출합니다(D-25). 소개 문구는 기존 8개 중 하나를 저장합니다.
 - 얼굴 분석은 `openai/gpt-6-luna`와 검수한 예시 6장을 사용합니다. `OPENROUTER_API_KEY`가 있어야 활성화되며, 실패해도 친구 생성은 성공합니다. 필요하면 `OPENROUTER_FACE_MODEL`로 교체할 수 있지만 해당 모델의 호출 설정 호환성을 확인해야 합니다.
 - 얼굴 분석 규격과 생성 파이프라인 통합 지점은 `docs/face-analysis-design.md`에 있습니다.
 - 기존 **OpenAI Moderation** 입력·출력 검사는 별도 직접 호출로 유지하며 OpenRouter 키와 혼용하지 않습니다.

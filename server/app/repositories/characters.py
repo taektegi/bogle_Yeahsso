@@ -150,6 +150,18 @@ class CharacterRepository:
                 for column in ("source_asset_id", "art_asset_id", "thumbnail_asset_id")
                 if row[column] is not None
             ]
+            # 같은 원본의 다른 생성 작업까지 지워 삭제 후 늦은 결과가 저장되지 않게 한다.
+            jobs = conn.execute(
+                "delete from public.generation_jobs where user_id=%s and source_asset_id=%s "
+                "returning art_asset_id,thumbnail_asset_id",
+                (user_id, row["source_asset_id"]),
+            ).fetchall()
+            asset_ids.extend(
+                asset_id
+                for job in jobs
+                for asset_id in (job["art_asset_id"], job["thumbnail_asset_id"])
+                if asset_id is not None
+            )
             conn.execute(
                 "delete from public.friends where id = %(character_id)s and user_id = %(user_id)s",
                 params,

@@ -268,7 +268,7 @@ def test_other_tables_can_protect_assets_through_asset_references(
 
 
 def test_an_asset_that_becomes_used_during_the_run_is_not_deleted(
-    database, seed_conn, storage
+    database, seed_conn, storage, monkeypatch
 ) -> None:
     user = make_user(seed_conn)
     target, _ = make_asset(seed_conn, user, "art")
@@ -283,7 +283,14 @@ def test_an_asset_that_becomes_used_during_the_run_is_not_deleted(
             (user, target, thumbnail),
         )
 
-    storage.on_remove = use_the_asset_now
+    original_select = cleanup._select_batch
+
+    def select_then_use(db, retention):
+        batch = original_select(db, retention)
+        use_the_asset_now()
+        return batch
+
+    monkeypatch.setattr(cleanup, "_select_batch", select_then_use)
 
     result = cleanup_assets(database, storage, RETENTION)
 

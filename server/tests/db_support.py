@@ -38,6 +38,11 @@ class FakeStorage:
     def upload(self, path: str, data: bytes, content_type: str) -> None:
         self.uploaded[path] = (data, content_type)
 
+    def download(self, path: str) -> bytes:
+        if self.fail or path in self.missing or path not in self.uploaded:
+            raise StorageError("file unavailable")
+        return self.uploaded[path][0]
+
     def remove(self, paths: Sequence[str]) -> None:
         if self.on_remove:
             self.on_remove()

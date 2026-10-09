@@ -26,6 +26,7 @@ import anyio.to_thread
 import psycopg
 
 from app.db import Database
+from app.repositories.creation import CreationRepository
 from app.storage import StorageClient, StorageError
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,9 @@ logger = logging.getLogger(__name__)
 ASSET_REFERENCES: list[str] = [
     "exists (select 1 from public.friends f"
     " where f.source_asset_id = a.id or f.art_asset_id = a.id or f.thumbnail_asset_id = a.id)",
+    "exists (select 1 from public.generation_jobs j where "
+    "(j.source_asset_id=a.id or j.art_asset_id=a.id or j.thumbnail_asset_id=a.id) "
+    "and (j.status in ('queued','processing') or j.created_at>now()-interval '24 hours'))",
 ]
 
 BATCH_SIZE = 100
@@ -83,19 +87,30 @@ def _delete_rows(db: Database, asset_ids: list) -> int:
 
 def cleanup_assets(db: Database, storage: StorageClient, retention: timedelta) -> CleanupResult:
     """미사용 에셋을 한 번 정리한다. 동기 함수라서 스레드에서 실행한다."""
+    CreationRepository(db).cleanup_jobs(retention)
     deleted = 0
     for _ in range(MAX_BATCHES_PER_RUN):
         batch = _select_batch(db, retention)
         if not batch:
             return CleanupResult(deleted=deleted)
         try:
-            storage.remove([path for _, path in batch])
+            # 업로드→생성·친구 저장과 경합해도 사용 중 파일은 삭제하지 않는다.
+            with db.connection() as conn:
+                locked = conn.execute(
+                    "select a.id,a.storage_path from public.assets a where a.id=any(%s) "
+                    f"and {_unused_clause()} for update skip locked",
+                    ([asset_id for asset_id, _ in batch],),
+                ).fetchall()
+                storage.remove([a["storage_path"] for a in locked])
+                removed = conn.execute(
+                    f"delete from public.assets a where a.id=any(%s) and {_unused_clause()}",
+                    ([a["id"] for a in locked],),
+                ).rowcount
         except StorageError as exc:
             # 같은 묶음을 계속 두드리지 않도록 이번 주기는 여기서 멈춘다.
             # 행이 남아 있으니 다음 주기에 다시 시도한다.
             logger.warning("asset cleanup could not remove files, will retry: %s", exc)
             return CleanupResult(deleted=deleted, incomplete=True)
-        removed = _delete_rows(db, [asset_id for asset_id, _ in batch])
         deleted += removed
         if removed < len(batch):
             # 일부 행이 그 사이 쓰이기 시작했거나 다른 프로세스가 먼저 지웠다.
