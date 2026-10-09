@@ -3,6 +3,13 @@
 FastAPI로 만든 보글 백엔드 서버입니다. 기준 문서는 `aidlc-docs/inception/requirements/requirements.md`입니다.
 API 계약의 기준은 서버를 띄우면 열리는 **`/docs`(OpenAPI)** 입니다.
 
+## AI 연결 기준
+
+- 이미지·대화·소개 생성과 생성 PNG의 얼굴 좌표 분석은 서버에서 **OpenRouter**를 통해 호출합니다(D-25).
+- 얼굴 분석은 `openai/gpt-6-luna`와 검수한 예시 6장을 사용합니다. `OPENROUTER_API_KEY`가 있어야 활성화되며, 실패해도 친구 생성은 성공합니다. 필요하면 `OPENROUTER_FACE_MODEL`로 교체할 수 있지만 해당 모델의 호출 설정 호환성을 확인해야 합니다.
+- 얼굴 분석 규격과 생성 파이프라인 통합 지점은 `docs/face-analysis-design.md`에 있습니다.
+- 기존 **OpenAI Moderation** 입력·출력 검사는 별도 직접 호출로 유지하며 OpenRouter 키와 혼용하지 않습니다.
+
 ## 실행
 
 Python 3.11 이상이 필요합니다. 모든 명령은 `server/` 폴더에서 실행합니다.
@@ -206,6 +213,9 @@ python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지
 | `SUPABASE_JWT_SECRET` | 레거시 HS256 토큰 검증 | HS256 토큰 거부 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Storage 서명 URL 생성 | 이미지를 돌려주는 API가 503 |
 | `DATABASE_URL` | Postgres 직접 연결 | DB를 쓰는 API가 503 (서버는 뜸) |
+| `OPENROUTER_API_KEY` | 이미지·대화·소개 생성과 얼굴 분석 | 얼굴 분석 비활성 |
+| `OPENROUTER_FACE_MODEL` | 얼굴 분석용 이미지 입력 모델 ID. 기본 `openai/gpt-6-luna` | 기본값 사용 |
+| `FACE_ANALYSIS_TIMEOUT_SECONDS` | 얼굴 분석 제한 시간. 기본 120초 | 기본값 사용 |
 | `CLEANUP_INTERVAL_SECONDS` | 미사용 에셋 정리 주기(초). 기본 3600, 0이면 끔 | 기본값 사용. DB·Storage 설정이 없으면 정리는 자동으로 꺼짐 |
 | `ASSET_RETENTION_HOURS` | 미사용 에셋 보관 시간. 기본 24 | 기본값 사용 |
 

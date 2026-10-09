@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 from app.assets import AssetRow
 from app.clock import get_now
 from app.config import Settings, get_settings
+from app.face_analysis import FaceMap
 from app.repositories.characters import CharacterRecord, get_character_repository
 from app.storage import get_storage
 from tests.conftest import JWT_SECRET, SUPABASE_URL
@@ -41,6 +42,18 @@ def record(name: str = "구름이", personality_type: str = "calm", with_source:
         introduction="하늘 위에서 놀다 왔어!",
         accent_argb=4289974783,
         created_at=datetime(2026, 10, 5, 5, 1, tzinfo=UTC),
+        face=FaceMap.model_validate(
+            {
+                "version": 1,
+                "size": [640, 480],
+                "facing": "front",
+                "head": [160, 60, 320, 300],
+                "eyes": [[250, 160, 24], [390, 160, 24]],
+                "mouth": [320, 260, 90, 36],
+                "cheeks": [[225, 225, 28], [415, 225, 28]],
+            },
+            context={"expected_size": (640, 480)},
+        ),
         source=asset(USER_ID, "source") if with_source else None,
         art=asset(USER_ID, "art"),
         thumbnail=asset(USER_ID, "thumbnail"),
@@ -83,7 +96,7 @@ def test_list_response_shape_is_camel_case(app, client: TestClient, storage) -> 
     [character] = body["items"]
     assert set(character) == {
         "id", "name", "personalityType", "personalityLabel", "introduction", "favoriteThings",
-        "speechStyle", "source", "art", "thumbnail", "accentArgb", "createdAt",
+        "speechStyle", "source", "art", "thumbnail", "accentArgb", "face", "createdAt",
     }  # fmt: skip
     assert character["id"] == str(item.id)
     assert character["name"] == "구름이"
@@ -92,6 +105,8 @@ def test_list_response_shape_is_camel_case(app, client: TestClient, storage) -> 
     assert character["favoriteThings"] == ["구름", "사과"]
     assert character["speechStyle"] == "해요체"
     assert character["accentArgb"] == 4289974783
+    assert character["face"]["version"] == 1
+    assert character["face"]["size"] == [640, 480]
     assert character["createdAt"] == "2026-10-05T05:01:00Z"
 
 
