@@ -74,11 +74,41 @@ def test_main_does_not_overwrite_result_without_force(tmp_path: Path) -> None:
     output_path = tmp_path / "character.ai.face.json"
     image_path.write_bytes(png_header(100, 100))
     output_path.write_text("keep", encoding="utf-8")
+    analyzer = FakeAnalyzer(face(100, 100))
 
     exit_code = main(
         [str(image_path), "--output", str(output_path)],
-        analyzer=FakeAnalyzer(face(100, 100)),
+        analyzer=analyzer,
     )
 
     assert exit_code == 2
     assert output_path.read_text(encoding="utf-8") == "keep"
+    assert analyzer.calls == []
+
+
+def test_force_analyzes_once_and_replaces_existing_result(tmp_path: Path) -> None:
+    image_path = tmp_path / "character.png"
+    output_path = tmp_path / "character.ai.face.json"
+    image_path.write_bytes(png_header(100, 100))
+    output_path.write_text("old", encoding="utf-8")
+    analyzer = FakeAnalyzer(face(100, 100))
+
+    assert main([str(image_path), "--output", str(output_path), "--force"], analyzer=analyzer) == 0
+    assert len(analyzer.calls) == 1
+    assert json.loads(output_path.read_text())["size"] == [100, 100]
+
+
+def test_output_created_during_analysis_is_not_overwritten(tmp_path: Path) -> None:
+    image_path = tmp_path / "character.png"
+    output_path = tmp_path / "character.ai.face.json"
+    image_path.write_bytes(png_header(100, 100))
+
+    class ConcurrentAnalyzer(FakeAnalyzer):
+        def analyze(self, image: bytes, **kwargs) -> FaceMap:
+            output_path.write_text("other-run", encoding="utf-8")
+            return super().analyze(image, **kwargs)
+
+    analyzer = ConcurrentAnalyzer(face(100, 100))
+    assert main([str(image_path), "--output", str(output_path)], analyzer=analyzer) == 2
+    assert output_path.read_text() == "other-run"
+    assert len(analyzer.calls) == 1

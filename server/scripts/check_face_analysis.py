@@ -75,6 +75,13 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None, *, analyzer: FaceAnalyzer | None = None) -> int:
     args = _parser().parse_args(argv)
 
+    if args.output is not None and args.output.exists() and not args.force:
+        print(
+            f"출력 파일이 이미 있습니다: {args.output} (--force로 덮어쓸 수 있습니다)",
+            file=sys.stderr,
+        )
+        return 2
+
     try:
         image, width, height = read_png(args.image)
     except PngReadError as exc:
@@ -121,15 +128,17 @@ def main(argv: Sequence[str] | None = None, *, analyzer: FaceAnalyzer | None = N
         print(rendered, end="")
         return 0
 
-    if args.output.exists() and not args.force:
+    try:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        # 분석 중 다른 실행이 파일을 만들었어도 --force 없이는 덮어쓰지 않는다.
+        with args.output.open("w" if args.force else "x", encoding="utf-8") as output:
+            output.write(rendered)
+    except FileExistsError:
         print(
             f"출력 파일이 이미 있습니다: {args.output} (--force로 덮어쓸 수 있습니다)",
             file=sys.stderr,
         )
         return 2
-    try:
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(rendered, encoding="utf-8")
     except OSError as exc:
         print(
             f"결과를 저장할 수 없습니다: {exc.strerror or type(exc).__name__}",
