@@ -1,7 +1,10 @@
 """실제 PostgreSQL을 사용하는 업로드→생성→저장과 소유권·경합 검증."""
 
 import asyncio
-from datetime import timedelta
+import threading
+import time
+from datetime import UTC, datetime, timedelta
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
@@ -12,6 +15,7 @@ from app.cleanup import cleanup_assets
 from app.config import Settings, get_settings
 from app.db import get_database
 from app.errors import ApiError
+from app.face_analysis import validate_face_payload
 from app.friend_settings import INTRODUCTIONS, SaveFriendIn
 from app.generation_worker import GenerationWorker
 from app.repositories.characters import CharacterRepository
@@ -38,7 +42,12 @@ def creation(database, seed_conn):
     user = make_user(seed_conn)
     repo = CreationRepository(database)
     storage = FakeStorage()
-    settings = Settings(_env_file=None, openrouter_api_key="fake-key", generation_timeout_seconds=3)
+    settings = Settings(
+        _env_file=None,
+        openrouter_api_key="fake-key",
+        openrouter_face_model="",
+        generation_timeout_seconds=3,
+    )
     yield user, repo, storage, settings
     # 각 테스트가 남긴 대기 작업을 다음 테스트의 전역 워커가 처리하지 않게 격리한다.
     seed_conn.execute("delete from auth.users where id=%s", (user,))
@@ -53,11 +62,11 @@ def uploaded(creation, data=None):
     return asset
 
 
-def complete(creation, database, asset=None, provider=None):
+def complete(creation, database, asset=None, provider=None, analyzer=None):
     user, repo, storage, settings = creation
     asset = asset or uploaded(creation)
     row, _ = repo.enqueue(user, asset.id, "drawing", str(uuid4()))
-    worker = GenerationWorker(database, storage, settings, provider or FakeProvider())
+    worker = GenerationWorker(database, storage, settings, provider or FakeProvider(), analyzer)
     assert repo.acquire_lease(worker.owner)
     job = repo.claim(worker.owner)
     assert job["id"] == row["id"]
@@ -298,3 +307,111 @@ def test_worker_max_two_and_result_source_mapping(creation, database):
     asyncio.run(scenario())
     for key, source in expected.items():
         assert repo.job(user, key)["source_asset_id"] == source
+
+
+FACE = {
+    "version": 1,
+    "size": [256, 256],
+    "facing": "front",
+    "head": [40, 30, 176, 196],
+    "eyes": [[95, 100, 12], [165, 100, 12]],
+    "mouth": [130, 160, 40, 15],
+    "cheeks": [[90, 140, 10], [170, 140, 10]],
+}
+
+
+class FakeFaceAnalyzer:
+    def __init__(self, mode="success", delay=0):
+        self.mode = mode
+        self.delay = delay
+        self.calls = []
+
+    def analyze(self, image, *, width, height, content_type):
+        self.calls.append((image, width, height, content_type, threading.get_ident()))
+        time.sleep(self.delay)
+        if self.mode == "error":
+            raise RuntimeError("private provider failure")
+        if self.mode == "none":
+            return None
+        return validate_face_payload(FACE, width=width, height=height)
+
+
+def test_face_flows_from_generated_png_to_job_response_and_saved_friend(app, creation, database):
+    user, repo, storage, settings = creation
+    source = uploaded(creation, png(color=(100, 100, 100, 255)))
+    generated = png(color=(240, 180, 200, 255))
+    analyzer = FakeFaceAnalyzer()
+    job = complete(creation, database, source, FakeProvider(generated), analyzer)
+    assert job["face"] == FACE
+    [(data, width, height, content_type, thread)] = analyzer.calls
+    assert data == generated and (width, height, content_type) == (256, 256, "image/png")
+    assert thread != threading.get_ident()
+
+    app.dependency_overrides[get_database] = lambda: database
+    app.dependency_overrides[get_storage] = lambda: storage
+    app.dependency_overrides[get_settings] = lambda: settings
+    app.dependency_overrides[get_current_user] = lambda: CurrentUser(user)
+    client = TestClient(app)
+    assert client.get(f"/v1/generations/{job['id']}").json()["face"] == FACE
+    key = {"Idempotency-Key": "save-face-001"}
+    body = payload(job).model_dump(mode="json", by_alias=True)
+    first = client.post("/v1/characters", json=body, headers=key)
+    assert first.status_code == 201 and first.json()["face"] == FACE
+    replay = client.post("/v1/characters", json=body, headers=key)
+    assert replay.status_code == 200 and replay.json() == first.json()
+    assert client.get(f"/v1/characters/{first.json()['id']}").json()["face"] == FACE
+    assert client.get("/v1/characters").json()["items"][0]["face"] == FACE
+    assert len(analyzer.calls) == 1  # 저장·집 조회에서 다시 분석하지 않는다.
+
+
+@pytest.mark.parametrize("mode,delay", [("error", 0), ("none", 0), ("success", 0.15)])
+def test_face_failure_or_late_result_keeps_generation_and_friend_successful(
+    app, creation, database, mode, delay
+):
+    user, repo, storage, settings = creation
+    settings.face_analysis_timeout_seconds = 0.03
+    analyzer = FakeFaceAnalyzer(mode, delay)
+    job = complete(creation, database, analyzer=analyzer)
+    assert job["status"] == "succeeded" and job["face"] is None
+    friend_id, _ = repo.save_friend(user, payload(job), "save-without-face-001")
+    assert CharacterRepository(database).get_for_user(user, friend_id).face is None
+    app.dependency_overrides[get_database] = lambda: database
+    app.dependency_overrides[get_storage] = lambda: storage
+    app.dependency_overrides[get_current_user] = lambda: CurrentUser(user)
+    response = TestClient(app).get(f"/v1/generations/{job['id']}")
+    assert response.status_code == 200 and response.json()["face"] is None
+    assert repo.job(user, job["id"])["face"] is None  # 늦게 완료된 분석도 반영하지 않는다.
+
+
+def test_face_analyzer_is_initialized_once_and_reused(creation, database, monkeypatch):
+    user, repo, storage, settings = creation
+    analyzer = FakeFaceAnalyzer()
+    built = []
+
+    def build(received_settings):
+        built.append(received_settings)
+        return analyzer
+
+    monkeypatch.setattr("app.generation_worker.build_face_analyzer", build)
+    worker = GenerationWorker(database, storage, settings, FakeProvider())
+    repo.acquire_lease(worker.owner)
+    try:
+        for _ in range(2):
+            source = uploaded(creation)
+            repo.enqueue(user, source.id, "drawing", str(uuid4()))
+            job = repo.claim(worker.owner)
+            asyncio.run(worker.process(job))
+            assert repo.job(user, job["id"])["face"] == FACE
+    finally:
+        repo.release_lease(worker.owner)
+    assert built == [settings] and len(analyzer.calls) == 2
+
+
+def test_face_analysis_skipped_when_only_file_storage_budget_remains():
+    analyzer = FakeFaceAnalyzer()
+    settings = Settings(_env_file=None)
+    worker = GenerationWorker(None, None, settings, FakeProvider(), analyzer)
+    job = {"id": uuid4(), "started_at": datetime.now(UTC) - timedelta(seconds=220)}
+    image = SimpleNamespace(art=png(), width=256, height=256)
+    assert asyncio.run(worker.analyze_face(job, image)) is None
+    assert analyzer.calls == []

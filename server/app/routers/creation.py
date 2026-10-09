@@ -11,6 +11,7 @@ from app.auth import CurrentUserDep
 from app.config import Settings, get_settings
 from app.db import DatabaseDep
 from app.errors import ERROR_RESPONSES, ApiError, service_unavailable
+from app.face_analysis import FaceMap
 from app.friend_settings import SaveFriendIn
 from app.idempotency import IdempotencyKeyHeader
 from app.images import MAX_UPLOAD_BYTES, InvalidImage, open_image
@@ -46,6 +47,7 @@ class GenerationOut(CamelModel):
     art: ImageRef | None = None
     thumbnail: ImageRef | None = None
     accent_argb: int | None = None
+    face: FaceMap | None = None
     error: JobError | None = None
 
 
@@ -69,6 +71,7 @@ def job_out(repo, storage, user_id, row):
             raise service_unavailable()
         result.art, result.thumbnail = refs[row["art_asset_id"]], refs[row["thumbnail_asset_id"]]
         result.accent_argb = row["accent_argb"]
+        result.face = FaceMap.model_validate(row["face"]) if row["face"] is not None else None
     return result
 
 
@@ -107,7 +110,6 @@ def upload_asset(
     "/generations",
     status_code=202,
     response_model=GenerationOut,
-    response_model_exclude_none=True,
     summary="친구 생성 작업 요청",
 )
 def create_generation(
@@ -131,7 +133,6 @@ def create_generation(
 @router.get(
     "/generations/{job_id}",
     response_model=GenerationOut,
-    response_model_exclude_none=True,
     summary="친구 생성 상태 조회",
 )
 def get_generation(job_id: UUID, user: CurrentUserDep, db: DatabaseDep, storage: StorageDep):
@@ -142,7 +143,6 @@ def get_generation(job_id: UUID, user: CurrentUserDep, db: DatabaseDep, storage:
 @router.post(
     "/generations/{job_id}/cancel",
     response_model=GenerationOut,
-    response_model_exclude_none=True,
     summary="친구 생성 취소",
 )
 def cancel_generation(job_id: UUID, user: CurrentUserDep, db: DatabaseDep, storage: StorageDep):
