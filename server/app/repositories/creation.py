@@ -5,6 +5,7 @@ from datetime import timedelta
 from uuid import UUID, uuid4
 
 import psycopg
+from psycopg.types.json import Jsonb
 
 from app.assets import AssetRow
 from app.db import Database
@@ -193,6 +194,7 @@ class CreationRepository:
                         "art_asset_id": job["art_asset_id"],
                         "thumbnail_asset_id": job["thumbnail_asset_id"],
                         "accent_argb": job["accent_argb"],
+                        "face": Jsonb(job["face"]) if job["face"] is not None else None,
                     },
                 )
                 return row["id"], new
@@ -248,12 +250,12 @@ class CreationRepository:
                 (code, message, retryable, user_id, job_id, owner, owner),
             )
 
-    def finish(self, user_id, job_id, owner, art, thumbnail, accent, timeout=240):
+    def finish(self, user_id, job_id, owner, art, thumbnail, accent, timeout=240, *, face=None):
         with self.db.connection() as conn:
             return (
                 conn.execute(
                     "update public.generation_jobs set status='succeeded',art_asset_id=%s,"
-                    "thumbnail_asset_id=%s,accent_argb=%s,finished_at=now() "
+                    "thumbnail_asset_id=%s,accent_argb=%s,face=%s,finished_at=now() "
                     "where user_id=%s and id=%s and status='processing' "
                     "and worker_owner=%s and started_at>now()-%s "
                     "and exists(select 1 from public.generation_worker_lease "
@@ -262,6 +264,7 @@ class CreationRepository:
                         art.id,
                         thumbnail.id,
                         accent,
+                        Jsonb(face) if face is not None else None,
                         user_id,
                         job_id,
                         owner,

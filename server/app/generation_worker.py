@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.errors import ApiError
+from app.face_analysis import analyze_face_best_effort, build_face_analyzer, face_to_json
 from app.image_provider import GenerationError, OpenRouterImages
 from app.images import InvalidImage, character_image, input_reference
 from app.repositories.creation import CreationRepository
@@ -16,15 +17,16 @@ logger = logging.getLogger(__name__)
 
 
 class GenerationWorker:
-    def __init__(self, db, storage, settings, provider=None):
+    def __init__(self, db, storage, settings, provider=None, analyzer=None):
         self.repo = CreationRepository(db)
         self.storage = storage
         self.settings = settings
         self.provider = provider or OpenRouterImages(settings)
+        self.analyzer = analyzer if analyzer is not None else build_face_analyzer(settings)
         self.owner = uuid4()
         self.tasks: dict[asyncio.Task, dict] = {}
 
-    def persist_images(self, job, image):
+    def persist_images(self, job, image, face=None):
         assets = []
         try:
             for kind, data, width, height in (
@@ -45,6 +47,7 @@ class GenerationWorker:
                 assets[1],
                 image.accent_argb,
                 self.settings.generation_timeout_seconds,
+                face=face,
             )
             if not accepted:
                 elapsed = (datetime.now(UTC) - job["started_at"]).total_seconds()
@@ -59,6 +62,35 @@ class GenerationWorker:
             if assets:
                 self.repo.discard_assets(job["user_id"], [a.id for a in assets])
             raise
+
+    async def analyze_face(self, job, image):
+        # 전체 4분 한도 안에서 파일 업로드·검증·성공 기록 시간을 남긴다.
+        elapsed = (datetime.now(UTC) - job["started_at"]).total_seconds()
+        reserve = min(25, self.settings.generation_timeout_seconds / 4)
+        budget = min(
+            120,
+            self.settings.face_analysis_timeout_seconds,
+            self.settings.generation_timeout_seconds - elapsed - reserve,
+        )
+        if budget <= 0:
+            return None
+        try:
+            face = await asyncio.wait_for(
+                asyncio.to_thread(
+                    analyze_face_best_effort,
+                    self.analyzer,
+                    image.art,
+                    width=image.width,
+                    height=image.height,
+                    content_type="image/png",
+                ),
+                timeout=budget,
+            )
+            return face_to_json(face)
+        except TimeoutError:
+            # 늦게 끝난 스레드의 결과는 사용하지 않는다. PNG 생성은 계속 성공할 수 있다.
+            logger.info("face analysis timed out jobId=%s", job["id"])
+            return None
 
     async def pipeline(self, job):
         source = await asyncio.to_thread(self.repo.source, job["user_id"], job["source_asset_id"])
@@ -76,7 +108,8 @@ class GenerationWorker:
             raise GenerationError(
                 "generation_invalid_result", "투명 배경 캐릭터를 만들지 못했어요.", True
             ) from None
-        await asyncio.to_thread(self.persist_images, job, image)
+        face = await self.analyze_face(job, image)
+        await asyncio.to_thread(self.persist_images, job, image, face)
 
     async def process(self, job):
         logger.info("generation processing jobId=%s", job["id"])
