@@ -2,6 +2,7 @@
 
 import base64
 import json
+import time
 from datetime import UTC, datetime
 from uuid import UUID
 
@@ -14,11 +15,13 @@ from app.clock import NowDep
 from app.errors import ERROR_RESPONSES, ApiError
 from app.idempotency import IdempotencyKey
 from app.rate_limit import limit_messages
-from app.repositories.messages import MessageRecord, MessageRepositoryDep
+from app.repositories.messages import MessageRecord, MessageRepository, MessageRepositoryDep
 from app.schemas import CamelModel
 from app.sleep import sleep_status
 
 router = APIRouter(prefix="/characters", tags=["chat"], responses=ERROR_RESPONSES)
+_REPLY_WAIT_TIMEOUT_SECONDS = 15.0
+_REPLY_POLL_INTERVAL_SECONDS = 0.2
 
 
 class MessageIn(CamelModel):
@@ -88,6 +91,28 @@ def _not_found() -> ApiError:
     return ApiError(404, "not_found", "친구를 찾을 수 없어요.")
 
 
+def _wait_for_reply(
+    repo: MessageRepository,
+    user_id: UUID,
+    character_id: UUID,
+    user_message: MessageRecord,
+    now: datetime,
+) -> MessageRecord | None:
+    """이미 진행 중인 요청의 답을 기다리고, 제한 시간이 지나면 None을 반환한다."""
+    age_seconds = max(0.0, (now - user_message.created_at).total_seconds())
+    remaining_seconds = max(0.0, _REPLY_WAIT_TIMEOUT_SECONDS - age_seconds)
+    deadline = time.monotonic() + remaining_seconds
+
+    while True:
+        reply = repo.get_reply(user_id, character_id, user_message.id)
+        if reply is not None:
+            return reply
+        remaining_seconds = deadline - time.monotonic()
+        if remaining_seconds <= 0:
+            return None
+        time.sleep(min(_REPLY_POLL_INTERVAL_SECONDS, remaining_seconds))
+
+
 @router.post(
     "/{character_id}/messages",
     response_model=MessagePairOut,
@@ -131,15 +156,20 @@ def send_message(
                 user_text=body.text,
             )
         else:
-            # 첫 요청이 AI 호출 중 종료됐거나 동시에 재전송된 경우에도 답을 완성한다.
-            reply = ChatReply(text=script_reply(profile, body.text), source="script")
-        assistant = repo.save_reply(
-            user.id,
-            character_id,
-            user_message.id,
-            reply.text,
-            reply.source,
-        )
+            # AI 호출 중인 첫 요청이 답을 저장할 때까지 기다린다.
+            assistant = _wait_for_reply(repo, user.id, character_id, user_message, now)
+            reply = None
+        if assistant is None:
+            # 첫 요청이 중단됐거나 답변 제한 시간을 넘긴 경우에만 스크립트로 복구한다.
+            if reply is None:
+                reply = ChatReply(text=script_reply(profile, body.text), source="script")
+            assistant = repo.save_reply(
+                user.id,
+                character_id,
+                user_message.id,
+                reply.text,
+                reply.source,
+            )
     if assistant is None:
         raise _not_found()
     return MessagePairOut(user_message=_out(user_message), assistant_message=_out(assistant))

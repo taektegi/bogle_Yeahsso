@@ -1,6 +1,6 @@
 """대화 API 계약을 DB 없이 확인한다."""
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 import pytest
@@ -91,6 +91,21 @@ class FakeRepository:
         return MessagePage(self.items[:limit], len(self.items) > limit)
 
 
+class EventuallyRepliedRepository(FakeRepository):
+    def __init__(self) -> None:
+        super().__init__()
+        self.pending_checks = 2
+
+    def get_reply(self, user_id, character_id, user_message_id):
+        if user_message_id not in self.replies and self.pending_checks > 0:
+            self.pending_checks -= 1
+            return None
+        return self.replies.setdefault(
+            user_message_id,
+            MessageRecord(uuid4(), "assistant", "기다려줘서 고마워!", "ai", AWAKE),
+        )
+
+
 @pytest.fixture
 def chat() -> FakeChat:
     return FakeChat()
@@ -138,6 +153,40 @@ def test_same_client_message_id_returns_same_pair_once(
     assert second.status_code == 200
     assert second.json() == first.json()
     assert len(repo.users) == len(repo.replies) == len(chat.calls) == 1
+
+
+def test_duplicate_waits_for_in_progress_reply_instead_of_saving_script(
+    app, client: TestClient, chat: FakeChat
+) -> None:
+    repo = EventuallyRepliedRepository()
+    repo.start_user_message(uuid4(), CHARACTER_ID, "message_key_001", "오늘 뭐 했어?")
+    use(app, repo, chat)
+
+    response = post(client)
+
+    assert response.status_code == 200
+    assert response.json()["assistantMessage"]["text"] == "기다려줘서 고마워!"
+    assert response.json()["assistantMessage"]["source"] == "ai"
+    assert len(repo.replies) == 1
+    assert chat.calls == []
+
+
+def test_duplicate_uses_script_after_original_reply_deadline(
+    app, client: TestClient, chat: FakeChat
+) -> None:
+    repo = FakeRepository()
+    user_message = MessageRecord(
+        uuid4(), "user", "오늘 뭐 했어?", None, AWAKE - timedelta(seconds=16)
+    )
+    repo.users["message_key_001"] = ("오늘 뭐 했어?", user_message)
+    use(app, repo, chat)
+
+    response = post(client)
+
+    assert response.status_code == 200
+    assert response.json()["assistantMessage"]["source"] == "script"
+    assert len(repo.replies) == 1
+    assert chat.calls == []
 
 
 def test_same_client_message_id_with_different_text_is_409(
