@@ -3,6 +3,19 @@
 FastAPI로 만든 보글 백엔드 서버입니다. 기준 문서는 `aidlc-docs/inception/requirements/requirements.md`입니다.
 API 계약의 기준은 서버를 띄우면 열리는 **`/docs`(OpenAPI)** 입니다.
 
+친구 만들기(FR-03~05)의 구현·설정·작업 정책은 [친구 만들기 구현 문서](../docs/friend-creation-implementation.md)를 참고하세요.
+원본 업로드, OpenRouter 이미지 생성, 상태·취소, 성격 목록과 친구 저장 API가 추가되었습니다.
+`server/.env`에 `OPENROUTER_API_KEY`를 입력합니다. 기존 `openrouter_key`도 인식합니다.
+내부 워커와 메모리 횟수 제한을 위해 서버는 **`--workers 1`**로 실행하세요.
+`uv sync --locked --extra dev`로 잠금 파일의 의존성을 설치할 수 있습니다.
+
+## AI 연결 기준
+
+- 이미지·대화 생성과 생성 PNG의 얼굴 좌표 분석은 서버에서 **OpenRouter**를 통해 호출합니다(D-25). 소개 문구는 기존 8개 중 하나를 저장합니다.
+- 얼굴 분석은 `openai/gpt-6-luna`와 검수한 예시 6장을 사용합니다. `OPENROUTER_API_KEY`가 있어야 활성화되며, 실패해도 친구 생성은 성공합니다. 필요하면 `OPENROUTER_FACE_MODEL`로 교체할 수 있지만 해당 모델의 호출 설정 호환성을 확인해야 합니다.
+- 얼굴 분석 규격과 생성 파이프라인 통합 지점은 `docs/face-analysis-design.md`에 있습니다.
+- 기존 **OpenAI Moderation** 입력·출력 검사는 별도 직접 호출로 유지하며 OpenRouter 키와 혼용하지 않습니다.
+
 ## 실행
 
 Python 3.11 이상이 필요합니다. 모든 명령은 `server/` 폴더에서 실행합니다.
@@ -206,6 +219,9 @@ python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지
 | `SUPABASE_JWT_SECRET` | 레거시 HS256 토큰 검증 | HS256 토큰 거부 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Storage 서명 URL 생성 | 이미지를 돌려주는 API가 503 |
 | `DATABASE_URL` | Postgres 직접 연결 | DB를 쓰는 API가 503 (서버는 뜸) |
+| `OPENROUTER_API_KEY` | 이미지·대화 생성과 얼굴 분석. 소개는 기존 문구 선택 | 새 친구 생성 요청 거부, 얼굴 분석 비활성 |
+| `OPENROUTER_FACE_MODEL` | 얼굴 분석용 이미지 입력 모델 ID. 기본 `openai/gpt-6-luna` | 기본값 사용 |
+| `FACE_ANALYSIS_TIMEOUT_SECONDS` | 얼굴 분석 제한 시간. 기본 120초 | 기본값 사용 |
 | `CLEANUP_INTERVAL_SECONDS` | 미사용 에셋 정리 주기(초). 기본 3600, 0이면 끔 | 기본값 사용. DB·Storage 설정이 없으면 정리는 자동으로 꺼짐 |
 | `ASSET_RETENTION_HOURS` | 미사용 에셋 보관 시간. 기본 24 | 기본값 사용 |
 

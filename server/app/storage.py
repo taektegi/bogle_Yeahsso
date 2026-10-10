@@ -32,6 +32,10 @@ class StorageError(Exception):
 
 
 class StorageClient(Protocol):
+    def download(self, path: str) -> bytes:
+        """비공개 객체를 서버에서 읽는다. 실패하면 StorageError."""
+        ...
+
     def sign(self, paths: Sequence[str]) -> dict[str, SignedUrl]:
         """객체 경로마다 서명 URL을 만든다. 없는 객체는 결과에서 빠진다.
 
@@ -65,6 +69,18 @@ class SupabaseStorage:
         self._headers = {"Authorization": f"Bearer {service_role_key}", "apikey": service_role_key}
         self._client = client or httpx2.Client(timeout=5.0)
         self._clock = clock
+
+    def download(self, path: str) -> bytes:
+        try:
+            response = self._client.get(
+                f"{self._storage_url}/object/authenticated/{self._bucket}/{quote(path)}",
+                headers=self._headers,
+            )
+        except httpx2.HTTPError:
+            raise StorageError("storage download failed") from None
+        if response.status_code != 200:
+            raise StorageError(f"storage returned HTTP {response.status_code}")
+        return response.content
 
     def sign(self, paths: Sequence[str]) -> dict[str, SignedUrl]:
         unique_paths = list(dict.fromkeys(paths))

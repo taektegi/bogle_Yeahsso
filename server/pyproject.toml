@@ -13,6 +13,10 @@ dependencies = [
   "tzdata>=2024.1",
   # Supabase Storage REST 호출. 최신 Starlette의 TestClient도 이것을 요구한다 (httpx는 deprecated)
   "httpx2>=2",
+  # PNG 알파 채널 검사와 예시 이미지 크기 확인.
+  "pillow>=11.3,<13",
+  "python-multipart>=0.0.20,<1",
+  "regex>=2025.9.18",
 ]
 
 [project.optional-dependencies]
@@ -27,6 +31,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["app*"]
+
+[tool.setuptools.package-data]
+app = ["face_examples/*.png", "face_examples/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

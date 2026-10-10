@@ -4,6 +4,7 @@
 빈 결과(`None`/`[]`)가 나오고, 라우터는 이를 404로 바꾼다 (FR-01.4).
 """
 
+import logging
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Annotated, Any
@@ -13,6 +14,9 @@ from fastapi import Depends
 
 from app.assets import AssetRow
 from app.db import Database, DatabaseDep
+from app.face_analysis import FaceMap, validate_face_payload
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -25,6 +29,7 @@ class CharacterRecord:
     introduction: str
     accent_argb: int
     created_at: datetime
+    face: FaceMap | None
     source: AssetRow | None
     art: AssetRow
     thumbnail: AssetRow
@@ -35,7 +40,7 @@ class CharacterRecord:
 _SELECT = """
     select
         f.id, f.name, f.personality_type, f.favorite_things, f.speech_style,
-        f.introduction, f.accent_argb, f.created_at,
+        f.introduction, f.accent_argb, f.created_at, f.face,
         s.id as source_id, s.storage_path as source_path, s.content_type as source_content_type,
         s.width as source_width, s.height as source_height,
         a.id as art_id, a.storage_path as art_path, a.content_type as art_content_type,
@@ -71,6 +76,13 @@ def _record(row: dict[str, Any]) -> CharacterRecord:
     art = _asset(row, "art")
     thumbnail = _asset(row, "thumbnail")
     assert art is not None and thumbnail is not None  # inner join이라 항상 있다.
+    face = None
+    if row["face"] is not None:
+        try:
+            face = validate_face_payload(row["face"], width=art.width, height=art.height)
+        except ValueError:
+            # 과거 데이터나 수동 입력이 잘못돼도 친구 조회 자체는 살리고 얼굴 효과만 뺀다.
+            logger.warning("character %s has an invalid face map; skipping it", row["id"])
     return CharacterRecord(
         id=row["id"],
         name=row["name"],
@@ -81,6 +93,7 @@ def _record(row: dict[str, Any]) -> CharacterRecord:
         accent_argb=row["accent_argb"],
         # DB 세션 시간대와 무관하게 항상 UTC로 돌려준다 (API 계약: 시각은 UTC).
         created_at=row["created_at"].astimezone(UTC),
+        face=face,
         source=_asset(row, "source"),
         art=art,
         thumbnail=thumbnail,
@@ -137,6 +150,18 @@ class CharacterRepository:
                 for column in ("source_asset_id", "art_asset_id", "thumbnail_asset_id")
                 if row[column] is not None
             ]
+            # 같은 원본의 다른 생성 작업까지 지워 삭제 후 늦은 결과가 저장되지 않게 한다.
+            jobs = conn.execute(
+                "delete from public.generation_jobs where user_id=%s and source_asset_id=%s "
+                "returning art_asset_id,thumbnail_asset_id",
+                (user_id, row["source_asset_id"]),
+            ).fetchall()
+            asset_ids.extend(
+                asset_id
+                for job in jobs
+                for asset_id in (job["art_asset_id"], job["thumbnail_asset_id"])
+                if asset_id is not None
+            )
             conn.execute(
                 "delete from public.friends where id = %(character_id)s and user_id = %(user_id)s",
                 params,

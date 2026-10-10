@@ -38,6 +38,11 @@ class FakeStorage:
     def upload(self, path: str, data: bytes, content_type: str) -> None:
         self.uploaded[path] = (data, content_type)
 
+    def download(self, path: str) -> bytes:
+        if self.fail or path in self.missing or path not in self.uploaded:
+            raise StorageError("file unavailable")
+        return self.uploaded[path][0]
+
     def remove(self, paths: Sequence[str]) -> None:
         if self.on_remove:
             self.on_remove()
@@ -75,6 +80,7 @@ def make_character(
     with_source: bool = True,
     personality_type: str = "calm",
     character_id: UUID | None = None,
+    face: dict | None = None,
 ) -> UUID:
     """친구 한 명과 그에 딸린 에셋(원본·아트·썸네일)을 만든다."""
     character_id = character_id or uuid4()
@@ -84,8 +90,9 @@ def make_character(
     conn.execute(
         "insert into public.friends "
         "(id, user_id, name, personality_type, favorite_things, speech_style, introduction, "
-        " source_asset_id, art_asset_id, thumbnail_asset_id, accent_argb, created_at) "
-        "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, coalesce(%s::timestamptz, now()))",
+        " source_asset_id, art_asset_id, thumbnail_asset_id, accent_argb, face, created_at) "
+        "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, "
+        "coalesce(%s::timestamptz, now()))",
         (
             character_id,
             user_id,
@@ -98,6 +105,7 @@ def make_character(
             art_id,
             thumbnail_id,
             4289974783,
+            psycopg.types.json.Jsonb(face) if face is not None else None,
             created_at,
         ),
     )

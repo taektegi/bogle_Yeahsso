@@ -5,11 +5,12 @@
 
 from fastapi import APIRouter
 
-from app.routers import characters, health, messages, profile
+from app.routers import characters, creation, health, messages, profile
 
 api_routers: list[APIRouter] = [
     health.router,
     characters.router,
     messages.router,
     profile.router,
+    creation.router,
 ]

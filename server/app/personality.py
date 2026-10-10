@@ -14,7 +14,7 @@ class PersonalityType:
 
 
 # 순서가 곧 화면 표시 순서다.
-PERSONALITY_TYPES: tuple[PersonalityType, ...] = (
+LEGACY_PERSONALITY_TYPES: tuple[PersonalityType, ...] = (
     PersonalityType("cheerful", "활발하고 씩씩해요"),
     PersonalityType("gentle", "다정하고 따뜻해요"),
     PersonalityType("curious", "호기심이 많아요"),
@@ -23,7 +23,14 @@ PERSONALITY_TYPES: tuple[PersonalityType, ...] = (
     PersonalityType("playful", "장난꾸러기예요"),
 )
 
-_LABELS = {item.code: item.label for item in PERSONALITY_TYPES}
+PERSONALITY_TYPES: tuple[PersonalityType, ...] = (
+    PersonalityType("cheerful_curious", "활발하고 호기심이 많아요"),
+    PersonalityType("quiet_brave", "조용하지만 용감해요"),
+    PersonalityType("gentle_smiling", "다정하고 잘 웃어요"),
+    PersonalityType("imaginative", "엉뚱한 상상가예요"),
+)
+
+_LABELS = {item.code: item.label for item in (*LEGACY_PERSONALITY_TYPES, *PERSONALITY_TYPES)}
 
 
 def personality_label(code: str) -> str:

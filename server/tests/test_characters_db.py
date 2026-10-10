@@ -143,6 +143,44 @@ def test_response_carries_the_stored_values(api, seed_conn) -> None:
     assert character["introduction"] == "뭉글이의 소개"
     assert character["accentArgb"] == 4289974783  # 부호 없는 32비트 값이 그대로 나온다
     assert character["art"]["width"] == 640
+    assert character["face"] is None
+
+
+def test_response_carries_a_valid_face_map(api, seed_conn) -> None:
+    user = make_user(seed_conn)
+    face = {
+        "version": 1,
+        "size": [640, 480],
+        "facing": "front",
+        "head": [160, 60, 320, 300],
+        "eyes": [[250, 160, 24], [390, 160, 24]],
+        "mouth": [320, 260, 90, 36],
+        "cheeks": [[225, 225, 28], [415, 225, 28]],
+    }
+    character_id = make_character(seed_conn, user, "얼굴 친구", face=face)
+
+    character = api.get(f"/v1/characters/{character_id}", headers=token_for(user)).json()
+
+    assert character["face"] == face
+
+
+def test_invalid_stored_face_is_omitted_without_hiding_the_character(api, seed_conn) -> None:
+    user = make_user(seed_conn)
+    invalid_face = {
+        "version": 1,
+        "size": [641, 480],
+        "facing": "front",
+        "head": [160, 60, 320, 300],
+        "eyes": [[250, 160, 24]],
+        "mouth": [320, 260, 90, 36],
+        "cheeks": [],
+    }
+    character_id = make_character(seed_conn, user, "좌표 오류", face=invalid_face)
+
+    response = api.get(f"/v1/characters/{character_id}", headers=token_for(user))
+
+    assert response.status_code == 200
+    assert response.json()["face"] is None
 
 
 def test_repository_filters_by_owner_in_sql(database: Database, seed_conn) -> None:
