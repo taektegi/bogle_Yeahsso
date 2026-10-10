@@ -84,6 +84,8 @@ PNG·JPEG 입력에 각각 한 번 요청한다. 재시도 없이 결과를 검�
 - 얼굴 분석 연결 후 실제 임시 PostgreSQL에서 전체 302개 테스트가 통과했다.
   생성 PNG 바이트·실제 크기 전달, 작업 스레드 실행, 분석기 재사용,
   작업→완료 응답→친구 저장·조회, 분석 실패·시간 초과 시 성공 유지와 늦은 결과 무시를 확인했다.
+- PR 준비 중 추가된 대화 기능의 최신 `main`을 충돌 없이 병합한 뒤,
+  실제 임시 PostgreSQL로 전체 336개 테스트를 다시 실행해 통과했다. DB 테스트 생략은 없었다.
 - bogle 원격 DB에 기존 `friends_face`와 새 `generation_face_mapping` 마이그레이션을 적용했다.
   `friends.face`와 `generation_jobs.face`가 nullable `jsonb`인지, 마이그레이션 이력이 일치하는지 확인했다.
 - Ruff 검사·포맷 검사와 `git diff --check` 통과. `server/.env`가 Git 제외 대상임을 확인했다.
