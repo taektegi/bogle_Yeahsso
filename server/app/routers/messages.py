@@ -148,7 +148,6 @@ def send_message(
 @router.get(
     "/{character_id}/messages",
     response_model=MessagePageOut,
-    response_model_exclude_none=True,
     summary="이전 대화",
 )
 def list_messages(

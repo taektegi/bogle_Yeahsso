@@ -214,6 +214,20 @@ def test_list_is_newest_first_and_has_a_cursor(app, client: TestClient, chat: Fa
     assert response.json()["nextCursor"] is not None
 
 
+def test_list_last_page_returns_null_cursor(app, client: TestClient, chat: FakeChat) -> None:
+    repo = FakeRepository()
+    repo.items = [MessageRecord(uuid4(), "assistant", "마지막 답", "script", AWAKE)]
+    use(app, repo, chat)
+
+    response = client.get(
+        f"/v1/characters/{CHARACTER_ID}/messages",
+        headers=bearer(hs256_token()),
+    )
+
+    assert response.status_code == 200
+    assert response.json()["nextCursor"] is None
+
+
 def test_invalid_history_cursor_is_422(app, client: TestClient, chat: FakeChat) -> None:
     use(app, FakeRepository(), chat)
 
