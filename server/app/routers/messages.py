@@ -4,6 +4,7 @@ import base64
 import json
 import time
 from datetime import UTC, datetime
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
@@ -12,6 +13,7 @@ from pydantic import Field, field_validator
 from app.ai_chat import ChatAiDep, ChatReply, script_reply
 from app.auth import CurrentUserDep
 from app.clock import NowDep
+from app.config import Settings, get_settings
 from app.errors import ERROR_RESPONSES, ApiError
 from app.idempotency import IdempotencyKey
 from app.rate_limit import limit_messages
@@ -20,8 +22,9 @@ from app.schemas import CamelModel
 from app.sleep import sleep_status
 
 router = APIRouter(prefix="/characters", tags=["chat"], responses=ERROR_RESPONSES)
-_REPLY_WAIT_TIMEOUT_SECONDS = 15.0
 _REPLY_POLL_INTERVAL_SECONDS = 0.2
+# AI 처리 한도는 늘리지 않고, 완료한 답을 DB에 저장할 짧은 여유만 둔다.
+_REPLY_SAVE_GRACE_SECONDS = 1.0
 
 
 class MessageIn(CamelModel):
@@ -96,13 +99,9 @@ def _wait_for_reply(
     user_id: UUID,
     character_id: UUID,
     user_message: MessageRecord,
-    now: datetime,
+    deadline: float,
 ) -> MessageRecord | None:
     """이미 진행 중인 요청의 답을 기다리고, 제한 시간이 지나면 None을 반환한다."""
-    age_seconds = max(0.0, (now - user_message.created_at).total_seconds())
-    remaining_seconds = max(0.0, _REPLY_WAIT_TIMEOUT_SECONDS - age_seconds)
-    deadline = time.monotonic() + remaining_seconds
-
     while True:
         reply = repo.get_reply(user_id, character_id, user_message.id)
         if reply is not None:
@@ -127,11 +126,13 @@ def send_message(
     repo: MessageRepositoryDep,
     chat: ChatAiDep,
     now: NowDep,
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> MessagePairOut:
     """AI가 답한다. 검열에 걸리거나 AI가 실패·15초 초과면 스크립트 대사로 답한다 (오류 아님).
 
     같은 ``clientMessageId``로 다시 보내면 이전 답을 그대로 돌려준다. 자는 시간에는 409.
     """
+    started_at = time.monotonic()
     profile = repo.get_friend_profile(user.id, character_id)
     if profile is None:
         raise _not_found()
@@ -147,6 +148,9 @@ def send_message(
             raise _not_found()
         user_message, created = started
 
+    # 기록 조회 시간도 포함한 동일한 한도를 원래 요청과 재전송에서 사용한다.
+    age_seconds = max(0.0, (now - user_message.created_at).total_seconds())
+    deadline = started_at + settings.chat_ai_timeout_seconds - age_seconds
     assistant = repo.get_reply(user.id, character_id, user_message.id)
     if assistant is None:
         if created:
@@ -154,10 +158,13 @@ def send_message(
                 friend=profile,
                 history=repo.recent_context(user.id, character_id, user_message),
                 user_text=body.text,
+                deadline=deadline,
             )
         else:
             # AI 호출 중인 첫 요청이 답을 저장할 때까지 기다린다.
-            assistant = _wait_for_reply(repo, user.id, character_id, user_message, now)
+            assistant = _wait_for_reply(
+                repo, user.id, character_id, user_message, deadline + _REPLY_SAVE_GRACE_SECONDS
+            )
             reply = None
         if assistant is None:
             # 첫 요청이 중단됐거나 답변 제한 시간을 넘긴 경우에만 스크립트로 복구한다.

@@ -187,6 +187,17 @@ def test_missing_credentials_never_calls_external_service() -> None:
     assert ai.reply(friend=FRIEND, history=(), user_text="안녕").source == "script"
 
 
+def test_expired_caller_deadline_never_calls_external_service() -> None:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        raise AssertionError("기록 조회 중 제한 시간이 끝나면 외부 호출을 하면 안 됨")
+
+    result = service(handler, clock=lambda: 20.0).reply(
+        friend=FRIEND, history=(), user_text="안녕", deadline=19.0
+    )
+
+    assert result.source == "script"
+
+
 def test_logs_do_not_contain_message_key_or_provider_body(caplog) -> None:
     secret_text = "아이의 비밀 대화"
     caplog.set_level(logging.WARNING)

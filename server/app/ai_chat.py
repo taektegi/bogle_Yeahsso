@@ -220,6 +220,7 @@ class ChatAiService:
         friend: CharacterChatProfile,
         history: Sequence[ConversationMessage],
         user_text: str,
+        deadline: float | None = None,
     ) -> ChatReply:
         """안전한 AI 답변 또는 스크립트 대사를 반환한다. 외부 오류를 밖으로 내보내지 않는다."""
         fallback = ChatReply(text=script_reply(friend, user_text), source="script")
@@ -227,7 +228,8 @@ class ChatAiService:
             logger.warning("chat fallback: AI credential is not configured")
             return fallback
 
-        deadline = self._clock() + self._timeout_seconds
+        service_deadline = self._clock() + self._timeout_seconds
+        deadline = min(service_deadline, deadline) if deadline is not None else service_deadline
         try:
             input_flagged = self._moderation_flagged(user_text, deadline)
             if input_flagged:

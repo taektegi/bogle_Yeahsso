@@ -18,7 +18,7 @@ AWAKE = datetime(2026, 10, 5, 3, 0, tzinfo=UTC)
 
 
 class FixedChat:
-    def reply(self, *, friend, history, user_text):
+    def reply(self, *, friend, history, user_text, deadline=None):
         return ChatReply("안전한 AI 답변이에요!", "ai")
 
 
@@ -28,7 +28,7 @@ class BlockingChat:
         self.release = Event()
         self.calls = 0
 
-    def reply(self, *, friend, history, user_text):
+    def reply(self, *, friend, history, user_text, deadline=None):
         self.calls += 1
         self.started.set()
         if not self.release.wait(timeout=5):

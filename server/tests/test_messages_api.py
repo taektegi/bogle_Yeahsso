@@ -1,12 +1,20 @@
 """대화 API 계약을 DB 없이 확인한다."""
 
 from datetime import UTC, datetime, timedelta
+from types import SimpleNamespace
 from uuid import UUID, uuid4
 
+import httpx2
 import pytest
 from fastapi.testclient import TestClient
 
-from app.ai_chat import CharacterChatProfile, ChatReply, ConversationMessage, get_chat_ai
+from app.ai_chat import (
+    CharacterChatProfile,
+    ChatAiService,
+    ChatReply,
+    ConversationMessage,
+    get_chat_ai,
+)
 from app.clock import get_now
 from app.idempotency import idempotency_conflict
 from app.repositories.messages import (
@@ -14,6 +22,7 @@ from app.repositories.messages import (
     MessageRecord,
     get_message_repository,
 )
+from app.routers import messages as messages_router
 from tests.tokens import bearer, hs256_token
 
 AWAKE = datetime(2026, 10, 5, 3, 0, tzinfo=UTC)  # 한국 시간 12:00
@@ -24,9 +33,11 @@ CHARACTER_ID = uuid4()
 class FakeChat:
     def __init__(self) -> None:
         self.calls: list[tuple[CharacterChatProfile, list[ConversationMessage], str]] = []
+        self.deadlines: list[float | None] = []
 
-    def reply(self, *, friend, history, user_text) -> ChatReply:
+    def reply(self, *, friend, history, user_text, deadline=None) -> ChatReply:
         self.calls.append((friend, list(history), user_text))
+        self.deadlines.append(deadline)
         return ChatReply("구름을 보며 놀았어요!", "ai")
 
 
@@ -186,6 +197,81 @@ def test_duplicate_uses_script_after_original_reply_deadline(
     assert response.status_code == 200
     assert response.json()["assistantMessage"]["source"] == "script"
     assert len(repo.replies) == 1
+    assert chat.calls == []
+
+
+def test_history_lookup_does_not_restart_ai_deadline(app, client, monkeypatch) -> None:
+    tick = [100.0]
+    timeouts = []
+    monkeypatch.setattr(messages_router, "time", SimpleNamespace(monotonic=lambda: tick[0]))
+
+    class SlowHistoryRepository(FakeRepository):
+        def recent_context(self, *args, **kwargs):
+            tick[0] += 1.0
+            return self.history
+
+    def handler(request):
+        timeouts.append(request.extensions["timeout"]["read"])
+        tick[0] += 14.5 / 3
+        if request.url.path.endswith("/moderations"):
+            return httpx2.Response(200, json={"results": [{"flagged": False}]})
+        return httpx2.Response(200, json={"choices": [{"message": {"content": "AI 답변"}}]})
+
+    chat = ChatAiService(
+        openrouter_api_key="fake-key",
+        openai_api_key="fake-key",
+        client=httpx2.Client(transport=httpx2.MockTransport(handler)),
+        clock=lambda: tick[0],
+    )
+    use(app, SlowHistoryRepository(), chat)
+
+    response = post(client)
+
+    assert response.status_code == 200
+    assert response.json()["assistantMessage"]["source"] == "script"
+    assert timeouts[0] == 14.0
+
+
+def test_duplicate_allows_original_reply_to_finish_saving(app, client, chat, monkeypatch) -> None:
+    tick = [115.0]
+
+    def wait(seconds):
+        tick[0] += seconds
+
+    monkeypatch.setattr(
+        messages_router, "time", SimpleNamespace(monotonic=lambda: tick[0], sleep=wait)
+    )
+
+    class SavingReplyRepository(FakeRepository):
+        def get_reply(self, user_id, character_id, user_message_id):
+            if tick[0] < 115.5:
+                return None
+            return self.replies.setdefault(
+                user_message_id,
+                MessageRecord(uuid4(), "assistant", "완료한 AI 답변", "ai", AWAKE),
+            )
+
+    repo = SavingReplyRepository()
+    repo.start_user_message(uuid4(), CHARACTER_ID, "message_key_001", "오늘 뭐 했어?")
+    use(app, repo, chat, AWAKE + timedelta(seconds=15))
+
+    response = post(client)
+
+    assert response.status_code == 200
+    assert response.json()["assistantMessage"]["source"] == "ai"
+    assert chat.calls == []
+
+
+def test_duplicate_uses_same_configured_timeout(app, client, chat, settings) -> None:
+    settings.chat_ai_timeout_seconds = 3.0
+    repo = FakeRepository()
+    repo.start_user_message(uuid4(), CHARACTER_ID, "message_key_001", "오늘 뭐 했어?")
+    use(app, repo, chat, AWAKE + timedelta(seconds=5))
+
+    response = post(client)
+
+    assert response.status_code == 200
+    assert response.json()["assistantMessage"]["source"] == "script"
     assert chat.calls == []
 
 
