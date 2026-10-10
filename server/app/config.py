@@ -44,6 +44,16 @@ class Settings(BaseSettings):
     # 업로드하고 친구로 저장하지 않은 에셋을 보관하는 시간. API 계약: 24시간
     asset_retention_hours: int = 24
 
+    # 대화 생성은 OpenRouter, 입력·출력 안전 검사는 OpenAI Moderation을 쓴다 (FR-09).
+    # 두 키는 서버에만 두고 앱·로그·응답에 노출하지 않는다 (NFR-03, NFR-09).
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    openrouter_model: str = "openai/gpt-6-luna"
+    openai_api_key: SecretStr | None = None
+    openai_base_url: str = "https://api.openai.com/v1"
+    openai_moderation_model: str = "omni-moderation-latest"
+    # 입력 검사부터 출력 검사까지의 전체 한도. 초과하면 스크립트 대사로 대체한다.
+    chat_ai_timeout_seconds: float = 15.0
+
     @property
     def issuer(self) -> str | None:
         """Supabase 토큰의 iss 값. SUPABASE_URL이 없으면 검사하지 않는다."""
