@@ -24,6 +24,7 @@ from app.db import create_database
 from app.face_analysis import build_face_analyzer
 from app.generation_worker import GenerationWorker
 from app.image_provider import OpenRouterImages
+from app.images import character_image
 from app.main import create_app
 from app.repositories.creation import CreationRepository
 from app.sleep import sleep_status
@@ -111,7 +112,7 @@ async def process_one(worker, job):
             pass
 
 
-def main():
+def main(sources=("drawing", "photo"), *, skip_chat=False, require_generation=False):
     logging.disable(logging.CRITICAL)
     budget = Budget()
     result = {"cases": [], "syntheticChatFixture": False, "testDataCleaned": False}
@@ -169,7 +170,7 @@ def main():
             require(client.get("/v1/me", headers=headers).status_code == 200, "jwt_verification")
             result["jwtVerifiedByServer"] = True
             require(repo.acquire_lease(worker.owner), "generation_worker_busy")
-            for kind in ("drawing", "photo"):
+            for kind in sources:
                 case = {"sourceType": kind}
                 phase = f"{kind}_upload"
                 mime = "image/jpeg" if kind == "photo" else "image/png"
@@ -215,6 +216,13 @@ def main():
                     require(image.status_code == 200, "signed_result")
                     with Image.open(io.BytesIO(image.content)) as decoded:
                         require(decoded.format == "PNG", "png_result")
+                    (OUTPUT / f"{kind}-{field}.png").write_bytes(image.content)
+                    if field == "art":
+                        validated = character_image(image.content)
+                        require(validated.accent_argb == generated["accentArgb"], "accent_color")
+                        case["transparentPngValidated"] = True
+                        case["width"], case["height"] = validated.width, validated.height
+                case["signedResultDownloads"] = True
                 body = {
                     "generationJobId": str(job_id),
                     "name": "진단친구",
@@ -233,6 +241,9 @@ def main():
                 saved.append(first.json()["id"])
                 case["saveAndReplay"] = True
                 result["cases"].append(case)
+
+            if require_generation:
+                require(len(saved) == len(sources), "generation_not_succeeded")
 
             # 이미지 제공자가 실패해도 대화는 별도의 합성 테스트 친구로 확인할 수 있다.
             if not saved:
@@ -272,7 +283,9 @@ def main():
                 "ownership",
             )
             result["ownershipBlocked"] = True
-            if sleep_status(datetime.now(UTC)).asleep:
+            if skip_chat:
+                result["chat"] = {"skipped": "not_in_scope"}
+            elif sleep_status(datetime.now(UTC)).asleep:
                 result["chat"] = {"skipped": "server_sleep_window"}
             elif not settings.openai_api_key:
                 result["chat"] = {"skipped": "moderation_not_configured"}
@@ -329,6 +342,7 @@ def main():
                         ).fetchall()
                     ]
                 if paths:
+                    require(all(path.startswith(f"{user}/") for path in paths), "cleanup_owner")
                     storage.remove(paths)
                 deleted = admin.delete(PROJECT_URL + f"/auth/v1/admin/users/{user}")
                 require(deleted.status_code == 200, "delete_test_account")
@@ -344,10 +358,21 @@ def main():
             json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         print(json.dumps(result, ensure_ascii=True, indent=2))
+    if require_generation and (
+        "failedStage" in result or not result["testDataCleaned"] or result.get("leaseCleanupFailed")
+    ):
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--confirm-paid-budget", action="store_true", required=True)
-    parser.parse_args()
-    main()
+    parser.add_argument("--output-dir", type=Path, default=OUTPUT)
+    parser.add_argument(
+        "--sources", nargs="+", choices=("drawing", "photo"), default=("drawing", "photo")
+    )
+    parser.add_argument("--skip-chat", action="store_true")
+    parser.add_argument("--require-generation", action="store_true")
+    args = parser.parse_args()
+    OUTPUT = args.output_dir.resolve()
+    main(args.sources, skip_chat=args.skip_chat, require_generation=args.require_generation)

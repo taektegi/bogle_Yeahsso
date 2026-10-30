@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "sourceType": "photo",
+      "uploadAndSignedRead": true,
+      "status": "succeeded",
+      "facePresent": true,
+      "transparentPngValidated": true,
+      "width": 1024,
+      "height": 1024,
+      "signedResultDownloads": true,
+      "saveAndReplay": true
+    }
+  ],
+  "syntheticChatFixture": false,
+  "testDataCleaned": true,
+  "authLogin": true,
+  "jwtVerifiedByServer": true,
+  "ownershipBlocked": true,
+  "chat": {
+    "skipped": "not_in_scope"
+  },
+  "deleteAndHistory": true,
+  "paidAttempts": {
+    "image": 1,
+    "face": 1,
+    "chat": 0
+  }
+}
