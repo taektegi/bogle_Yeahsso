@@ -1,0 +1,3 @@
+tags:
+  # Rehearsals against a running server (test/e2e); skipped without one.
+  e2e:

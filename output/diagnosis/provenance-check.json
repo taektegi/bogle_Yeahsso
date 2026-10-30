@@ -1,0 +1,7 @@
+{
+  "sourceFiles": 430,
+  "byteIdentical": true,
+  "additionalFrontendFiles": [
+    "frontend/test/e2e/team_backend_diagnosis_test.dart"
+  ]
+}

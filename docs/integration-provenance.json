@@ -1,0 +1,13 @@
+{
+  "repository": "taektegi/bogle_Yeahsso",
+  "backendBaseline": "a6aca1690b42095d026c14874a3c326cc89ea5a2",
+  "backendBaselineBranch": "seonghyun_backend",
+  "integrationBranch": "seonghyun_real",
+  "frontendRepository": "quasiaward/Bogle_doll_making_app",
+  "frontendBranch": "release",
+  "frontendCommit": "5d1b9c7b59441ac0fe7983957af774114fb9c8dd",
+  "frontendDestination": "frontend",
+  "frontendTrackedSourceFiles": 430,
+  "sourcePolicy": "원본 추적 파일을 복사하고 기능 코드는 변경하지 않음. 추가 진단 테스트는 별도 파일.",
+  "dateAsiaSeoul": "2026-10-31"
+}

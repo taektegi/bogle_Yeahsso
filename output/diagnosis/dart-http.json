@@ -1,0 +1,438 @@
+{
+  "observations": [
+    {
+      "case": "personality_list",
+      "status": 200,
+      "count": 4
+    },
+    {
+      "case": "drawing_generate_download",
+      "pngOnDisk": true,
+      "jobIdPresent": true,
+      "faceOnDisk": true
+    },
+    {
+      "case": "drawing_app_save",
+      "status": 422,
+      "code": "validation_error",
+      "fieldErrors": {
+        "personalityType": "missing"
+      }
+    },
+    {
+      "case": "drawing_server_save_replay",
+      "sameId": true,
+      "face": true,
+      "responseLossInjected": true
+    },
+    {
+      "case": "photo_generate_download",
+      "pngOnDisk": true,
+      "jobIdPresent": true,
+      "faceOnDisk": true
+    },
+    {
+      "case": "photo_app_save",
+      "status": 422,
+      "code": "validation_error",
+      "fieldErrors": {
+        "personalityType": "missing"
+      }
+    },
+    {
+      "case": "photo_server_save_replay",
+      "sameId": true,
+      "face": true,
+      "responseLossInjected": false
+    },
+    {
+      "case": "server_list_to_local",
+      "downloaded": true,
+      "sleepBedtime": 1320
+    },
+    {
+      "case": "unsupported_edit_outbox",
+      "serverNameUnchanged": true,
+      "localNameChanged": true,
+      "pending": 0
+    },
+    {
+      "case": "unsupported_motion",
+      "fallback": true
+    },
+    {
+      "case": "chat_replay_history",
+      "sameReply": true,
+      "historyCount": 4
+    },
+    {
+      "case": "server_sleep_guard",
+      "appReturnsNull": true
+    },
+    {
+      "case": "ownership",
+      "status": 404
+    },
+    {
+      "case": "generation_failure_rejected",
+      "code": "generation_rejected",
+      "retryable": false
+    },
+    {
+      "case": "generation_failure_invalid_png",
+      "code": "generation_invalid_result",
+      "retryable": true
+    },
+    {
+      "case": "generation_failure_timeout",
+      "code": "generation_timeout",
+      "retryable": true
+    },
+    {
+      "case": "app_generation_cancel",
+      "cancelled": true
+    },
+    {
+      "case": "delayed_delete",
+      "serverStillPresent": true
+    },
+    {
+      "case": "server_delete_cascade",
+      "historyStatus": 404
+    },
+    {
+      "case": "server_counts",
+      "jobs": 5,
+      "friends": 1,
+      "aiCalls": 5,
+      "storageReadbacks": 9
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/auth/v1/token",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/personality-types",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/drawing",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/v1/token",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/b3731e75-1227-4b6d-b12f-77dfbb42041a",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/59f537fae07e1d66f674a94d129d2cbd7d41f3da5e793e4ba8afead125b38180",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/bcc67d2528541a872e8d7d2634530d33ad64fdee21adc8f66b784f525f188648",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 422
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/photo",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/e4c8d934-740a-4bdd-bbca-d9c0df3f6a06",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/96778d974a8cf6866e387af521481b471da2448a1ab956e57860aee27d262109",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/616c4a724b8a408936d7fad429d7242495f0c8daceee2345daf22fa0892b3334",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 422
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/59f537fae07e1d66f674a94d129d2cbd7d41f3da5e793e4ba8afead125b38180",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/bcc67d2528541a872e8d7d2634530d33ad64fdee21adc8f66b784f525f188648",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/96778d974a8cf6866e387af521481b471da2448a1ab956e57860aee27d262109",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/616c4a724b8a408936d7fad429d7242495f0c8daceee2345daf22fa0892b3334",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436",
+      "status": 405
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436/motion",
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/asleep",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436/messages",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/awake",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/v1/token",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436",
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/rejected",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/photo",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/792d8616-f0b4-45ee-a269-c0b1cd34ae24",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/invalid_png",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/photo",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/08c5155b-cd3f-4d0f-b73f-f882ce99afb4",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/timeout",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/photo",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/24af850c-785e-48c6-b039-2ae4481aa8c6",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/24af850c-785e-48c6-b039-2ae4481aa8c6",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/success",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/drawing",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations/0b8520c4-5e30-4980-8954-194e21c30b5b/cancel",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436/messages",
+      "status": 404
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/characters/3d0f51e6-743b-4239-83cd-5e0a10f7f436",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/observations",
+      "status": 200
+    }
+  ]
+}
