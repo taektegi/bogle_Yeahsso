@@ -35,6 +35,7 @@ class SyncedCharacterRepository implements CharacterRepository {
 
   /// How long a deletion can still be undone before it reaches the service.
   final Duration undoWindow;
+  final _forgetTimers = <String, Timer>{};
 
   /// Friends the service made (and knows by this id); the starter friends
   /// and any friend made without the service stay on the iPad only.
@@ -68,8 +69,11 @@ class SyncedCharacterRepository implements CharacterRepository {
       accentHex: (json['accentArgb'] as num).toInt(),
       createdAt: created == null ? null : DateTime.parse(created).toLocal(),
       sleep: SleepSchedule(
-        bedtime: (json['bedtime'] as num?)?.toInt() ?? 22 * 60,
-        wakeTime: (json['wakeTime'] as num?)?.toInt() ?? 6 * 60,
+        bedtime:
+            (json['bedtime'] as num?)?.toInt() ?? const SleepSchedule().bedtime,
+        wakeTime:
+            (json['wakeTime'] as num?)?.toInt() ??
+            const SleepSchedule().wakeTime,
       ),
     );
   }
@@ -113,10 +117,27 @@ class SyncedCharacterRepository implements CharacterRepository {
     if (job == null) return local.createFriend(friend);
     // 같은 생성 결과를 다시 저장하거나 앱을 재실행해도 같은 요청으로 복구한다.
     final key = 'friend-$job';
+    final types = await api.get('/v1/personality-types');
+    final selected = (types['items'] as List)
+        .cast<Map<String, dynamic>>()
+        .where(
+          (item) =>
+              item['label'] == friend.personality ||
+              item['code'] == friend.personality,
+        )
+        .firstOrNull;
+    if (selected == null) {
+      throw const ApiException(
+        statusCode: 422,
+        code: 'validation_error',
+        message: '성격을 다시 선택해 주세요.',
+        fieldErrors: {'personalityType': '선택한 성격을 찾을 수 없어요.'},
+      );
+    }
     final body = {
       'generationJobId': job,
       'name': friend.name,
-      'personality': friend.personality,
+      'personalityType': selected['code'],
       'favoriteThings': friend.favoriteThings,
       'speechStyle': friend.speechStyle,
       'bedtime': const SleepSchedule().bedtime,
@@ -184,21 +205,27 @@ class SyncedCharacterRepository implements CharacterRepository {
 
   /// Its picture files go once the deletion can't be undone.
   void _forgetLater(CharacterFriend friend) {
-    Timer(undoWindow + const Duration(seconds: 1), () async {
-      final back = (await local.fetchFriends()).any((f) => f.id == friend.id);
-      if (!back) {
-        await art.forget(friend.assetPath);
-        await onForget?.call(friend.id);
-      }
-    });
+    _forgetTimers.remove(friend.id)?.cancel();
+    _forgetTimers[friend.id] = Timer(
+      undoWindow + const Duration(seconds: 1),
+      () async {
+        _forgetTimers.remove(friend.id);
+        final back = (await local.fetchFriends()).any((f) => f.id == friend.id);
+        if (!back) {
+          await art.forget(friend.assetPath);
+          await onForget?.call(friend.id);
+        }
+      },
+    );
   }
 
   @override
   Future<void> restoreFriend(DeletedFriend deleted) async {
-    await local.restoreFriend(deleted);
     if (isServiceId(deleted.friend.id)) {
-      await outbox.cancelDelete(deleted.friend.id);
+      if (!await outbox.cancelDelete(deleted.friend.id)) return;
     }
+    _forgetTimers.remove(deleted.friend.id)?.cancel();
+    await local.restoreFriend(deleted);
   }
 
   @override

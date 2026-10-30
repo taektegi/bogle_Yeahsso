@@ -124,7 +124,10 @@ class Outbox {
     await _ready;
     final before = _changes.length;
     _changes.removeWhere(
-      (c) => c.kind == _Kind.deleteCharacter && c.target == friendId,
+      (c) =>
+          c.kind == _Kind.deleteCharacter &&
+          c.target == friendId &&
+          c.notBefore.isAfter(_clock()),
     );
     if (_changes.length == before) return false;
     await _save();

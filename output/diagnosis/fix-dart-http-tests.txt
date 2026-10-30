@@ -1,0 +1,3 @@
+00:00 +0: loading C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/e2e/team_backend_diagnosis_test.dart
+00:00 +0: 관찰: release Dart 클라이언트 → 팀 FastAPI → 실제 PostgreSQL
+00:38 +1: All tests passed!

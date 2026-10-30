@@ -1,4 +1,4 @@
-// 팀 main과 release의 실제 HTTP 연동을 관찰한다. 앱의 요청은 수정하지 않는다.
+// 수정된 실제 Dart 클라이언트 → HTTP → 팀 서버 → PostgreSQL 수용 검사.
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,6 +8,7 @@ import 'package:bogle_app/src/data/app_services.dart';
 import 'package:bogle_app/src/data/character_generation.dart';
 import 'package:bogle_app/src/data/character_repository.dart';
 import 'package:bogle_app/src/data/local_store.dart';
+import 'package:bogle_app/src/models/character_friend.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
@@ -110,56 +111,30 @@ void main() {
           ).exists(),
         });
 
-        // 첫 요청은 앱의 createFriend를 그대로 호출한다.
-        try {
-          await services.characters.createFriend(
-            NewFriend(
-              name: '진단친구',
-              personality: choice['label'] as String,
-              favoriteThings: const ['그림'],
-              speechStyle: '해요체',
-              assetPath: art.assetPath,
-              accentHex: art.accentHex,
-              generationJobId: art.jobId,
-            ),
-          );
-          observe('${source.name}_app_save', {'status': 201});
-        } on ApiException catch (error) {
-          observe('${source.name}_app_save', {
-            'status': error.statusCode,
-            'code': error.code,
-            'fieldErrors': error.fieldErrors,
-          });
-          expect(error.statusCode, 422);
-          expect(error.fieldErrors.keys, contains('personalityType'));
-        }
-
-        // 이후 서버 기능은 별도 명시적인 서버 규격 요청으로 독립 확인한다.
-        final body = {
-          'generationJobId': art.jobId,
-          'name': '진단친구',
-          'personalityType': choice['code'],
-          'favoriteThings': ['그림'],
-          'speechStyle': '해요체',
-        };
-        final key = 'server-${art.jobId}';
+        final input = NewFriend(
+          name: '진단친구',
+          personality: choice['label'] as String,
+          favoriteThings: const ['그림'],
+          speechStyle: '해요체',
+          assetPath: art.assetPath,
+          accentHex: art.accentHex,
+          generationJobId: art.jobId,
+        );
         if (source == GenerationSource.drawing) {
           client.dropNextPath = '/v1/characters';
         }
-        final saved = await api.post(
-          '/v1/characters',
-          body: body,
-          idempotencyKey: key,
-        );
-        final replay = await api.post(
-          '/v1/characters',
-          body: body,
-          idempotencyKey: key,
-        );
-        expect(replay['id'], saved['id']);
+        final made = await services.characters.createFriend(input);
+        final repeated = await services.characters.createFriend(input);
+        expect(repeated.id, made.id);
+        final saved = await api.get('/v1/characters/${made.id}');
+        expect(saved['personalityType'], choice['code']);
+        expect(saved['bedtime'], 1260);
+        expect(saved['wakeTime'], 420);
         serverFriends.add(saved);
-        observe('${source.name}_server_save_replay', {
-          'sameId': true,
+        observe('${source.name}_app_save_replay', {
+          'saved': true,
+          'sameId': repeated.id == made.id,
+          'personalityType': saved['personalityType'],
           'face': saved['face'] != null,
           'responseLossInjected': source == GenerationSource.drawing,
         });
@@ -177,23 +152,45 @@ void main() {
         'sleepBedtime': friend.sleep.bedtime,
       });
 
-      await repo.saveFriend(friend.copyWith(name: '수정된이름'));
+      await repo.saveFriend(
+        friend.copyWith(
+          name: '수정된이름',
+          personality: '상상을 좋아해요',
+          introduction: '함께 놀자!',
+          speechStyle: '반말',
+          sleep: const SleepSchedule(bedtime: 1200, wakeTime: 480),
+        ),
+      );
       await services.sync!.outbox.flush();
       final server = await api.get('/v1/characters/${friend.id}');
       final local = (await repo.fetchFriends()).firstWhere(
         (f) => f.id == friend.id,
       );
-      observe('unsupported_edit_outbox', {
-        'serverNameUnchanged': server['name'] == friend.name,
+      observe('edit_outbox_synced', {
+        'serverNameChanged': server['name'] == '수정된이름',
         'localNameChanged': local.name == '수정된이름',
         'pending': await services.sync!.outbox.pending,
       });
-      expect(server['name'], friend.name);
+      expect(server['name'], '수정된이름');
+      expect(server['personality'], '상상을 좋아해요');
+      expect(server['introduction'], '함께 놀자!');
+      expect(server['speechStyle'], '반말');
+      expect(server['bedtime'], 1200);
+      expect(server['wakeTime'], 480);
       expect(local.name, '수정된이름');
       expect(await services.sync!.outbox.pending, 0);
 
       final clips = await services.motion.clipsFor(friend);
-      observe('unsupported_motion', {'fallback': clips == null});
+      observe('built_in_motion', {
+        'builtIn': clips == null,
+        'serverRequests': client.requests
+            .where((r) => (r['path'] as String).endsWith('/motion'))
+            .length,
+      });
+      expect(
+        client.requests.where((r) => (r['path'] as String).endsWith('/motion')),
+        isEmpty,
+      );
       expect(clips, isNull);
       final answer = await services.chat.replyTo(friend, '안녕');
       expect(answer, isNotEmpty);
@@ -271,14 +268,43 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 300));
       observe('app_generation_cancel', {'cancelled': true});
 
-      await repo.deleteFriend(friend.id);
+      // 실제 10초 동안 서버 데이터를 보존하고 되돌리면 삭제 요청을 취소한다.
+      final undone = await repo.deleteFriend(friend.id);
+      await Future<void>.delayed(const Duration(seconds: 1));
+      await repo.restoreFriend(undone!);
+      await Future<void>.delayed(const Duration(seconds: 10));
+      expect((await api.get('/v1/characters/${friend.id}'))['id'], friend.id);
+      observe('undo_before_deadline', {'serverPreserved': true});
+
+      final elapsed = Stopwatch()..start();
+      final deleted = await repo.deleteFriend(friend.id);
       final immediate = await api.get('/v1/characters/${friend.id}');
-      observe('delayed_delete', {
-        'serverStillPresent': immediate['id'] == friend.id,
-      });
       expect(immediate['id'], friend.id);
-      // 서버 직접 삭제는 별도 검증이다. 10초 복구 창을 기다리지 않는다.
-      await api.delete('/v1/characters/${friend.id}');
+      await Future<void>.delayed(const Duration(seconds: 9));
+      expect((await api.get('/v1/characters/${friend.id}'))['id'], friend.id);
+      var removed = false;
+      while (elapsed.elapsed < const Duration(seconds: 14)) {
+        try {
+          await api.get('/v1/characters/${friend.id}');
+        } on ApiException catch (error) {
+          expect(error.statusCode, 404);
+          removed = true;
+          break;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+      }
+      expect(removed, isTrue);
+      expect(elapsed.elapsedMilliseconds, greaterThanOrEqualTo(10000));
+      // 유예가 끝난 뒤 로컬에서만 되살아나지 않아야 한다.
+      await repo.restoreFriend(deleted!);
+      expect(
+        (await repo.fetchFriends()).where((f) => f.id == friend.id),
+        isEmpty,
+      );
+      observe('actual_delayed_delete', {
+        'presentAt9Seconds': true,
+        'deletedAfterMs': elapsed.elapsedMilliseconds,
+      });
       try {
         await api.get('/v1/characters/${friend.id}/messages');
         fail('삭제된 친구 대화가 조회됨');
@@ -286,7 +312,7 @@ void main() {
         expect(error.statusCode, 404);
         observe('server_delete_cascade', {'historyStatus': error.statusCode});
       }
-      await Future<void>.delayed(const Duration(seconds: 12));
+      await Future<void>.delayed(const Duration(seconds: 2));
       observe('server_counts', await api.get('/diagnostic/observations'));
     },
     skip: _url == null

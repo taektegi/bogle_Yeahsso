@@ -97,6 +97,7 @@ def test_list_response_shape_is_camel_case(app, client: TestClient, storage) -> 
     assert set(character) == {
         "id", "name", "personalityType", "personalityLabel", "introduction", "favoriteThings",
         "speechStyle", "source", "art", "thumbnail", "accentArgb", "face", "createdAt",
+        "personality", "bedtime", "wakeTime",
     }  # fmt: skip
     assert character["id"] == str(item.id)
     assert character["name"] == "구름이"
@@ -284,7 +285,7 @@ def test_status_while_asleep(app, client: TestClient, storage) -> None:
     assert response.status_code == 200
     assert response.json() == {
         "asleep": True,
-        "nextChangeAt": "2026-10-05T21:00:00Z",  # 다음 날 06:00 KST
+        "nextChangeAt": "2026-10-05T22:00:00Z",  # 다음 날 07:00 KST
         "serverTime": "2026-10-05T13:00:00Z",
     }
 
@@ -298,7 +299,7 @@ def test_status_while_awake(app, client: TestClient, storage) -> None:
 
     assert response.json() == {
         "asleep": False,
-        "nextChangeAt": "2026-10-05T13:00:00Z",  # 22:00 KST
+        "nextChangeAt": "2026-10-05T12:00:00Z",  # 21:00 KST
         "serverTime": "2026-10-05T05:00:00Z",
     }
 

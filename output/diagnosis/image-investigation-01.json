@@ -1,0 +1,14 @@
+{
+  "model": "openai/gpt-image-2.5-flare",
+  "generated": false,
+  "keyAuthenticationSucceeded": true,
+  "modelDiscoverySucceeded": true,
+  "endpoints": [],
+  "httpStatus": 404,
+  "category": "data_policy",
+  "dataPolicyMentioned": true,
+  "privacySettingsMentioned": true,
+  "providerAuthenticationMentioned": false,
+  "code": "generation_unavailable",
+  "retryable": false
+}

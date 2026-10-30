@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,7 +21,7 @@ import 'window_view_service.dart';
 /// is an interface, and the iPad is where the app's data lives: friends,
 /// their pictures, care and memories, the profile and orders are kept in its
 /// storage either way. [AppServices.remote] adds the character service for
-/// what only it can do (making a friend from a drawing, chat, motion clips)
+/// what only it can do (making a friend from a drawing and chat)
 /// and keeps its copy in step ([sync]).
 class AppServices {
   AppServices({
@@ -68,7 +66,7 @@ class AppServices {
 
   /// With the character service (`ApiConfig`). Everything is still kept on
   /// the iPad ([store]); the service makes friends from drawings, answers in
-  /// chat and makes motion clips, and hears about changes through an outbox.
+  /// chat and hears about changes through an outbox. Motions run in the app.
   factory AppServices.remote(
     ApiConfig config, {
     required FileStore store,
@@ -107,10 +105,8 @@ class AppServices {
       orders: InMemoryOrderRepository(store: store),
       generator: ApiCharacterGenerator(api, art: art, store: store),
       chat: ApiChatService(api, beforeReply: outbox.flush),
-      motion: ApiMotionService(
-        api,
-        folder: Directory('${store.folder.path}/motion'),
-      ),
+      // 팀 서버의 GIF API 대신 LivingCharacter의 내장 모션을 사용한다.
+      motion: const NoMotionService(),
       sync: ServiceSync(
         characters: characters,
         profile: profile,

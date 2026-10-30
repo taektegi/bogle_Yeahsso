@@ -1,5 +1,8 @@
 # 보글 API 서버
 
+`seonghyun_real`의 최신 앱 연동 계약은 [통합 연동 수정](../docs/integration-fixes.md)입니다.
+친구 편집·개별 수면을 사용하려면 `20261030172223_friend_edit_sleep` 마이그레이션을 먼저 적용합니다.
+
 FastAPI로 만든 보글 백엔드 서버입니다. 기준 문서는 `aidlc-docs/inception/requirements/requirements.md`입니다.
 API 계약의 기준은 서버를 띄우면 열리는 **`/docs`(OpenAPI)** 입니다.
 

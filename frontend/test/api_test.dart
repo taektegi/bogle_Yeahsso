@@ -316,6 +316,11 @@ void main() {
     test('a new friend is made on the service and kept on the iPad with the '
         "generator's pictures", () async {
       final service = FakeService({
+        'GET /v1/personality-types': (_) => json({
+          'items': [
+            {'code': 'imaginative', 'label': '엉뚱한 상상가예요'},
+          ],
+        }),
         'POST /v1/characters': (_) => json(serverFriend(), 201),
       });
       final wired = Wired(service, MemoryStore(), await tempFolder());
@@ -323,7 +328,7 @@ void main() {
       final made = await wired.characters.createFriend(
         const NewFriend(
           name: '구름이',
-          personality: '엉뚱해요',
+          personality: '엉뚱한 상상가예요',
           favoriteThings: ['구름'],
           speechStyle: '해요체',
           assetPath: '/kept/job.png',
@@ -336,6 +341,8 @@ void main() {
       final sent = service.to('/v1/characters').single;
       expect(sent.headers['Idempotency-Key'], isNotEmpty);
       expect(jsonDecode(sent.body)['generationJobId'], jobId);
+      expect(jsonDecode(sent.body)['personalityType'], 'imaginative');
+      expect(jsonDecode(sent.body).containsKey('personality'), isFalse);
       expect(made.id, friendId);
       expect(made.assetPath, '/kept/job.png');
       expect((await wired.characters.fetchFriends()).last.id, friendId);
@@ -344,6 +351,11 @@ void main() {
     test('the introduction setup wrote from the answers replaces the '
         "service's own", () async {
       final service = FakeService({
+        'GET /v1/personality-types': (_) => json({
+          'items': [
+            {'code': 'imaginative', 'label': '엉뚱한 상상가예요'},
+          ],
+        }),
         'POST /v1/characters': (_) => json(serverFriend(), 201),
         'PATCH /v1/characters/$friendId': (_) => json(serverFriend()),
       });
@@ -353,7 +365,7 @@ void main() {
       final made = await wired.characters.createFriend(
         const NewFriend(
           name: '구름이',
-          personality: '엉뚱한 상상가, 상상 놀이를 제안해요',
+          personality: '엉뚱한 상상가예요',
           favoriteThings: ['구름'],
           speechStyle: '반말',
           assetPath: '/kept/job.png',
@@ -402,6 +414,44 @@ void main() {
           'name': '뭉게',
           'bedtime': 1260,
         });
+      },
+    );
+
+    test(
+      'undo then delete again keeps artwork through the new undo window',
+      () async {
+        final service = FakeService({
+          'GET /v1/characters': (_) => json({
+            'items': [serverFriend()],
+          }),
+          'DELETE /v1/characters/$friendId': (_) => http.Response('', 204),
+        });
+        final wired = Wired(service, MemoryStore(), await tempFolder());
+        final repo = SyncedCharacterRepository(
+          wired.api,
+          local: InMemoryCharacterRepository(),
+          outbox: wired.outbox,
+          art: wired.art,
+          undoWindow: const Duration(seconds: 4),
+        );
+        addTearDown(wired.outbox.dispose);
+        await repo.pull();
+        final friend = (await repo.fetchFriends()).firstWhere(
+          (f) => f.id == friendId,
+        );
+        final first = await repo.deleteFriend(friendId);
+        await repo.restoreFriend(first!);
+        await Future<void>.delayed(const Duration(seconds: 2));
+        final second = await repo.deleteFriend(friendId);
+        // 첫 삭제의 이미지 정리 시각(5초)을 넘기되 두 번째 유예(6초) 안에 복원한다.
+        await Future<void>.delayed(const Duration(milliseconds: 3250));
+        expect(await File(friend.assetPath).exists(), isTrue);
+        await repo.restoreFriend(second!);
+        expect(service.to('/v1/characters/$friendId'), isEmpty);
+        expect(
+          (await repo.fetchFriends()).any((f) => f.id == friendId),
+          isTrue,
+        );
       },
     );
 

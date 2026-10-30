@@ -1,0 +1,89 @@
+00:00 +0: loading C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/figure_motion_test.dart
+00:00 +0: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/figure_motion_test.dart: Act.wave moves smoothly and comes back to rest
+00:00 +1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/figure_motion_test.dart: Act.hop moves smoothly and comes back to rest
+00:00 +2: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +5: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +6: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +7: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +9: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +10: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +11: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +12: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +15: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +17: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +18: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +19: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +20: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +21: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: uploads the drawing, polls, and reads the clips
+00:00 +22: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/figure_motion_test.dart: Act.tumble moves smoothly and comes back to rest
+00:00 +23: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +24: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +25: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +26: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +27: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +31: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +32: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +33: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +34: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +35: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +36: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +37: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +38: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +39: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +40: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +41: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +42: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +43: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +44: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +44: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/figure_motion_test.dart: 뭉글이 is rigged from the part names in its drawing
+unhandled element <filter/>; Picture key: Svg loader
+00:00 +45: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +46: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +47: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +48: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +49: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +50: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +51: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +52: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +53: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +54: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +55: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +56: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +57: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +58: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +59: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +60: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +61: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +62: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +63: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +64: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +65: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +66: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +67: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +68: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +69: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +70: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +71: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +72: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +73: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +74: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +75: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +76: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +77: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +78: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +79: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:00 +80: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:01 +81: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:01 +82: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:01 +83: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:02 +84: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: without MOTION_SERVER the app makes no requests
+00:02 +85: All tests passed!

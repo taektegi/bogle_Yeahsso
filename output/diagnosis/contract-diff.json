@@ -3,9 +3,6 @@
     "/v1/health/ready": [
       "get"
     ],
-    "/v1/characters/{character_id}": [
-      "patch"
-    ],
     "/v1/characters/{character_id}/motion": [
       "get"
     ],
@@ -15,11 +12,7 @@
   },
   "responseProperties": {
     "CharacterOut": {
-      "onlyFrontend": [
-        "bedtime",
-        "personality",
-        "wakeTime"
-      ],
+      "onlyFrontend": [],
       "onlyBackend": []
     },
     "GenerationOut": {
@@ -71,6 +64,20 @@
           "반말"
         ],
         "title": "Speechstyle"
+      },
+      "bedtime": {
+        "type": "integer",
+        "maximum": 1439.0,
+        "minimum": 0.0,
+        "title": "Bedtime",
+        "default": 1260
+      },
+      "wakeTime": {
+        "type": "integer",
+        "maximum": 1439.0,
+        "minimum": 0.0,
+        "title": "Waketime",
+        "default": 420
       }
     },
     "type": "object",

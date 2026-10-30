@@ -189,6 +189,8 @@ class CreationRepository:
                         "personality_type": payload.personality_type,
                         "favorite_things": payload.favorite_things,
                         "speech_style": payload.speech_style,
+                        "bedtime": payload.bedtime,
+                        "wake_time": payload.wake_time,
                         "introduction": secrets.choice(INTRODUCTIONS),
                         "source_asset_id": job["source_asset_id"],
                         "art_asset_id": job["art_asset_id"],

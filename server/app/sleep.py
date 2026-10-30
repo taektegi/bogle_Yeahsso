@@ -1,37 +1,44 @@
-"""친구의 수면 시간 (FR-08, D-15).
-
-모든 친구가 한국 시간(Asia/Seoul) 22:00–06:00에 잔다. 판정은 서버 시각 기준이다.
-수동 재우기·수면 일정 편집은 없으므로 시각만으로 결정된다.
-"""
+"""앱의 개별 수면 일정. 서버 시각을 앱의 UTC 오프셋으로 변환해 판정한다."""
 
 from dataclasses import dataclass
-from datetime import UTC, datetime, time, timedelta
-from zoneinfo import ZoneInfo
+from datetime import UTC, datetime, timedelta, timezone
+from typing import Annotated
 
-TIME_ZONE = ZoneInfo("Asia/Seoul")
-BEDTIME = time(22, 0)
-WAKE_TIME = time(6, 0)
+from fastapi import Header
+
+ClientUtcOffset = Annotated[int, Header(alias="X-Bogle-Utc-Offset-Minutes", ge=-840, le=840)]
 
 
 @dataclass(frozen=True)
 class SleepStatus:
     asleep: bool
     # 다음에 자거나 깨는 시각 (UTC)
-    next_change_at: datetime
+    next_change_at: datetime | None
 
 
-def sleep_status(now: datetime) -> SleepStatus:
-    """`now`는 시간대가 있는 시각이어야 한다. 22:00은 잠든 것, 06:00은 깨어난 것으로 본다."""
+def sleep_status(
+    now: datetime, bedtime: int = 21 * 60, wake_time: int = 7 * 60, utc_offset: int = 540
+) -> SleepStatus:
+    """분 단위 일정, 시작 포함/끝 제외. 같은 시각이면 앱과 같이 항상 깨어 있다."""
     if now.tzinfo is None:
         raise ValueError("now must be timezone-aware")
 
-    local = now.astimezone(TIME_ZONE)
-    asleep = local.time() >= BEDTIME or local.time() < WAKE_TIME
-
-    if not asleep:
-        change = datetime.combine(local.date(), BEDTIME, tzinfo=TIME_ZONE)
-    elif local.time() >= BEDTIME:
-        change = datetime.combine(local.date() + timedelta(days=1), WAKE_TIME, tzinfo=TIME_ZONE)
-    else:
-        change = datetime.combine(local.date(), WAKE_TIME, tzinfo=TIME_ZONE)
-    return SleepStatus(asleep=asleep, next_change_at=change.astimezone(UTC))
+    if not (0 <= bedtime < 1440 and 0 <= wake_time < 1440 and -840 <= utc_offset <= 840):
+        raise ValueError("invalid sleep schedule or UTC offset")
+    if bedtime == wake_time:
+        return SleepStatus(False, None)
+    local = now.astimezone(timezone(timedelta(minutes=utc_offset)))
+    minute = local.hour * 60 + local.minute
+    asleep = (
+        bedtime <= minute < wake_time
+        if bedtime < wake_time
+        else minute >= bedtime or minute < wake_time
+    )
+    midnight = local.replace(hour=0, minute=0, second=0, microsecond=0)
+    next_change = min(
+        candidate
+        for day in (0, 1)
+        for boundary in (bedtime, wake_time)
+        if (candidate := midnight + timedelta(days=day, minutes=boundary)) > local
+    )
+    return SleepStatus(asleep, next_change.astimezone(UTC))

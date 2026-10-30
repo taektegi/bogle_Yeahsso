@@ -15,6 +15,8 @@ from fastapi import Depends
 from app.assets import AssetRow
 from app.db import Database, DatabaseDep
 from app.face_analysis import FaceMap, validate_face_payload
+from app.friend_settings import EditFriendIn
+from app.personality import PERSONALITY_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +35,9 @@ class CharacterRecord:
     source: AssetRow | None
     art: AssetRow
     thumbnail: AssetRow
+    personality: str | None = None
+    bedtime: int = 21 * 60
+    wake_time: int = 7 * 60
 
 
 # 에셋 조인에도 소유자 조건을 건다. friends의 외래 키가 이미 같은 소유자를 보장하지만
@@ -41,6 +46,7 @@ _SELECT = """
     select
         f.id, f.name, f.personality_type, f.favorite_things, f.speech_style,
         f.introduction, f.accent_argb, f.created_at, f.face,
+        f.personality, f.bedtime, f.wake_time,
         s.id as source_id, s.storage_path as source_path, s.content_type as source_content_type,
         s.width as source_width, s.height as source_height,
         a.id as art_id, a.storage_path as art_path, a.content_type as art_content_type,
@@ -97,6 +103,9 @@ def _record(row: dict[str, Any]) -> CharacterRecord:
         source=_asset(row, "source"),
         art=art,
         thumbnail=thumbnail,
+        personality=row["personality"],
+        bedtime=row["bedtime"],
+        wake_time=row["wake_time"],
     )
 
 
@@ -124,6 +133,24 @@ class CharacterRepository:
                 "select 1 from public.friends"
                 " where id = %(character_id)s and user_id = %(user_id)s",
                 {"user_id": user_id, "character_id": character_id},
+            ).fetchone()
+        return row is not None
+
+    def update_for_user(self, user_id: UUID, character_id: UUID, body: EditFriendIn) -> bool:
+        fields = body.model_dump(exclude_unset=True)
+        if "personality" in fields:
+            fields["personality_type"] = next(
+                (p.code for p in PERSONALITY_TYPES if p.label == fields["personality"]), "custom"
+            )
+        if not fields:
+            return self.exists_for_user(user_id, character_id)
+        # 열 이름은 검증한 모델과 위 고정 키에서만 온다. 입력값은 바인딩한다.
+        assignments = ", ".join(f"{name} = %({name})s" for name in fields)
+        with self._db.connection() as conn:
+            row = conn.execute(
+                f"update public.friends set {assignments}"
+                " where id = %(character_id)s and user_id = %(user_id)s returning id",
+                {**fields, "user_id": user_id, "character_id": character_id},
             ).fetchone()
         return row is not None
 

@@ -19,7 +19,7 @@ from app.idempotency import IdempotencyKey
 from app.rate_limit import limit_messages
 from app.repositories.messages import MessageRecord, MessageRepository, MessageRepositoryDep
 from app.schemas import CamelModel
-from app.sleep import sleep_status
+from app.sleep import ClientUtcOffset, sleep_status
 
 router = APIRouter(prefix="/characters", tags=["chat"], responses=ERROR_RESPONSES)
 _REPLY_POLL_INTERVAL_SECONDS = 0.2
@@ -127,6 +127,7 @@ def send_message(
     chat: ChatAiDep,
     now: NowDep,
     settings: Annotated[Settings, Depends(get_settings)],
+    utc_offset: ClientUtcOffset = 540,
 ) -> MessagePairOut:
     """AI가 답한다. 검열에 걸리거나 AI가 실패·15초 초과면 스크립트 대사로 답한다 (오류 아님).
 
@@ -141,7 +142,7 @@ def send_message(
     )
     created = False
     if user_message is None:
-        if sleep_status(now).asleep:
+        if sleep_status(now, profile.bedtime, profile.wake_time, utc_offset).asleep:
             raise ApiError(409, "character_asleep", "친구가 지금 자고 있어요. 깨어나면 이야기해요.")
         started = repo.start_user_message(user.id, character_id, body.client_message_id, body.text)
         if started is None:
