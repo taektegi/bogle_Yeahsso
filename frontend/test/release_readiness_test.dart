@@ -189,7 +189,8 @@ void main() {
     expect(find.text('이야기를 추억으로 저장하지 못했어요.'), findsOneWidget);
     chat.reply.complete('우리 같이 놀자!');
     await tester.pumpAndSettle();
-    expect(chatLine('우리 같이 놀자!'), findsOneWidget);
+    // The friend says it in its balloon, and the chat card keeps it.
+    expect(chatLine('우리 같이 놀자!'), findsNWidgets(2));
     expect(tester.takeException(), isNull);
   });
 

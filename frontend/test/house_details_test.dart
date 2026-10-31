@@ -325,7 +325,7 @@ void main() {
     Size(1194, 834),
     Size(1366, 1024),
   ]) {
-    testWidgets('둘이 있는 대화와 키보드에서 두 친구와 대화창이 겹치지 않는다 $size', (tester) async {
+    testWidgets('둘이 있는 대화와 키보드에서 두 친구·말풍선·대화창이 겹치지 않는다 $size', (tester) async {
       await open(tester, size: size);
       await invite(tester);
       await tester.tap(find.bySemanticsLabel('대화하기'));
@@ -344,8 +344,21 @@ void main() {
       await tester.pump();
       await tester.tap(find.byTooltip('보내기'));
       await tester.pump(const Duration(milliseconds: 600));
-      // 답은 방 안 말풍선이 아니라 대화창에 쌓인다.
-      expect(find.byType(SceneSpeech), findsNothing);
+      // 답은 친구의 말풍선으로 나오고, 대화창에도 함께 쌓인다.
+      expect(find.byType(SceneSpeech), findsOneWidget);
+      expect(
+        tester.widget<SceneSpeech>(find.byType(SceneSpeech)).text,
+        contains('구름'),
+      );
+      void bubbleInRoom(double floor) {
+        final bubble = tester.getRect(find.byType(SceneSpeech));
+        expect(bubble.left, greaterThanOrEqualTo(0));
+        expect(bubble.top, greaterThanOrEqualTo(0));
+        expect(bubble.right, lessThan(panel().left));
+        expect(bubble.bottom, lessThanOrEqualTo(floor));
+      }
+
+      bubbleInRoom(size.height);
       expect(
         find.descendant(
           of: find.byType(ChatPanel),
@@ -367,6 +380,7 @@ void main() {
         expect(character.top, greaterThanOrEqualTo(0));
         expect(character.right, lessThan(dock.left));
       }
+      bubbleInRoom(size.height - 350);
       await capture(tester, 'keyboard-${size.width.toInt()}');
       expect(tester.takeException(), isNull);
       tester.view.resetViewInsets();

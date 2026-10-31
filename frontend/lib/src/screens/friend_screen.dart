@@ -124,6 +124,12 @@ class _FriendScreenState extends State<FriendScreen>
     duration: const Duration(milliseconds: 380),
   )..addListener(_companyChanged);
   double _stageSize = 0, _stagePan = 0;
+
+  /// How far the room is panned left for the conversation, and where the
+  /// chat card's left edge is on screen while it's open: the friend's
+  /// balloon keeps to the room between the two.
+  double _stagePanX = 0;
+  double? _chatLeft;
   final _deferredAnswers = <({String text, TalkTopic topic})>[];
   void _companyChanged() {
     if (mounted) setState(() {});
@@ -851,6 +857,8 @@ class _FriendScreenState extends State<FriendScreen>
             ? math.max(0.0, room.feet - (h - keyboard - 16))
             : 0.0;
         _stagePan = pan;
+        _stagePanX = panX;
+        _chatLeft = _chatOpen ? w - margin - panelWidth : null;
         return Stack(
           children: [
             Positioned.fill(
@@ -1008,10 +1016,10 @@ class _FriendScreenState extends State<FriendScreen>
       if (_guestEating case final snack?)
         ?_eatingAt(snack, w, h, feet, guest: true),
       if (_performing case final kind?) ?_clipAt(kind, w, h, feet),
-      // In conversation the words are in the chat card instead.
+      // In conversation too the friend answers in its balloon; the chat
+      // card keeps the whole conversation beside it.
       if ((_bubble != null || _guestBubble != null || _thinking > 0) &&
           !_welcome &&
-          !_chatOpen &&
           _landed)
         ?_speech(w, h, feet),
     ];

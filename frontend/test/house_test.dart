@@ -803,7 +803,8 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.bySemanticsLabel('생각하는 중'), findsOneWidget);
+    // The friend thinks in its balloon and in the chat card alike.
+    expect(find.bySemanticsLabel('생각하는 중'), findsWidgets);
     expect(tester.widget<TextField>(field).focusNode!.hasFocus, isTrue);
     await tester.pump(const Duration(seconds: 1));
     expect(find.bySemanticsLabel('생각하는 중'), findsNothing);
