@@ -35,6 +35,7 @@ class ApiCharacterGenerator implements CharacterGenerator {
     required this.art,
     LocalStore? store,
     this.giveUpAfter = const Duration(minutes: 5),
+    this.faceGiveUpAfter = const Duration(minutes: 3),
     Future<void> Function(Duration)? wait,
   }) : _store = store,
        _wait = wait ?? Future<void>.delayed;
@@ -63,6 +64,8 @@ class ApiCharacterGenerator implements CharacterGenerator {
 
   @override
   Future<CharacterGenerationJob?> unfinished() async {
+    // 앱이 꺼지기 전에 받지 못한 얼굴 좌표도 다시 받으러 간다.
+    unawaited(_resumeFaces());
     final pending = await _store?.read(_pendingName);
     final id = pending is Map ? pending['jobId'] : pending;
     final revision = pending is Map ? pending['sketchRevision'] : null;
@@ -96,9 +99,103 @@ class ApiCharacterGenerator implements CharacterGenerator {
   }
 
   final Duration giveUpAfter;
+
+  /// 그림보다 늦게 오는 얼굴 좌표를 기다리는 시간. 서버는 최대 2분 안에 분석을 끝낸다.
+  final Duration faceGiveUpAfter;
   final Future<void> Function(Duration) _wait;
   final _uploads = Expando<Future<String>>();
   final _completed = Expando<String>();
+
+  // -------------------------------------------------------------------------
+  // 얼굴 좌표는 그림보다 늦게 온다. 서버는 그림이 완성되면 바로 succeeded를
+  // 알리고(faceStatus: pending) 얼굴 분석을 이어서 한다. 아이는 그동안 친구
+  // 설정을 하고, 앱은 뒤에서 작업을 다시 조회해 좌표가 오면 그림 옆
+  // (`<jobId>.face.json`)에 둔다. 좌표가 끝내 없어도 친구는 몸 전체로 움직인다.
+  // -------------------------------------------------------------------------
+
+  /// 아직 얼굴 좌표를 받지 못한 작업. 앱을 다시 켜면 이어서 묻는다.
+  static const _pendingFacesName = 'pending_faces';
+  final _followingFaces = <String, Future<void>>{};
+  Future<void> _facesKept = Future.value();
+
+  /// 작업 [jobId]의 얼굴 좌표가 오거나 없다고 확정될 때까지 조회하고,
+  /// 오면 친구 그림 옆에 저장한다. 예외를 밖으로 던지지 않는다.
+  Future<void> followFace(String jobId) =>
+      _followingFaces[jobId] ??= _followFace(jobId).whenComplete(() {
+        // 화살표 함수로 쓰면 제거한 future를 돌려줘 자기 자신을 기다리게 된다.
+        _followingFaces.remove(jobId);
+      });
+
+  @override
+  Future<void>? faceStillComing(String jobId) => _followingFaces[jobId];
+
+  Future<void> _followFace(String jobId) async {
+    final deadline = DateTime.now().add(faceGiveUpAfter);
+    var delay = const Duration(seconds: 2);
+    var misses = 0;
+    try {
+      while (true) {
+        await _wait(delay);
+        final Map<String, dynamic> state;
+        try {
+          state = await api.get('/v1/generations/$jobId');
+          misses = 0;
+        } on ApiException catch (e) {
+          // 작업이 지워졌거나(404) 계속 연결되지 않으면 그만둔다.
+          if (!e.retryable || ++misses > 5) break;
+          if (DateTime.now().isAfter(deadline)) break;
+          continue;
+        }
+        if (state['faceStatus'] != 'pending') {
+          if (state['faceStatus'] == 'ready' && state['face'] != null) {
+            await art.keepFace(jobId, state['face'] as Object);
+          }
+          break;
+        }
+        if (DateTime.now().isAfter(deadline)) break;
+        delay = Duration(
+          milliseconds: (state['pollAfterMs'] as num?)?.toInt() ?? 2000,
+        );
+      }
+    } on Object {
+      // 얼굴 좌표는 선택 기능이다. 받지 못해도 친구 만들기는 그대로 끝난다.
+    }
+    await _rememberFace(jobId, pending: false);
+  }
+
+  Future<void> _resumeFaces() async {
+    for (final id in await _pendingFaces()) {
+      unawaited(followFace(id));
+    }
+  }
+
+  Future<List<String>> _pendingFaces() async {
+    try {
+      final kept = await _store?.read(_pendingFacesName);
+      return [
+        for (final id in kept is List ? kept : const [])
+          if (id is String) id,
+      ];
+    } on Object {
+      return [];
+    }
+  }
+
+  /// 저장 목록은 한 번에 하나씩 고친다. 동시에 끝난 두 작업이 서로의 변경을 덮지 않게 한다.
+  Future<void> _rememberFace(String jobId, {required bool pending}) {
+    Future<void> change() async {
+      try {
+        final ids = await _pendingFaces()
+          ..remove(jobId);
+        if (pending) ids.add(jobId);
+        await _store?.write(_pendingFacesName, ids);
+      } on Object {
+        // 저장하지 못하면 앱을 다시 켰을 때의 재조회만 빠진다.
+      }
+    }
+
+    return _facesKept = _facesKept.then((_) => change());
+  }
 
   @override
   CharacterGenerationJob start(GenerationInput input) =>
@@ -341,6 +438,12 @@ class _ApiGenerationJob implements CharacterGenerationJob {
           // 생성은 성공했는데 다운로드만 끊긴 경우 같은 결과를 다시 받는다.
           if (input case final source?) generator._completed[source] = id;
           final kept = await _keep(id, state);
+          // 얼굴 분석은 아직 진행 중일 수 있다. 기다리지 않고 설정 화면으로 가되,
+          // 앱이 꺼져도 다시 물을 수 있게 먼저 기록해 둔다.
+          if (state['faceStatus'] == 'pending') {
+            await generator._rememberFace(id, pending: true);
+            unawaited(generator.followFace(id));
+          }
           return GeneratedArt(
             assetPath: kept.art,
             thumbnailPath: kept.thumbnail,

@@ -59,6 +59,8 @@ void main() {
   test('every state of a generation is a GenerationOut', () {
     expectMatches(generationWaiting('queued'), 'GenerationOut');
     expectMatches(generationSucceeded(), 'GenerationOut');
+    expectMatches(generationSucceededFace('pending'), 'GenerationOut');
+    expectMatches(generationSucceededFace('unavailable'), 'GenerationOut');
     expectMatches(
       generationFailed('generation_rejected', retryable: false),
       'GenerationOut',

@@ -1890,6 +1890,22 @@
               }
             ]
           },
+          "faceStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "ready",
+                  "unavailable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facestatus"
+          },
           "error": {
             "anyOf": [
               {

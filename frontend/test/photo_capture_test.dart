@@ -85,6 +85,8 @@ class _PhotoGenerator implements CharacterGenerator {
   Future<CharacterGenerationJob?> unfinished() async => null;
   @override
   Future<void> finished(String id) async {}
+  @override
+  Future<void>? faceStillComing(String jobId) => null;
 }
 
 Future<void> _show(

@@ -82,6 +82,11 @@ abstract interface class CharacterGenerator {
 
   /// The friend made from job [jobId] exists: nothing to pick up any more.
   Future<void> finished(String jobId);
+
+  /// 작업 [jobId]의 얼굴 좌표가 아직 오는 중이면, 다 받거나 없다고 확정되거나
+  /// 기다리기를 그만둘 때 끝나는 future. 기다릴 것이 없으면 null이다.
+  /// 친구 설정을 마친 뒤 표정까지 갖춘 친구로 만나게 하려고 쓴다.
+  Future<void>? faceStillComing(String jobId);
 }
 
 /// Without a character service the child's own picture becomes the friend:
@@ -104,6 +109,10 @@ class LocalCharacterGenerator implements CharacterGenerator {
 
   @override
   Future<void> finished(String jobId) => Future.value();
+
+  /// 기기 안에서 만든 친구는 얼굴 좌표를 따로 받지 않는다.
+  @override
+  Future<void>? faceStillComing(String jobId) => null;
 
   Future<GeneratedArt> _save(GenerationInput input) async {
     final png = input.image.length > 8 && input.image[0] == 0x89;

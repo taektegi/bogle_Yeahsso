@@ -196,12 +196,12 @@
 |---|---|---|
 | `queued` | 접수됨 | `pollAfterMs` |
 | `processing` | 생성 중 | `pollAfterMs` |
-| `succeeded` | 성공 | `art`, `thumbnail`, `accentArgb`, `face` |
+| `succeeded` | 성공 | `art`, `thumbnail`, `accentArgb`, `face`, `faceStatus` (`pending`이면 `pollAfterMs`) |
 | `failed` | 실패 | `error` |
 | `cancelled` | 취소됨 | — |
 
 - 진행률은 서버가 알 수 없으므로 **퍼센트를 내려 주지 않습니다.** 앱의 30초·75초 안내 문구는 앱의 경과 시간으로 계속 처리해 주세요.
-- `pollAfterMs`는 항상 **2000**입니다. 이 간격으로 조회해 주세요.
+- `pollAfterMs`는 항상 **2000**입니다. 이 간격으로 조회해 주세요. `succeeded`이면서 `faceStatus`가 `pending`일 때도 같은 값이 내려갑니다.
 
 성공 응답:
 
@@ -213,14 +213,27 @@
   "thumbnail": {"assetId": "...", "url": "...", "expiresAt": "...", "contentType": "image/png", "width": 256, "height": 256},
   "accentArgb": 4289974783,
   "face": {"version": 1, "size": [1024, 1024], "facing": "front", "head": [250, 100, 520, 500], "eyes": [[410, 300, 42], [610, 300, 42]], "mouth": [510, 470, 130, 52], "cheeks": [[350, 420, 50], [670, 420, 50]]},
+  "faceStatus": "ready",
   "createdAt": "...", "updatedAt": "..."
 }
+```
+
+그림이 완성되면 얼굴 분석을 기다리지 않고 바로 `succeeded`가 내려갑니다. 이때 얼굴 분석이 아직 진행 중이면 다음과 같습니다.
+
+```json
+{"jobId": "9b1d...", "status": "succeeded", "art": {...}, "thumbnail": {...}, "accentArgb": 4289974783,
+ "face": null, "faceStatus": "pending", "pollAfterMs": 2000, "createdAt": "...", "updatedAt": "..."}
 ```
 
 - `succeeded`는 결과 파일을 **실제로 읽을 수 있을 때만** 내려갑니다 (FR-04.3).
 - 결과는 항상 **배경이 투명한 캐릭터 PNG 1장**입니다 (D-10). 그래서 `presentationType`(cutout/paperPhoto) 필드는 **두지 않습니다.** 사진형 카드 스타일(`archive_*`)을 앱에서 계속 쓸지는 앱이 정하면 되고, 서버 응답에는 영향이 없습니다 (4절 응답의 `source` 이미지로 원본을 쓸 수 있음).
 - `accentArgb`는 서버가 결과 PNG에서 뽑은 대표색입니다. **부호 없는 32비트**(0–4294967295)이므로 앱에서 정수 범위에 주의하세요 (Dart `int`는 문제없음).
 - `face`는 생성 PNG의 얼굴 좌표 지도입니다. 생성 직후 한 번만 분석해 저장하며, 실패하거나 좌표 검증을 통과하지 못하면 `null`입니다. `null`이어도 생성은 성공이고 앱은 얼굴 덧그리기만 생략합니다. 형식은 `docs/face-analysis-design.md`를 따릅니다.
+- `faceStatus`는 `succeeded`에만 있습니다 (2026-10-31 추가).
+  - `pending`: 얼굴 분석이 아직 진행 중이라 `face`가 `null`입니다. 앱은 친구 설정 화면으로 먼저 넘어가고, 뒤에서 `pollAfterMs` 간격으로 다시 조회합니다. 분석은 최대 120초 안에 끝납니다. 설정 질문을 다 마쳤는데도 `pending`이면 앱은 로딩 모습으로 기다렸다가 친구를 보여 줍니다.
+  - `ready`: `face`가 있습니다.
+  - `unavailable`: 분석 실패·시간 초과·서버 재시작 등으로 `face`가 없습니다. 다시 분석하지 않습니다.
+- 분석이 끝나기 전에 친구를 저장해도 됩니다. 저장한 친구의 `face`는 처음에 `null`이고, 분석이 끝나면 서버가 그 친구의 `face`도 채웁니다.
 - 얼굴 좌표 분석은 OpenRouter의 `openai/gpt-6-luna`와 사용자 검수 예시 6장을 사용합니다(OI-03 부분 결정, 2026-10-09 사용자 확정).
 
 실패 응답:
@@ -440,7 +453,7 @@
 
 - Meta Animated Drawings 기반 GIF 모션 파이프라인과 `GET /v1/characters/{id}/motion`은 만들지 않습니다(D-26).
 - Flutter가 캐릭터 PNG 한 장으로 몸 전체 애니메이션을 처리합니다.
-- 백엔드는 생성 PNG 직후 얼굴을 한 번 분석하고, 3.3절 생성 성공 응답과 4절 Character 응답의 nullable `face`로 전달합니다.
+- 백엔드는 생성 PNG 직후 얼굴을 한 번 분석하고, 3.3절 생성 성공 응답과 4절 Character 응답의 nullable `face`로 전달합니다. 분석은 생성 성공 뒤에 이어서 진행하므로 성공 응답에서는 `faceStatus: pending`과 함께 `face`가 아직 비어 있을 수 있습니다.
 - 앱은 `face`가 있으면 눈꺼풀·입·볼을 덧그리고, `null`이면 몸 전체 애니메이션만 유지합니다.
 - 친구의 집 진입 시 재분석하거나 별도 API를 호출하지 않습니다. 자세한 검증·저장 흐름은 `docs/face-analysis-design.md`를 따릅니다.
 
@@ -486,7 +499,7 @@
 | 말투 | `~지요!`, `해요체`, `반말` |
 | 성격 유형 | 서버 목록 4개 (`GET /v1/personality-types`) |
 | 수면 | 한국 시간 22:00–06:00 고정, 서버 판정 |
-| 얼굴 좌표 분석 | 생성 PNG 직후 1회, 실패 시 `face: null`로 계속 진행 |
+| 얼굴 좌표 분석 | 생성 성공 뒤 1회(최대 120초), 실패 시 `face: null`로 계속 진행 |
 
 ## 10. 요청서 7절 결정 목록에 대한 답
 
@@ -536,5 +549,6 @@
 | 6 | **사진형 카드 스타일(`archive_*`) 유지 여부** | 서버에는 영향이 없습니다. 앱 쪽 결정만 알려 주세요 |
 
 ## 변경 이력
+- 2026-10-31: 얼굴 분석을 생성 성공 뒤로 옮겼습니다. 생성 성공 응답에 `faceStatus`(`pending`·`ready`·`unavailable`)를 추가했고, `pending`이면 `pollAfterMs`도 내려갑니다. 분석 전에 저장한 친구의 `face`는 분석이 끝나면 서버가 채웁니다.
 - 2026-10-09: 생성 결과와 Character 응답에 nullable `face` version 1을 추가했습니다. 얼굴 분석 실패는 생성 실패가 아닙니다.
 - 2026-10-05: v1 확정안. 초안에서 남겨 두었던 제안값을 모두 확정하고 오류 코드·한도·일정을 추가했습니다. 초안과 달라진 점: 업로드는 `kind` 필드 없이 `file`만 받음, 모든 이미지 객체에 `width`·`height` 추가, Character 응답에 `personalityLabel` 추가, 성격 유형 목록 API(`GET /v1/personality-types`) 추가.

@@ -414,6 +414,52 @@ class _LoadingScreenState extends State<LoadingScreen>
 /// Gap, copy line and message slot under the wordmark.
 const double _belowWordmark = 28 + 40 + 76;
 
+/// 로딩 화면의 로고가 다 드러난 뒤 모습: 로고, "친구가 찾아오는 중 · · ·", 떠오르는 거품.
+/// 친구 설정을 마쳤는데 얼굴 좌표가 아직 오는 중일 때 설정 화면이 이 모습으로 기다린다.
+class FriendArrivingView extends StatelessWidget {
+  const FriendArrivingView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final still = MediaQuery.disableAnimationsOf(context);
+    return Stack(
+      key: const ValueKey('friend-arriving'),
+      fit: StackFit.expand,
+      children: [
+        Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 로딩 화면과 같이 로고가 화면 한가운데 오도록 아래 공간만큼 위를 띄운다.
+              const SizedBox(height: _belowWordmark),
+              Semantics(
+                label: '보글',
+                image: true,
+                child: SvgPicture.asset(
+                  'assets/figma/loading_wordmark.svg',
+                  width: 258,
+                  height: 160,
+                  excludeFromSemantics: true,
+                ),
+              ),
+              const SizedBox(height: 28),
+              Semantics(
+                liveRegion: true,
+                child: SizedBox(
+                  height: 40,
+                  child: _ArrivingCopy(running: true, reducedMotion: still),
+                ),
+              ),
+              const SizedBox(height: 76),
+            ],
+          ),
+        ),
+        ExcludeSemantics(child: BubbleField(running: true, still: still)),
+      ],
+    );
+  }
+}
+
 // Live text follows the app's typeface instead of retaining SVG outlines.
 const _loadingCopyStyle = TextStyle(
   fontFamily: bogleDisplayFont,

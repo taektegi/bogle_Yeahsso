@@ -48,6 +48,9 @@ class GenerationOut(CamelModel):
     thumbnail: ImageRef | None = None
     accent_argb: int | None = None
     face: FaceMap | None = None
+    # succeeded일 때만 값이 있다. pending이면 얼굴 분석이 진행 중이라 face가 아직 null이고,
+    # pollAfterMs 뒤에 다시 조회하면 ready(face 있음) 또는 unavailable(face 없음)로 바뀐다.
+    face_status: Literal["pending", "ready", "unavailable"] | None = None
     error: JobError | None = None
 
 
@@ -72,6 +75,11 @@ def job_out(repo, storage, user_id, row):
         result.art, result.thumbnail = refs[row["art_asset_id"]], refs[row["thumbnail_asset_id"]]
         result.accent_argb = row["accent_argb"]
         result.face = FaceMap.model_validate(row["face"]) if row["face"] is not None else None
+        result.face_status = row["face_status"] or (
+            "ready" if row["face"] is not None else "unavailable"
+        )
+        if result.face_status == "pending":
+            result.poll_after_ms = 2000
     return result
 
 

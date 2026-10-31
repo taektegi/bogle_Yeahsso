@@ -82,6 +82,16 @@ Map<String, dynamic> generationSucceeded() => {
   'thumbnail': image('thumb-9', 'https://cdn.test/new/thumb.png', side: 256),
   'accentArgb': 4294945450,
   'face': face,
+  'faceStatus': 'ready',
+};
+
+/// `GenerationOut`, finished while its face map is still being worked out
+/// (`pending`), or finished with none (`unavailable`).
+Map<String, dynamic> generationSucceededFace(String faceStatus) => {
+  ...generationSucceeded(),
+  'face': null,
+  'faceStatus': faceStatus,
+  if (faceStatus == 'pending') 'pollAfterMs': 2000,
 };
 
 /// `GenerationOut`, still going.

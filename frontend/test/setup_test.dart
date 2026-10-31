@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:bogle_app/src/data/app_services.dart';
 import 'package:bogle_app/src/data/character_generation.dart';
 import 'package:bogle_app/src/data/character_repository.dart';
 import 'package:bogle_app/src/data/friend_creation_messages.dart';
 import 'package:bogle_app/src/screens/friend_screen.dart';
 import 'package:bogle_app/src/screens/house/house_widgets.dart';
+import 'package:bogle_app/src/screens/loading_screen.dart';
 import 'package:bogle_app/src/screens/setup_friend_screen.dart';
 import 'package:bogle_app/src/theme/bogle_theme.dart';
 import 'package:bogle_app/src/widgets/fireworks.dart';
@@ -54,6 +58,75 @@ Future<InMemoryCharacterRepository> open(
         art: const GeneratedArt(assetPath: 'assets/figma/character_friend.svg'),
         repository: repo,
         voice: voice,
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+  return repo;
+}
+
+/// 얼굴 좌표가 [face]가 끝날 때까지 오는 중인 생성기.
+class FaceComingGenerator extends LocalCharacterGenerator {
+  FaceComingGenerator(this.face);
+  final Future<void>? face;
+  final asked = <String>[];
+
+  @override
+  Future<void>? faceStillComing(String jobId) {
+    asked.add(jobId);
+    return face;
+  }
+}
+
+/// 질문 네 개에 답하고 마지막 버튼까지 누른다.
+Future<void> answerEverything(WidgetTester tester) async {
+  await tester.pump(const Duration(milliseconds: 1500));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('말로 알려주기'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.bySemanticsLabel('그만 듣기'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byTooltip('다음'));
+  await tester.pumpAndSettle();
+  final next = find.byKey(const ValueKey('setup-next'));
+  await tester.tap(find.text('엉뚱한 상상가'));
+  await tester.pump();
+  await tester.tap(next);
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('구름 구경하기'));
+  await tester.pump();
+  await tester.tap(next);
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const ValueKey('speech-manner-plain')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('이 말투로 정하기'));
+}
+
+Future<InMemoryCharacterRepository> openMade(
+  WidgetTester tester,
+  CharacterGenerator generator,
+) async {
+  tester.view.physicalSize = const Size(1366, 1024);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  final repo = InMemoryCharacterRepository();
+  await tester.pumpWidget(
+    AppServicesScope(
+      services: AppServices.local(characters: repo, generator: generator),
+      child: MaterialApp(
+        theme: buildBogleTheme(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!,
+        ),
+        home: SetupFriendScreen(
+          art: const GeneratedArt(
+            assetPath: 'assets/figma/character_friend.svg',
+            jobId: 'job-face-1',
+          ),
+          repository: repo,
+          voice: FakeVoice('보글보글'),
+        ),
       ),
     ),
   );
@@ -232,6 +305,43 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
     expect(find.text('이 친구에 대해 알려주세요! 이 친구의 이름은 뭐예요?'), findsOneWidget);
+  });
+
+  testWidgets('얼굴 좌표가 아직 오는 중이면 질문을 마친 뒤 로딩 모습으로 기다린다', (tester) async {
+    final face = Completer<void>();
+    final generator = FaceComingGenerator(face.future);
+    final repo = await openMade(tester, generator);
+    await answerEverything(tester);
+    await tester.pumpAndSettle();
+
+    // 친구는 이미 저장됐지만, 표정이 올 때까지 로딩 화면과 같은 모습이다.
+    expect(generator.asked, ['job-face-1']);
+    expect(
+      (await repo.fetchFriends()).where((f) => f.name == '보글보글'),
+      hasLength(1),
+    );
+    expect(find.byType(FriendArrivingView), findsOneWidget);
+    expect(find.text('친구가 찾아오는 중'), findsOneWidget);
+    expect(find.text('친구가 되었어요!'), findsNothing);
+    expect(find.text('보글보글은 어떻게 말하나요?'), findsNothing);
+
+    face.complete();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(FriendArrivingView), findsNothing);
+    expect(find.text('친구가 되었어요!'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('기다릴 얼굴 좌표가 없으면 로딩 없이 바로 친구를 만난다', (tester) async {
+    final generator = FaceComingGenerator(null);
+    await openMade(tester, generator);
+    await answerEverything(tester);
+    await tester.pumpAndSettle();
+
+    expect(generator.asked, ['job-face-1']);
+    expect(find.byType(FriendArrivingView), findsNothing);
+    expect(find.text('친구가 되었어요!'), findsOneWidget);
   });
 
   testWidgets('answers one question at a time, then the friend greets', (

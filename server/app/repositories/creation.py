@@ -229,6 +229,11 @@ class CreationRepository:
                 "error_message='서버가 재시작되어 작업이 중단됐어요. 다시 시도해 주세요.',"
                 "error_retryable=true,finished_at=now() where status='processing'"
             )
+            # 중단된 얼굴 분석은 유료 AI를 자동으로 다시 부르지 않고 좌표 없음으로 마친다.
+            conn.execute(
+                "update public.generation_jobs set face_status='unavailable' "
+                "where face_status='pending'"
+            )
 
     def claim(self, owner):
         with self.db.connection() as conn:
@@ -252,12 +257,25 @@ class CreationRepository:
                 (code, message, retryable, user_id, job_id, owner, owner),
             )
 
-    def finish(self, user_id, job_id, owner, art, thumbnail, accent, timeout=240, *, face=None):
+    def finish(
+        self,
+        user_id,
+        job_id,
+        owner,
+        art,
+        thumbnail,
+        accent,
+        timeout=240,
+        *,
+        face_status="pending",
+    ):
+        """그림 결과로 작업을 성공 처리한다. 얼굴 좌표는 ``finish_face``가 나중에 채운다."""
         with self.db.connection() as conn:
             return (
                 conn.execute(
                     "update public.generation_jobs set status='succeeded',art_asset_id=%s,"
-                    "thumbnail_asset_id=%s,accent_argb=%s,face=%s,finished_at=now() "
+                    "thumbnail_asset_id=%s,accent_argb=%s,face=null,face_status=%s,"
+                    "finished_at=now() "
                     "where user_id=%s and id=%s and status='processing' "
                     "and worker_owner=%s and started_at>now()-%s "
                     "and exists(select 1 from public.generation_worker_lease "
@@ -266,7 +284,7 @@ class CreationRepository:
                         art.id,
                         thumbnail.id,
                         accent,
-                        Jsonb(face) if face is not None else None,
+                        face_status,
                         user_id,
                         job_id,
                         owner,
@@ -276,6 +294,39 @@ class CreationRepository:
                 ).fetchone()
                 is not None
             )
+
+    def finish_face(self, user_id, job_id, owner, face) -> bool:
+        """진행 중인 얼굴 분석 결과를 기록하고, 이 작업으로 이미 저장한 친구에도 채운다.
+
+        작업 행을 먼저 잠그므로 같은 작업의 친구 저장(``save_friend``)과 순서가 섞여도
+        친구는 분석 결과를 받는다. 분석이 끝나기 전에 저장했으면 여기서 채우고,
+        분석이 먼저 끝났으면 저장할 때 작업의 face를 복사한다.
+        """
+        with self.db.connection() as conn:
+            row = conn.execute(
+                "update public.generation_jobs set face=%s,face_status=%s "
+                "where user_id=%s and id=%s and status='succeeded' "
+                "and face_status='pending' and worker_owner=%s "
+                "and exists(select 1 from public.generation_worker_lease "
+                "where owner=%s and expires_at>now()) returning id",
+                (
+                    Jsonb(face) if face is not None else None,
+                    "ready" if face is not None else "unavailable",
+                    user_id,
+                    job_id,
+                    owner,
+                    owner,
+                ),
+            ).fetchone()
+            if row is None:
+                return False
+            if face is not None:
+                conn.execute(
+                    "update public.friends set face=%s "
+                    "where user_id=%s and generation_job_id=%s and face is null",
+                    (Jsonb(face), user_id, job_id),
+                )
+            return True
 
     def cleanup_jobs(self, retention=timedelta(hours=24)):
         with self.db.connection() as conn:
