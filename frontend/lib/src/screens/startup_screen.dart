@@ -106,8 +106,11 @@ class _StartupScreenState extends State<StartupScreen>
       'home_order_cart.png',
     ])
       precacheImage(AssetImage('assets/figma/$name'), context),
-    for (final name in const ['logo.svg', 'home_photo_circle.svg'])
-      if (SvgAssetLoader('assets/figma/$name') case final loader)
+    for (final path in const [
+      'assets/figma/logo.svg',
+      'assets/icons/home/camera.svg',
+    ])
+      if (SvgAssetLoader(path) case final loader)
         svg.cache
             .putIfAbsent(
               loader.cacheKey(context),

@@ -290,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             idle: _idle,
                                             lift: 5,
                                             offset: 0.5,
-                                            child: const _PhotoBadge(),
+                                            child: const _PhotoIllustration(),
                                           ),
                                         ],
                                       ),
