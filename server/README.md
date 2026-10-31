@@ -2,6 +2,8 @@
 
 `seonghyun_real`의 최신 앱 연동 계약은 [통합 연동 수정](../docs/integration-fixes.md)입니다.
 친구 편집·개별 수면을 사용하려면 `20261030172223_friend_edit_sleep` 마이그레이션을 먼저 적용합니다.
+앱의 새 말투 8개를 저장하려면 `20261031051000_friend_speech_styles`도 적용합니다.
+기존 말투 3개는 그대로 지원하며 새 말투는 저장·편집·AI 지침·대체 대사에 반영됩니다.
 
 FastAPI로 만든 보글 백엔드 서버입니다. 기준 문서는 `aidlc-docs/inception/requirements/requirements.md`입니다.
 API 계약의 기준은 서버를 띄우면 열리는 **`/docs`(OpenAPI)** 입니다.

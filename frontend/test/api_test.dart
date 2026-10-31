@@ -10,6 +10,7 @@ import 'package:bogle_app/src/data/api/synced_character_repository.dart';
 import 'package:bogle_app/src/data/character_generation.dart';
 import 'package:bogle_app/src/data/art_source.dart';
 import 'package:bogle_app/src/data/character_repository.dart';
+import 'package:bogle_app/src/data/friend_profile_choices.dart';
 import 'package:bogle_app/src/data/local_store.dart';
 import 'package:bogle_app/src/data/motion_service.dart';
 import 'package:bogle_app/src/data/profile_repository.dart';
@@ -346,6 +347,69 @@ void main() {
       expect(made.id, friendId);
       expect(made.assetPath, '/kept/job.png');
       expect((await wired.characters.fetchFriends()).last.id, friendId);
+    });
+
+    const servicePersonalities = [
+      {'code': 'cheerful_curious', 'label': '활발하고 호기심이 많아요'},
+      {'code': 'quiet_brave', 'label': '조용하지만 용감해요'},
+      {'code': 'gentle_smiling', 'label': '다정하고 잘 웃어요'},
+      {'code': 'imaginative', 'label': '엉뚱한 상상가예요'},
+    ];
+    for (var i = 0; i < personalityChoices.length; i++) {
+      test('앱 성격 선택지 ${personalityChoices[i]}를 서버 코드로 저장한다', () async {
+        final service = FakeService({
+          'GET /v1/personality-types': (_) =>
+              json({'items': servicePersonalities.reversed.toList()}),
+          'POST /v1/characters': (_) => json(serverFriend(), 201),
+        });
+        final wired = Wired(service, MemoryStore(), await tempFolder());
+
+        final made = await wired.characters.createFriend(
+          NewFriend(
+            name: '구름이',
+            personality: personalityChoices[i],
+            favoriteThings: const ['구름'],
+            speechStyle: '해요체',
+            assetPath: '/kept/job.png',
+            accentHex: 0xFFBDCFFF,
+            generationJobId: jobId,
+          ),
+        );
+
+        final sent = service.to('/v1/characters').single;
+        expect(
+          jsonDecode(sent.body)['personalityType'],
+          servicePersonalities[i]['code'],
+        );
+        expect(sent.headers['Idempotency-Key'], 'friend-$jobId');
+        expect(made.id, friendId);
+      });
+    }
+
+    test('서버에서 찾을 수 없는 성격은 임의의 코드로 저장하지 않는다', () async {
+      final service = FakeService({
+        'GET /v1/personality-types': (_) =>
+            json({'items': servicePersonalities}),
+      });
+      final wired = Wired(service, MemoryStore(), await tempFolder());
+
+      await expectLater(
+        wired.characters.createFriend(
+          const NewFriend(
+            name: '구름이',
+            personality: '없는 성격',
+            favoriteThings: ['구름'],
+            speechStyle: '해요체',
+            assetPath: '/kept/job.png',
+            accentHex: 0xFFBDCFFF,
+            generationJobId: jobId,
+          ),
+        ),
+        throwsA(
+          isA<ApiException>().having((e) => e.code, 'code', 'validation_error'),
+        ),
+      );
+      expect(service.to('/v1/characters'), isEmpty);
     });
 
     test('the introduction setup wrote from the answers replaces the '

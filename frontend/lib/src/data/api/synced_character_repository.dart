@@ -16,6 +16,14 @@ import 'outbox.dart';
 /// app was reinstalled. Its own copy is what the chat AI and the motion
 /// clips use.
 class SyncedCharacterRepository implements CharacterRepository {
+  // 앱의 짧은 선택 문구를 서버 목록의 표시명에 연결하고, 코드는 응답에서 가져온다.
+  static const _personalityLabels = {
+    '호기심 많은 탐험가': '활발하고 호기심이 많아요',
+    '차분하고 든든한 친구': '조용하지만 용감해요',
+    '다정한 응원가': '다정하고 잘 웃어요',
+    '엉뚱한 상상가': '엉뚱한 상상가예요',
+  };
+
   SyncedCharacterRepository(
     this.api, {
     required this.local,
@@ -118,12 +126,12 @@ class SyncedCharacterRepository implements CharacterRepository {
     // 같은 생성 결과를 다시 저장하거나 앱을 재실행해도 같은 요청으로 복구한다.
     final key = 'friend-$job';
     final types = await api.get('/v1/personality-types');
+    final label = _personalityLabels[friend.personality] ?? friend.personality;
     final selected = (types['items'] as List)
         .cast<Map<String, dynamic>>()
         .where(
           (item) =>
-              item['label'] == friend.personality ||
-              item['code'] == friend.personality,
+              item['label'] == label || item['code'] == friend.personality,
         )
         .firstOrNull;
     if (selected == null) {

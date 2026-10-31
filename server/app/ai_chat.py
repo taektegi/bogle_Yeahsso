@@ -25,6 +25,7 @@ from fastapi import Depends
 
 from app.config import Settings, get_settings
 from app.personality import personality_label
+from app.speech_styles import render_speech_line, speech_guidance, speech_lines
 
 logger = logging.getLogger(__name__)
 
@@ -179,13 +180,17 @@ def _register_for(speech_style: str) -> _Register:
 def script_reply(friend: CharacterChatProfile, user_text: str) -> str:
     """Flutter FriendTalk과 같은 주제·말투 규칙으로 결정적인 대사를 만든다."""
     topic = _topic_for(user_text)
+    favorites = friend.favorite_things or ("반짝이는 것",)
+    favorite = favorites[_stable_index(f"{friend.name}:{user_text}:favorite", len(favorites))]
+    styled_lines = speech_lines(friend.speech_style, topic)
+    if styled_lines:
+        line = styled_lines[_stable_index(f"{friend.name}:{user_text}:line", len(styled_lines))]
+        return render_speech_line(line, favorite=favorite, name=friend.name)
     lines = _FALLBACK_LINES[topic]
     line = lines[_stable_index(f"{friend.name}:{user_text}:line", len(lines))]
     register = _register_for(friend.speech_style)
     text = line[{"casual": 0, "polite": 1, "jiyo": 2}[register]]
 
-    favorites = friend.favorite_things or ("반짝이는 것",)
-    favorite = favorites[_stable_index(f"{friend.name}:{user_text}:favorite", len(favorites))]
     text = text.replace("{f}", favorite)
     return text if text.endswith("?") else f"{text}!"
 
@@ -316,7 +321,7 @@ class ChatAiService:
             "이름": friend.name,
             "성격": personality_label(friend.personality_type),
             "좋아하는 것": list(friend.favorite_things),
-            "말투": friend.speech_style,
+            "말투": speech_guidance(friend.speech_style),
             "소개": friend.introduction,
         }
         return (

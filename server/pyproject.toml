@@ -33,7 +33,7 @@ build-backend = "setuptools.build_meta"
 include = ["app*"]
 
 [tool.setuptools.package-data]
-app = ["face_examples/*.png", "face_examples/*.json"]
+app = ["face_examples/*.png", "face_examples/*.json", "speech_catalog.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
