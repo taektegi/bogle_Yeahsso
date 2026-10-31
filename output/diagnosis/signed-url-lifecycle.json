@@ -1,0 +1,22 @@
+{
+  "paidAiCalls": 0,
+  "syntheticGenerationFixture": true,
+  "diagnosticTtlSeconds": 4,
+  "originalFrontendUntouched": true,
+  "dart": {
+    "initialDownloadAndPngDecode": true,
+    "expiredUrlHttpStatus": 400,
+    "oldUrlActuallyRejected": true,
+    "expiredUrlOfflineReloadUsesLocalFiles": true,
+    "offlineReloadHttpRequests": 0,
+    "persistentFriendDoesNotStoreSignedUrl": true,
+    "sameAssetGetsNewWorkingUrl": true,
+    "emptyLocalRestoreAfterOldUrlExpiry": true,
+    "generationResumeGetsFreshUrl": true
+  },
+  "flutterExitCode": 0,
+  "passed": true,
+  "diagnosticServerStopped": true,
+  "testDataCleaned": true,
+  "temporaryProjectCleaned": true
+}

@@ -47,10 +47,14 @@ def _record(row: dict) -> MessageRecord:
 def _profile(row: dict) -> CharacterChatProfile:
     return CharacterChatProfile(
         name=row["name"],
-        personality_type=row["personality_type"],
+        personality_type=(
+            row["personality"] if row["personality"] is not None else row["personality_type"]
+        ),
         favorite_things=tuple(row["favorite_things"]),
         speech_style=row["speech_style"],
         introduction=row["introduction"],
+        bedtime=row["bedtime"],
+        wake_time=row["wake_time"],
     )
 
 
@@ -61,7 +65,8 @@ class MessageRepository:
     def get_friend_profile(self, user_id: UUID, character_id: UUID) -> CharacterChatProfile | None:
         with self._db.connection() as conn:
             row = conn.execute(
-                "select name, personality_type, favorite_things, speech_style, introduction"
+                "select name, personality_type, personality, favorite_things, speech_style,"
+                " introduction, bedtime, wake_time"
                 " from public.friends where id = %(character_id)s and user_id = %(user_id)s",
                 {"user_id": user_id, "character_id": character_id},
             ).fetchone()

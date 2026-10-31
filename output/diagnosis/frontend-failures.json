@@ -1,0 +1,127 @@
+{
+  "passed": 583,
+  "failed": 30,
+  "skipped": 3,
+  "failures": [
+    {
+      "file": "api_test.dart",
+      "test": "SyncedCharacterRepository friends on the service but not on the iPad are brought in, pictures and face maps saved as files"
+    },
+    {
+      "file": "art_source_test.dart",
+      "test": "cut-out art from a file is measured; art with a background is a card; unreadable art is neither"
+    },
+    {
+      "file": "art_source_test.dart",
+      "test": "a generator's square canvas is cut to its figure, feet on the floor, and its face moves along; snug art is kept"
+    },
+    {
+      "file": "art_source_test.dart",
+      "test": "the invite tile shows a generated friend wherever it comes from, and 뭉글이 when it has no outline to take"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "a tail is left out when weighing where the body is"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "on a card the body moves to the middle as far as it can, every pixel inside"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "a plump friend is not blown up to fill the card"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "a picture with its own ground is fitted whole and centred"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "the artwork gets exactly its box, so a hero leaves from the drawing"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "card colour a one-colour friend on its own colour gets a lighter shade of it, still readable"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "card colour a white friend gets a deeper card that still reads"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "card colour a friend that already stands out keeps its colour"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "card colour art with a ground of its own keeps the friend's colour"
+    },
+    {
+      "file": "card_figure_test.dart",
+      "test": "card colour the archive card is painted in it"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.float with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.jelly with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.peekaboo with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.freeze with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.sneak with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.startle with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.heartbeat with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.dizzy with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.puff with its face drawn moving"
+    },
+    {
+      "file": "house_clip_test.dart",
+      "test": "a clip is read once: its length and where the friend is"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.waddle with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.popcorn with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.yahoo with its face drawn moving"
+    },
+    {
+      "file": "generated_friend_motion_test.dart",
+      "test": "a generated friend plays Act.proud with its face drawn moving"
+    },
+    {
+      "file": "house_clip_test.dart",
+      "test": "a snack given while a clip plays ends it: the friend eats"
+    },
+    {
+      "file": "window_views_test.dart",
+      "test": "completed pair persists by filename and works offline after moving the container"
+    }
+  ]
+}

@@ -40,6 +40,8 @@ class CharacterChatProfile:
     favorite_things: tuple[str, ...]
     speech_style: str
     introduction: str = ""
+    bedtime: int = 21 * 60
+    wake_time: int = 7 * 60
 
 
 @dataclass(frozen=True)

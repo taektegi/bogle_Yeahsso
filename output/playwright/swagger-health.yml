@@ -1,0 +1,416 @@
+- generic [ref=e4]:
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - heading "Bogle API 0.1.0 OAS 3.1" [level=1] [ref=e9]:
+        - text: Bogle API
+        - generic [ref=e10]:
+          - generic [ref=e11]: 0.1.0
+          - generic [ref=e13]: OAS 3.1
+      - link "/openapi.json" [ref=e15] [cursor=pointer]:
+        - /url: /openapi.json
+    - paragraph [ref=e19]:
+      - text: 보글 백엔드 API. 이 문서(
+      - code [ref=e20]: /docs
+      - text: )가 앱과 서버 사이의 계약이다.
+  - button "Authorize" [ref=e24] [cursor=pointer]
+  - main [ref=e28]:
+    - generic [ref=e31]:
+      - generic [ref=e33]:
+        - heading [level=3] [ref=e34] [cursor=pointer]:
+          - link "health" [ref=e35]:
+            - /url: "#/health"
+          - button "Collapse operation" [expanded] [ref=e36]
+        - generic [ref=e42]:
+          - generic [ref=e43] [cursor=pointer]:
+            - button "GET /v1/health 서버 상태 확인" [expanded] [ref=e44]:
+              - generic [ref=e45]: GET
+              - generic [ref=e46]:
+                - link "/v1/health" [ref=e48]:
+                  - /url: "#/health/health_v1_health_get"
+                - generic [ref=e50]: 서버 상태 확인
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "get /v1/health" [expanded] [ref=e51]
+          - generic [ref=e538]:
+            - paragraph [ref=e542]: 로그인 없이 호출할 수 있다. 배포 확인과 앱의 서버 연결 확인에 쓴다.
+            - generic [ref=e543]:
+              - generic [ref=e544]:
+                - heading "Parameters" [level=4] [ref=e547] [cursor=pointer]
+                - button "Cancel" [ref=e588] [cursor=pointer]
+              - paragraph [ref=e552]: No parameters
+            - generic [ref=e553]:
+              - button "Execute" [ref=e589] [cursor=pointer]
+              - button "Clear" [ref=e590] [cursor=pointer]
+            - generic [ref=e554]:
+              - heading "Responses" [level=4] [ref=e556]
+              - generic [ref=e557]:
+                - generic [ref=e591]:
+                  - generic [ref=e592]:
+                    - generic [ref=e593]:
+                      - heading "Curl" [level=4] [ref=e594]
+                      - generic "Copy cURL command to clipboard" [ref=e595]:
+                        - button "Copy cURL command to clipboard" [ref=e596] [cursor=pointer]
+                      - code [ref=e599]: "curl -X 'GET' \\ 'http://127.0.0.1:8765/v1/health' \\ -H 'accept: */*'"
+                    - generic [ref=e601]:
+                      - heading "Request URL" [level=4] [ref=e602]
+                      - generic [ref=e603]: http://127.0.0.1:8765/v1/health
+                    - heading "Server response" [level=4] [ref=e604]
+                    - table [ref=e605]:
+                      - rowgroup [ref=e606]:
+                        - row [ref=e607]:
+                          - cell "Code" [ref=e608]
+                          - cell "Details" [ref=e609]
+                      - rowgroup [ref=e610]:
+                        - row [ref=e611]:
+                          - cell "200" [ref=e612]
+                          - 'cell "Response body Copy code to clipboard Download { \"status\": \"ok\" } Response headers content-length: 15 content-type: application/json date: Fri,30 Oct 2026 16:26:53 GMT server: uvicorn x-request-id: d801b5caf57a4d64be397860564ac12a" [ref=e613]':
+                            - generic [ref=e614]:
+                              - heading "Response body" [level=5] [ref=e615]
+                              - generic [ref=e616]:
+                                - generic "Copy code to clipboard" [ref=e617]:
+                                  - button "Copy code to clipboard" [ref=e618] [cursor=pointer]
+                                - button "Download" [ref=e619] [cursor=pointer]
+                                - code [ref=e621]: "{ \"status\": \"ok\" }"
+                            - generic [ref=e622]:
+                              - heading "Response headers" [level=5] [ref=e623]
+                              - generic [ref=e624]:
+                                - generic [ref=e625]: "content-length: 15"
+                                - generic [ref=e626]: "content-type: application/json"
+                                - generic [ref=e627]: "date: Fri,30 Oct 2026 16:26:53 GMT"
+                                - generic [ref=e628]: "server: uvicorn"
+                                - generic [ref=e629]: "x-request-id: d801b5caf57a4d64be397860564ac12a"
+                  - heading "Responses" [level=4] [ref=e630]
+                - region [ref=e558]:
+                  - rowgroup [ref=e559]:
+                    - row [ref=e560]:
+                      - cell "Code" [ref=e561]
+                      - cell "Description" [ref=e562]
+                      - cell "Links" [ref=e563]
+                  - rowgroup [ref=e564]:
+                    - row [ref=e565]:
+                      - cell "200" [ref=e566]
+                      - cell "Successful Response Media type application/json Controls Accept header. Example Value" [ref=e567]:
+                        - paragraph [ref=e570]: Successful Response
+                        - generic [ref=e572]:
+                          - generic [ref=e573]: Media type
+                          - combobox "Media Type" [ref=e575]:
+                            - option "application/json" [selected]
+                          - generic [ref=e576]:
+                            - text: Controls
+                            - code [ref=e577]: Accept
+                            - text: header.
+                        - generic [ref=e578]:
+                          - tablist [ref=e579]:
+                            - tab "Example Value" [selected] [ref=e580] [cursor=pointer]
+                            - tab "Schema" [ref=e581] [cursor=pointer]
+                          - tabpanel "Example Value" [ref=e582]:
+                            - code [ref=e586]: "{ \"status\": \"ok\" }"
+                      - cell "No links" [ref=e587]
+      - generic [ref=e55]:
+        - heading [level=3] [ref=e56] [cursor=pointer]:
+          - link "characters" [ref=e57]:
+            - /url: "#/characters"
+          - button "Collapse operation" [expanded] [ref=e58]
+        - generic [ref=e62]:
+          - generic [ref=e65] [cursor=pointer]:
+            - button "GET /v1/characters 내 친구 목록 (보관함)" [ref=e66]:
+              - generic [ref=e67]: GET
+              - generic [ref=e68]:
+                - link "/v1/characters" [ref=e70]:
+                  - /url: "#/characters/list_characters_v1_characters_get"
+                - generic [ref=e72]: 내 친구 목록 (보관함)
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e73]
+            - button "get /v1/characters" [ref=e76]
+          - generic [ref=e81] [cursor=pointer]:
+            - 'button "GET /v1/characters/{character_id} 친구 상세" [ref=e82]':
+              - generic [ref=e83]: GET
+              - generic [ref=e84]:
+                - 'link "/v1/characters/{character_id}" [ref=e86]':
+                  - /url: "#/characters/get_character_v1_characters__character_id__get"
+                - generic [ref=e88]: 친구 상세
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e89]
+            - 'button "get /v1/characters/{character_id}" [ref=e92]'
+          - generic [ref=e97] [cursor=pointer]:
+            - 'button "DELETE /v1/characters/{character_id} 친구 삭제 (영구)" [ref=e98]':
+              - generic [ref=e99]: DELETE
+              - generic [ref=e100]:
+                - 'link "/v1/characters/{character_id}" [ref=e102]':
+                  - /url: "#/characters/delete_character_v1_characters__character_id__delete"
+                - generic [ref=e104]: 친구 삭제 (영구)
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e105]
+            - 'button "delete /v1/characters/{character_id}" [ref=e108]'
+          - generic [ref=e113] [cursor=pointer]:
+            - 'button "GET /v1/characters/{character_id}/status 친구의 수면 상태" [ref=e114]':
+              - generic [ref=e115]: GET
+              - generic [ref=e116]:
+                - 'link "/v1/characters/{character_id}/status" [ref=e118]':
+                  - /url: "#/characters/get_status_v1_characters__character_id__status_get"
+                - generic [ref=e120]: 친구의 수면 상태
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e121]
+            - 'button "get /v1/characters/{character_id}/status" [ref=e124]'
+      - generic [ref=e128]:
+        - heading [level=3] [ref=e129] [cursor=pointer]:
+          - link "creation" [ref=e130]:
+            - /url: "#/creation"
+          - button "Collapse operation" [expanded] [ref=e131]
+        - generic [ref=e135]:
+          - generic [ref=e138] [cursor=pointer]:
+            - button "POST /v1/characters 친구 초기 설정 저장" [ref=e139]:
+              - generic [ref=e140]: POST
+              - generic [ref=e141]:
+                - link "/v1/characters" [ref=e143]:
+                  - /url: "#/creation/save_character_v1_characters_post"
+                - generic [ref=e145]: 친구 초기 설정 저장
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e146]
+            - button "post /v1/characters" [ref=e149]
+          - generic [ref=e154] [cursor=pointer]:
+            - button "POST /v1/assets 그림·사진 원본 업로드" [ref=e155]:
+              - generic [ref=e156]: POST
+              - generic [ref=e157]:
+                - link "/v1/assets" [ref=e159]:
+                  - /url: "#/creation/upload_asset_v1_assets_post"
+                - generic [ref=e161]: 그림·사진 원본 업로드
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e162]
+            - button "post /v1/assets" [ref=e165]
+          - generic [ref=e170] [cursor=pointer]:
+            - button "POST /v1/generations 친구 생성 작업 요청" [ref=e171]:
+              - generic [ref=e172]: POST
+              - generic [ref=e173]:
+                - link "/v1/generations" [ref=e175]:
+                  - /url: "#/creation/create_generation_v1_generations_post"
+                - generic [ref=e177]: 친구 생성 작업 요청
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e178]
+            - button "post /v1/generations" [ref=e181]
+          - generic [ref=e186] [cursor=pointer]:
+            - 'button "GET /v1/generations/{job_id} 친구 생성 상태 조회" [ref=e187]':
+              - generic [ref=e188]: GET
+              - generic [ref=e189]:
+                - 'link "/v1/generations/{job_id}" [ref=e191]':
+                  - /url: "#/creation/get_generation_v1_generations__job_id__get"
+                - generic [ref=e193]: 친구 생성 상태 조회
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e194]
+            - 'button "get /v1/generations/{job_id}" [ref=e197]'
+          - generic [ref=e202] [cursor=pointer]:
+            - 'button "POST /v1/generations/{job_id}/cancel 친구 생성 취소" [ref=e203]':
+              - generic [ref=e204]: POST
+              - generic [ref=e205]:
+                - 'link "/v1/generations/{job_id}/cancel" [ref=e207]':
+                  - /url: "#/creation/cancel_generation_v1_generations__job_id__cancel_post"
+                - generic [ref=e209]: 친구 생성 취소
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e210]
+            - 'button "post /v1/generations/{job_id}/cancel" [ref=e213]'
+          - generic [ref=e218] [cursor=pointer]:
+            - button "GET /v1/personality-types 성격 선택지" [ref=e219]:
+              - generic [ref=e220]: GET
+              - generic [ref=e221]:
+                - link "/v1/personality-types" [ref=e223]:
+                  - /url: "#/creation/list_personalities_v1_personality_types_get"
+                - generic [ref=e225]: 성격 선택지
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e226]
+            - button "get /v1/personality-types" [ref=e229]
+      - generic [ref=e233]:
+        - heading [level=3] [ref=e234] [cursor=pointer]:
+          - link "chat" [ref=e235]:
+            - /url: "#/chat"
+          - button "Collapse operation" [expanded] [ref=e236]
+        - generic [ref=e240]:
+          - generic [ref=e243] [cursor=pointer]:
+            - 'button "POST /v1/characters/{character_id}/messages 대화 보내기" [ref=e244]':
+              - generic [ref=e245]: POST
+              - generic [ref=e246]:
+                - 'link "/v1/characters/{character_id}/messages" [ref=e248]':
+                  - /url: "#/chat/send_message_v1_characters__character_id__messages_post"
+                - generic [ref=e250]: 대화 보내기
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e251]
+            - 'button "post /v1/characters/{character_id}/messages" [ref=e254]'
+          - generic [ref=e259] [cursor=pointer]:
+            - 'button "GET /v1/characters/{character_id}/messages 이전 대화" [ref=e260]':
+              - generic [ref=e261]: GET
+              - generic [ref=e262]:
+                - 'link "/v1/characters/{character_id}/messages" [ref=e264]':
+                  - /url: "#/chat/list_messages_v1_characters__character_id__messages_get"
+                - generic [ref=e266]: 이전 대화
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e267]
+            - 'button "get /v1/characters/{character_id}/messages" [ref=e270]'
+      - generic [ref=e274]:
+        - heading [level=3] [ref=e275] [cursor=pointer]:
+          - link "profile" [ref=e276]:
+            - /url: "#/profile"
+          - button "Collapse operation" [expanded] [ref=e277]
+        - generic [ref=e281]:
+          - generic [ref=e284] [cursor=pointer]:
+            - button "GET /v1/me 내 프로필" [ref=e285]:
+              - generic [ref=e286]: GET
+              - generic [ref=e287]:
+                - link "/v1/me" [ref=e289]:
+                  - /url: "#/profile/get_me_v1_me_get"
+                - generic [ref=e291]: 내 프로필
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e292]
+            - button "get /v1/me" [ref=e295]
+          - generic [ref=e300] [cursor=pointer]:
+            - button "PATCH /v1/me 내 프로필 수정" [ref=e301]:
+              - generic [ref=e302]: PATCH
+              - generic [ref=e303]:
+                - link "/v1/me" [ref=e305]:
+                  - /url: "#/profile/update_me_v1_me_patch"
+                - generic [ref=e307]: 내 프로필 수정
+            - generic "Copy path to clipboard":
+              - button "Copy path to clipboard"
+            - button "authorization button unlocked" [ref=e308]
+            - button "patch /v1/me" [ref=e311]
+    - generic [ref=e316]:
+      - heading [level=4] [ref=e317] [cursor=pointer]:
+        - button "Schemas" [expanded] [ref=e318]
+      - generic [ref=e322]:
+        - article [ref=e323]:
+          - generic [ref=e324]:
+            - button [ref=e325] [cursor=pointer]:
+              - strong [ref=e327]: Body_upload_asset_v1_assets_post
+            - button "Expand all" [ref=e331] [cursor=pointer]
+            - strong [ref=e332]: object
+        - article [ref=e333]:
+          - generic [ref=e334]:
+            - button [ref=e335] [cursor=pointer]:
+              - strong [ref=e337]: CharacterListOut
+            - button "Expand all" [ref=e341] [cursor=pointer]
+            - strong [ref=e342]: object
+        - article [ref=e343]:
+          - generic [ref=e344]:
+            - button [ref=e345] [cursor=pointer]:
+              - strong [ref=e347]: CharacterOut
+            - button "Expand all" [ref=e351] [cursor=pointer]
+            - strong [ref=e352]: object
+        - article [ref=e353]:
+          - generic [ref=e354]:
+            - button [ref=e355] [cursor=pointer]:
+              - strong [ref=e357]: ErrorBody
+            - button "Expand all" [ref=e361] [cursor=pointer]
+            - strong [ref=e362]: object
+        - article [ref=e363]:
+          - generic [ref=e364]:
+            - button [ref=e365] [cursor=pointer]:
+              - strong [ref=e367]: ErrorResponse
+            - button "Expand all" [ref=e371] [cursor=pointer]
+            - strong [ref=e372]: object
+        - article [ref=e373]:
+          - generic [ref=e374]:
+            - button [ref=e375] [cursor=pointer]:
+              - strong [ref=e377]: FaceMap
+            - button "Expand all" [ref=e381] [cursor=pointer]
+            - strong [ref=e382]: object
+        - article [ref=e383]:
+          - generic [ref=e384]:
+            - button [ref=e385] [cursor=pointer]:
+              - strong [ref=e387]: GenerationIn
+            - button "Expand all" [ref=e391] [cursor=pointer]
+            - strong [ref=e392]: object
+        - article [ref=e393]:
+          - generic [ref=e394]:
+            - button [ref=e395] [cursor=pointer]:
+              - strong [ref=e397]: GenerationOut
+            - button "Expand all" [ref=e401] [cursor=pointer]
+            - strong [ref=e402]: object
+        - article [ref=e403]:
+          - generic [ref=e404]:
+            - button [ref=e405] [cursor=pointer]:
+              - strong [ref=e407]: HealthResponse
+            - button "Expand all" [ref=e411] [cursor=pointer]
+            - strong [ref=e412]: object
+        - article [ref=e413]:
+          - generic [ref=e414]:
+            - button [ref=e415] [cursor=pointer]:
+              - strong [ref=e417]: ImageRef
+            - button "Expand all" [ref=e421] [cursor=pointer]
+            - strong [ref=e422]: object
+        - article [ref=e423]:
+          - generic [ref=e424]:
+            - button [ref=e425] [cursor=pointer]:
+              - strong [ref=e427]: JobError
+            - button "Expand all" [ref=e431] [cursor=pointer]
+            - strong [ref=e432]: object
+        - article [ref=e433]:
+          - generic [ref=e434]:
+            - button [ref=e435] [cursor=pointer]:
+              - strong [ref=e437]: MessageIn
+            - button "Expand all" [ref=e441] [cursor=pointer]
+            - strong [ref=e442]: object
+        - article [ref=e443]:
+          - generic [ref=e444]:
+            - button [ref=e445] [cursor=pointer]:
+              - strong [ref=e447]: MessageOut
+            - button "Expand all" [ref=e451] [cursor=pointer]
+            - strong [ref=e452]: object
+        - article [ref=e453]:
+          - generic [ref=e454]:
+            - button [ref=e455] [cursor=pointer]:
+              - strong [ref=e457]: MessagePageOut
+            - button "Expand all" [ref=e461] [cursor=pointer]
+            - strong [ref=e462]: object
+        - article [ref=e463]:
+          - generic [ref=e464]:
+            - button [ref=e465] [cursor=pointer]:
+              - strong [ref=e467]: MessagePairOut
+            - button "Expand all" [ref=e471] [cursor=pointer]
+            - strong [ref=e472]: object
+        - article [ref=e473]:
+          - generic [ref=e474]:
+            - button [ref=e475] [cursor=pointer]:
+              - strong [ref=e477]: PersonalityListOut
+            - button "Expand all" [ref=e481] [cursor=pointer]
+            - strong [ref=e482]: object
+        - article [ref=e483]:
+          - generic [ref=e484]:
+            - button [ref=e485] [cursor=pointer]:
+              - strong [ref=e487]: PersonalityOut
+            - button "Expand all" [ref=e491] [cursor=pointer]
+            - strong [ref=e492]: object
+        - article [ref=e493]:
+          - generic [ref=e494]:
+            - button [ref=e495] [cursor=pointer]:
+              - strong [ref=e497]: ProfileOut
+            - button "Expand all" [ref=e501] [cursor=pointer]
+            - strong [ref=e502]: object
+        - article [ref=e503]:
+          - generic [ref=e504]:
+            - button [ref=e505] [cursor=pointer]:
+              - strong [ref=e507]: ProfilePatch
+            - button "Expand all" [ref=e511] [cursor=pointer]
+            - strong [ref=e512]: object
+        - article [ref=e513]:
+          - generic [ref=e514]:
+            - button [ref=e515] [cursor=pointer]:
+              - strong [ref=e517]: SaveFriendIn
+            - button "Expand all" [ref=e521] [cursor=pointer]
+            - strong [ref=e522]: object
+        - article [ref=e523]:
+          - generic [ref=e524]:
+            - button [ref=e525] [cursor=pointer]:
+              - strong [ref=e527]: SleepStatusOut
+            - button "Expand all" [ref=e531] [cursor=pointer]
+            - strong [ref=e532]: object

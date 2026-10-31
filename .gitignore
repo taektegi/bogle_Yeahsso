@@ -29,3 +29,6 @@ supabase/.temp/
 # Editors
 .idea/
 .vscode/
+
+# 진단 브라우저의 세션·중간 snapshot. 보존할 증거는 output/playwright/에 둔다.
+.playwright-cli/

@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "sourceType": "drawing",
+      "uploadAndSignedRead": true,
+      "status": "failed",
+      "errorCode": "generation_unavailable",
+      "retryable": false
+    },
+    {
+      "sourceType": "photo",
+      "uploadAndSignedRead": true,
+      "status": "failed",
+      "errorCode": "generation_unavailable",
+      "retryable": false
+    }
+  ],
+  "syntheticChatFixture": true,
+  "testDataCleaned": true,
+  "authLogin": true,
+  "jwtVerifiedByServer": true,
+  "ownershipBlocked": true,
+  "chat": {
+    "skipped": "server_sleep_window"
+  },
+  "deleteAndHistory": true,
+  "paidAttempts": {
+    "image": 2,
+    "face": 0,
+    "chat": 0
+  }
+}

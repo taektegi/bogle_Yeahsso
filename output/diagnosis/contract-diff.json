@@ -1,0 +1,93 @@
+{
+  "frontendMethodsMissingFromBackend": {
+    "/v1/health/ready": [
+      "get"
+    ],
+    "/v1/characters/{character_id}/motion": [
+      "get"
+    ],
+    "/v1/assets/{asset_id}": [
+      "get"
+    ]
+  },
+  "responseProperties": {
+    "CharacterOut": {
+      "onlyFrontend": [],
+      "onlyBackend": []
+    },
+    "GenerationOut": {
+      "onlyFrontend": [],
+      "onlyBackend": []
+    },
+    "ProfileOut": {
+      "onlyFrontend": [],
+      "onlyBackend": []
+    },
+    "MessageOut": {
+      "onlyFrontend": [],
+      "onlyBackend": []
+    }
+  },
+  "saveRequest": {
+    "properties": {
+      "generationJobId": {
+        "type": "string",
+        "format": "uuid",
+        "title": "Generationjobid"
+      },
+      "name": {
+        "type": "string",
+        "title": "Name"
+      },
+      "personalityType": {
+        "type": "string",
+        "enum": [
+          "cheerful_curious",
+          "quiet_brave",
+          "gentle_smiling",
+          "imaginative"
+        ],
+        "title": "Personalitytype"
+      },
+      "favoriteThings": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array",
+        "title": "Favoritethings"
+      },
+      "speechStyle": {
+        "type": "string",
+        "enum": [
+          "~지요!",
+          "해요체",
+          "반말"
+        ],
+        "title": "Speechstyle"
+      },
+      "bedtime": {
+        "type": "integer",
+        "maximum": 1439.0,
+        "minimum": 0.0,
+        "title": "Bedtime",
+        "default": 1260
+      },
+      "wakeTime": {
+        "type": "integer",
+        "maximum": 1439.0,
+        "minimum": 0.0,
+        "title": "Waketime",
+        "default": 420
+      }
+    },
+    "type": "object",
+    "required": [
+      "generationJobId",
+      "name",
+      "personalityType",
+      "favoriteThings",
+      "speechStyle"
+    ],
+    "title": "SaveFriendIn"
+  }
+}

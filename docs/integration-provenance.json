@@ -1,0 +1,20 @@
+{
+  "repository": "taektegi/bogle_Yeahsso",
+  "backendBaseline": "a6aca1690b42095d026c14874a3c326cc89ea5a2",
+  "backendBaselineBranch": "seonghyun_backend",
+  "integrationBranch": "seonghyun_real",
+  "frontendRepository": "quasiaward/Bogle_doll_making_app",
+  "frontendBranch": "release",
+  "frontendCommit": "5d1b9c7b59441ac0fe7983957af774114fb9c8dd",
+  "frontendDestination": "frontend",
+  "frontendTrackedSourceFiles": 430,
+  "sourcePolicy": "최초 통합 시 원본 430개 추적 파일을 그대로 복사. 이후 사용자 승인 연동 수정은 docs/integration-fixes.md 참조.",
+  "dateAsiaSeoul": "2026-10-31",
+  "integrationFixes": {
+    "dateAsiaSeoul": "2026-10-31",
+    "migration": "20261030172223_friend_edit_sleep",
+    "report": "docs/integration-fixes.md",
+    "aiGeneration": "정책 수정 후 실제 이미지 생성·얼굴 분석·Storage·친구 저장 검증 완료",
+    "aiGenerationReport": "docs/ai-generation-resolution.md"
+  }
+}

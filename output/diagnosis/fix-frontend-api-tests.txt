@@ -1,0 +1,37 @@
+00:00 +0: loading C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/api_test.dart
+00:00 +0: ApiClient signs in once and signs every request
+00:00 +1: ApiClient an expired token is refreshed once and the request retried
+00:00 +2: ApiClient the service's errors arrive with their code and message
+00:00 +3: ApiClient a read is tried once more after a passing problem, after the wait the service asks for
+00:00 +4: ApiClient a write without an idempotency key is never sent twice
+00:00 +5: ApiClient keys are UUID v4
+00:00 +6: Outbox edits to one friend go out as one request
+00:00 +7: Outbox what the service could not hear yet is sent after a relaunch
+00:00 +8: Outbox a deletion waits for its delay and can be undone until then
+00:00 +9: Outbox a friend the service no longer has is deleted already; a refused edit is dropped
+00:00 +10: SyncedCharacterRepository the archive reads the iPad; it never asks the service
+00:00 +11: SyncedCharacterRepository friends on the service but not on the iPad are brought in, pictures and face maps saved as files
+00:00 +11 -1: SyncedCharacterRepository friends on the service but not on the iPad are brought in, pictures and face maps saved as files [E]
+  Null check operator used on a null value
+  test\api_test.dart 304:54  main.<fn>.<fn>
+
+00:00 +11 -1: SyncedCharacterRepository a new friend is made on the service and kept on the iPad with the generator's pictures
+00:00 +12 -1: SyncedCharacterRepository the introduction setup wrote from the answers replaces the service's own
+00:00 +13 -1: SyncedCharacterRepository an edit is saved on the iPad at once and sends only what changed
+00:00 +14 -1: SyncedCharacterRepository undo then delete again keeps artwork through the new undo window
+00:05 +15 -1: SyncedCharacterRepository a deletion is undoable; one not undone reaches the service even if the app closes first
+00:06 +16 -1: ApiCharacterGenerator follows the job and keeps the finished friend on the iPad
+00:06 +17 -1: ApiCharacterGenerator a refusal comes back with the service's words and no retry
+00:06 +18 -1: ApiCharacterGenerator a retry of the same picture reuses its upload with a new key
+00:06 +19 -1: ApiCharacterGenerator cancelling asks the service and never hands over the artwork
+00:06 +20 -1: ApiCharacterGenerator a job started before the app closed is picked up, and dropped once its friend is made
+00:07 +21 -1: chat, motion and profile the service answers for its friends; starters answer themselves
+00:07 +22 -1: chat, motion and profile the chat so far comes back oldest first
+00:07 +23 -1: chat, motion and profile an asleep friend leaves the answer to the app
+00:07 +24 -1: chat, motion and profile ready clips are kept on the iPad and played from there next time
+00:07 +25 -1: chat, motion and profile art that cannot be animated uses the app motions
+00:07 +26 -1: chat, motion and profile the profile is kept on the iPad and the service hears what changed
+00:07 +27 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/api_test.dart: SyncedCharacterRepository friends on the service but not on the iPad are brought in, pictures and face maps saved as files

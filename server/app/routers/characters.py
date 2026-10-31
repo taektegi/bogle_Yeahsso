@@ -14,6 +14,7 @@ from app.auth import CurrentUserDep
 from app.clock import NowDep
 from app.errors import ERROR_RESPONSES, ApiError
 from app.face_analysis import FaceMap
+from app.friend_settings import EditFriendIn
 from app.personality import personality_label
 from app.repositories.characters import (
     CharacterRecord,
@@ -21,7 +22,7 @@ from app.repositories.characters import (
     CharacterRepositoryDep,
 )
 from app.schemas import CamelModel
-from app.sleep import sleep_status
+from app.sleep import ClientUtcOffset, sleep_status
 from app.storage import StorageClient, StorageDep, StorageError
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,9 @@ class CharacterOut(CamelModel):
     name: str
     personality_type: str
     personality_label: str
+    personality: str
+    bedtime: int
+    wake_time: int
     introduction: str
     favorite_things: list[str]
     speech_style: str
@@ -62,7 +66,18 @@ def _to_out(record: CharacterRecord, refs: dict[UUID, ImageRef]) -> CharacterOut
         id=record.id,
         name=record.name,
         personality_type=record.personality_type,
-        personality_label=personality_label(record.personality_type),
+        personality_label=(
+            record.personality
+            if record.personality is not None
+            else personality_label(record.personality_type)
+        ),
+        personality=(
+            record.personality
+            if record.personality is not None
+            else personality_label(record.personality_type)
+        ),
+        bedtime=record.bedtime,
+        wake_time=record.wake_time,
         introduction=record.introduction,
         favorite_things=record.favorite_things,
         speech_style=record.speech_style,
@@ -85,7 +100,7 @@ def _assets_of(records: list[CharacterRecord]):
 
 class SleepStatusOut(CamelModel):
     asleep: bool
-    next_change_at: datetime
+    next_change_at: datetime | None
     # 앱이 기기 시계 오차를 보정할 수 있도록 서버 시각을 함께 준다.
     server_time: datetime
 
@@ -122,15 +137,33 @@ def get_character(
     summary="친구의 수면 상태",
 )
 def get_status(
-    character_id: UUID, user: CurrentUserDep, repo: CharacterRepositoryDep, now: NowDep
+    character_id: UUID,
+    user: CurrentUserDep,
+    repo: CharacterRepositoryDep,
+    now: NowDep,
+    utc_offset: ClientUtcOffset = 540,
 ) -> SleepStatusOut:
-    """한국 시간 22:00–06:00에는 잔다. 판정은 서버 시각 기준이다 (FR-08)."""
-    if not repo.exists_for_user(user.id, character_id):
+    """앱 일정과 기기 UTC 오프셋을 사용한다. 오프셋 생략 시 한국 시간이다."""
+    record = repo.get_for_user(user.id, character_id)
+    if record is None:
         raise ApiError(404, "not_found", "친구를 찾을 수 없어요.")
-    status = sleep_status(now)
+    status = sleep_status(now, record.bedtime, record.wake_time, utc_offset)
     return SleepStatusOut(
         asleep=status.asleep, next_change_at=status.next_change_at, server_time=now
     )
+
+
+@router.patch("/{character_id}", response_model=CharacterOut, summary="친구 정보 수정")
+def edit_character(
+    character_id: UUID,
+    body: EditFriendIn,
+    user: CurrentUserDep,
+    repo: CharacterRepositoryDep,
+    storage: StorageDep,
+) -> CharacterOut:
+    if not repo.update_for_user(user.id, character_id, body):
+        raise ApiError(404, "not_found", "친구를 찾을 수 없어요.")
+    return get_character(character_id, user, repo, storage)
 
 
 def _remove_files(

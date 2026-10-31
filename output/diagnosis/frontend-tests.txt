@@ -1,0 +1,1213 @@
+00:00 +0: loading C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/account_visual_test.dart
+00:00 +0: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/account_visual_test.dart: 보글 팝업·프로필·말투 화면 렌더링 검수
+00:00 +0 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: (setUpAll)
+00:00 +0 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 종이를 균일 배율로 맞추고 확대·이동 좌표를 정확히 역변환한다
+00:00 +1 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 종이 크기를 저장·복원하며 성공한 생성 뒤 새 종이로 시작한다
+00:00 +2 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 크기 없는 이전 초안도 되돌릴 수 있는 화면 밖 그림까지 보존한다
+00:00 +3 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +3 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_viewport_test.dart: (setUpAll)
+unhandled element <filter/>; Picture key: Svg loader
+00:00 +4 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +5 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +6 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +7 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +8 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +9 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +10 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +11 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +12 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +13 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +14 ~1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +14 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +14 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/api_test.dart: SyncedCharacterRepository friends on the service but not on the iPad are brought in, pictures and face maps saved as files [E]
+  Null check operator used on a null value
+  test\api_test.dart 304:54  main.<fn>.<fn>
+
+00:00 +15 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +16 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +17 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +18 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +19 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:00 +20 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +21 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +22 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +23 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +24 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +25 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +26 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +27 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +28 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +29 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +30 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +31 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +32 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +33 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +34 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:01 +35 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:02 +36 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:02 +37 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 실시간 크기 변경 후 그림·생성 식별자·undo·PNG를 보존하고 입력도 정확하다
+00:02 +38 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:02 +39 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:02 +40 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:02 +41 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:02 +42 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:02 +43 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +44 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +45 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +46 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +47 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +47 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: archive has no favourites and keeps repository order
+unhandled element <filter/>; Picture key: Svg loader
+00:03 +48 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +49 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +49 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_state_test.dart: 좁은 주문 전체 흐름 Size(744.0, 600.0) 글자 1.0
+unhandled element <filter/>; Picture key: Svg loader
+00:03 +50 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +51 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +52 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +53 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+unhandled element <filter/>; Picture key: Svg loader
+00:03 +54 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(1366.0, 1024.0) 글자 1.0
+00:03 +55 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:03 +56 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +57 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +58 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +59 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +60 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +61 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +62 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +63 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +64 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +65 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +66 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +67 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +68 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +69 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: edit mode renames a friend and says goodbye with undo
+00:04 +70 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(744.0, 600.0) 글자 2.0
+00:04 +71 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(744.0, 600.0) 글자 2.0
+00:04 +72 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(744.0, 600.0) 글자 2.0
+00:05 +73 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(744.0, 600.0) 글자 2.0
+00:05 +74 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(744.0, 600.0) 글자 2.0
+00:05 +75 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(744.0, 600.0) 글자 2.0
+00:05 +76 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_editor_design_test.dart: 친구 편집의 글꼴·키보드·취소·저장 Size(744.0, 600.0) 글자 2.0
+00:05 +77 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: saying goodbye to every friend leaves the empty archive
+00:05 +78 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: saying goodbye to every friend leaves the empty archive
+00:05 +79 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: saying goodbye to every friend leaves the empty archive
+00:05 +80 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: saying goodbye to every friend leaves the empty archive
+00:05 +81 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: saying goodbye to every friend leaves the empty archive
+00:05 +82 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: saying goodbye to every friend leaves the empty archive
+00:05 +83 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: saying goodbye to every friend leaves the empty archive
+00:05 +84 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: saying goodbye to every friend leaves the empty archive
+00:05 +85 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_viewport_test.dart: house 자동 화면 적응 Size(1366.0, 1024.0) 글자 1.0
+00:05 +86 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_edit_test.dart: cards show no level or memories; corners carry the design icons
+00:05 +87 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_viewport_test.dart: order 자동 화면 적응 Size(1366.0, 1024.0) 글자 1.0
+00:05 +88 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:05 +89 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:05 +90 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:05 +91 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +92 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +93 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +94 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +95 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +96 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +97 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +98 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +99 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +100 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +101 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +102 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +103 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+00:06 +104 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_header_test.dart: archive keeps the shared top bar at Size(1024.0, 768.0), empty: false
+unhandled element <filter/>; Picture key: Svg loader
+00:06 +105 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:06 +106 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:06 +107 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:06 +108 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:06 +109 ~1 -1: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +109 ~1 -2: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +109 ~1 -2: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: cut-out art from a file is measured; art with a background is a card; unreadable art is neither [E]
+  Null check operator used on a null value
+  test\art_source_test.dart 95:45  main.<fn>
+
+00:07 +109 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +109 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a generator's square canvas is cut to its figure, feet on the floor, and its face moves along; snug art is kept [E]
+  Null check operator used on a null value
+  test\art_source_test.dart 135:41  main.<fn>
+
+00:07 +110 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +111 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +112 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +113 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +114 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +115 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +116 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +117 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +118 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +119 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +120 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +121 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +122 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +123 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +123 ~1 -3: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: the invite tile shows a generated friend wherever it comes from, and 뭉글이 when it has no outline to take
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _DescendantWidgetFinder:<Found 0 widgets with key
+[<'silhouette-C:\Users\kimse\AppData\Local\Temp\bogle_art39457a2c/friend.png'>] descending from
+widgets with type "FriendSilhouette": []>
+   Which: means none were found but one was expected
+C:\Users\kimse\AppData\Local\Temp\bogle_art39457a2c/friend.png
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart:190:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart line 190
+The test description was:
+  the invite tile shows a generated friend wherever it comes from, and 뭉글이 when it has no outline to
+  take
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:07 +123 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+00:07 +123 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: the invite tile shows a generated friend wherever it comes from, and 뭉글이 when it has no outline to take [E]
+  Test failed. See exception logs above.
+  The test description was: the invite tile shows a generated friend wherever it comes from, and 뭉글이 when it has no outline to take
+
+00:07 +123 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(1366.0, 1024.0)
+unhandled element <filter/>; Picture key: Svg loader
+00:07 +124 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/adaptive_viewport_test.dart: house 자동 화면 적응 Size(600.0, 600.0) 글자 1.0
+00:07 +125 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a broken link shows the new-friend drawing, not a hole
+00:07 +126 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a broken link shows the new-friend drawing, not a hole
+unhandled element <filter/>; Picture key: Svg loader
+00:07 +127 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a broken link shows the new-friend drawing, not a hole
+00:07 +128 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a broken link shows the new-friend drawing, not a hole
+00:07 +129 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a broken link shows the new-friend drawing, not a hole
+00:07 +130 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a broken link shows the new-friend drawing, not a hole
+00:08 +131 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a broken link shows the new-friend drawing, not a hole
+00:08 +132 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(744.0, 600.0)
+00:08 +133 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(744.0, 600.0)
+00:08 +134 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(744.0, 600.0)
+00:08 +135 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(744.0, 600.0)
+00:08 +136 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/archive_notice_test.dart: 작별 알림은 읽고 복구할 시간을 준 뒤 자동으로 닫힘 Size(744.0, 600.0)
+00:08 +137 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +138 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +139 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +140 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +141 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +142 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +143 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +144 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +145 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +146 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +147 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +148 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +149 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +150 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +151 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +152 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +153 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +154 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +155 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:08 +156 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:09 +157 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:09 +158 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:09 +159 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:09 +160 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is file lives in its house
+00:09 +161 ~1 -4: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: new Figma composition contains eight round, generation-only bubbles
+00:09 +161 ~1 -5: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: new Figma composition contains eight round, generation-only bubbles
+00:09 +161 ~1 -5: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: a tail is left out when weighing where the body is [E]
+  Null check operator used on a null value
+  test\card_figure_test.dart 51:56  main.<fn>
+
+00:09 +161 ~1 -6: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: new Figma composition contains eight round, generation-only bubbles
+00:09 +161 ~1 -6: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: on a card the body moves to the middle as far as it can, every pixel inside [E]
+  Null check operator used on a null value
+  test\card_figure_test.dart 61:56  main.<fn>
+
+00:09 +162 ~1 -6: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is painted lives in its house
+00:09 +162 ~1 -7: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is painted lives in its house
+00:09 +162 ~1 -7: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: a plump friend is not blown up to fill the card [E]
+  Null check operator used on a null value
+  test\card_figure_test.dart 90:67  main.<fn>
+
+00:09 +162 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is painted lives in its house
+00:09 +162 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: a picture with its own ground is fitted whole and centred [E]
+  Null check operator used on a null value
+  test\card_figure_test.dart 103:68  main.<fn>
+
+00:09 +163 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is painted lives in its house
+00:09 +163 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: 뭉글이 keeps the size its card was designed with
+unhandled element <filter/>; Picture key: Svg loader
+00:09 +164 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is painted lives in its house
+00:09 +165 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a friend whose art is painted lives in its house
+00:09 +166 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:09 +167 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:09 +168 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +169 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +169 ~1 -8: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: the artwork gets exactly its box, so a hero leaves from the drawing
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following _TypeError was thrown running a test:
+Null check operator used on a null value
+
+When the exception was thrown, this was the stack:
+#0      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart:145:63)
+<asynchronous suspension>
+#1      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#2      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  the artwork gets exactly its box, so a hero leaves from the drawing
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:10 +169 ~1 -9: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +169 ~1 -9: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: the artwork gets exactly its box, so a hero leaves from the drawing [E]
+  Test failed. See exception logs above.
+  The test description was: the artwork gets exactly its box, so a hero leaves from the drawing
+
+00:10 +170 ~1 -9: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +171 ~1 -9: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +171 ~1 -10: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +171 ~1 -10: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: card colour a one-colour friend on its own colour gets a lighter shade of it, still readable [E]
+  Null check operator used on a null value
+  test\card_figure_test.dart 195:60  main.<fn>.<fn>
+
+00:10 +171 ~1 -11: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +171 ~1 -11: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: card colour a white friend gets a deeper card that still reads [E]
+  Null check operator used on a null value
+  test\card_figure_test.dart 206:79  main.<fn>.<fn>
+
+00:10 +171 ~1 -12: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +171 ~1 -12: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: card colour a friend that already stands out keeps its colour [E]
+  Null check operator used on a null value
+  test\card_figure_test.dart 217:9  main.<fn>.<fn>
+
+00:10 +171 ~1 -13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:10 +171 ~1 -13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: card colour art with a ground of its own keeps the friend's colour [E]
+  Null check operator used on a null value
+  test\card_figure_test.dart 222:70  main.<fn>.<fn>
+
+00:10 +172 ~1 -13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:11 +173 ~1 -13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:11 +174 ~1 -13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:11 +175 ~1 -13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:11 +176 ~1 -13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:11 +176 ~1 -13: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: card colour the archive card is painted in it
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: not contains Color:<Color(alpha: 1.0000, red: 0.9490, green: 0.6000, blue: 0.6863,
+colorSpace: ColorSpace.sRGB)>
+  Actual: Set:[
+            Color:Color(alpha: 0.0000, red: 0.0000, green: 0.0000, blue: 0.0000, colorSpace:
+ColorSpace.sRGB),
+            Color:Color(alpha: 1.0000, red: 0.9490, green: 0.6000, blue: 0.6863, colorSpace:
+ColorSpace.sRGB)
+          ]
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart:263:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart line 263
+The test description was:
+  the archive card is painted in it
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:11 +176 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:11 +176 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/card_figure_test.dart: card colour the archive card is painted in it [E]
+  Test failed. See exception logs above.
+  The test description was: the archive card is painted in it
+
+00:12 +177 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:12 +178 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:12 +179 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:13 +180 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:13 +181 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:13 +182 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:13 +183 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:13 +184 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:13 +185 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:13 +186 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:14 +187 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:14 +188 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:14 +189 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:14 +189 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/checkout_management_test.dart: default address and saved card complete a local payment exactly once
+unhandled element <filter/>; Picture key: Svg loader
+00:14 +190 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:15 +191 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:15 +192 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:15 +193 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:15 +194 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:15 +195 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:15 +196 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:15 +197 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:16 +197 ~1 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/e2e/backend_feedback_rehearsal_test.dart: 실제 Dart → FastAPI → PostgreSQL: 입력·PNG·설정·수면·대화·실패 복구
+  Skip: 개인 백엔드 rehearse_flutter.py로 실행
+00:16 +197 ~2 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:16 +198 ~2 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:16 +199 ~2 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:16 +199 ~2 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/e2e/rehearsal_test.dart: a friend goes from a drawing to the service and back to a fresh iPad
+  Skip: set BOGLE_E2E_API_URL to rehearse
+00:16 +199 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/bubble_field_test.dart: originals never overlap at entry, wrap or after a split
+00:17 +200 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: false)
+00:17 +201 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +202 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +203 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +204 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +205 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +206 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +207 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +208 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +209 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +210 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +211 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +212 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +213 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +214 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +215 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +216 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +217 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +218 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +219 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +220 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +221 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +222 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +223 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +224 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +225 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +226 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +227 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +228 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +229 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +230 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +231 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +232 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +233 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +234 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +235 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +236 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +237 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +238 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +239 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +240 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +241 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +242 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +243 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +244 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +244 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/figure_motion_test.dart: 뭉글이 is rigged from the part names in its drawing
+unhandled element <filter/>; Picture key: Svg loader
+00:17 +245 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +246 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +247 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:17 +248 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +249 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +250 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +251 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +252 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +253 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +254 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +255 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +256 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +257 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +258 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +259 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +260 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +261 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +262 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +263 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +264 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +265 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: toolbar geometry stays stable (reduced motion: true)
+00:18 +266 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/fireworks_test.dart: ribbons rise behind content and fall in front on one clock
+00:18 +267 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/fireworks_test.dart: ribbons rise behind content and fall in front on one clock
+00:18 +268 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/fireworks_test.dart: ribbons rise behind content and fall in front on one clock
+00:18 +269 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/fireworks_test.dart: ribbons rise behind content and fall in front on one clock
+00:18 +270 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/fireworks_test.dart: ribbons rise behind content and fall in front on one clock
+00:18 +271 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +272 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +273 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +274 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +275 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +276 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +277 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +278 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +279 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +280 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +281 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +282 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: birth rises, overshoots, and settles on Size(1024.0, 768.0)
+00:18 +283 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: false)
+00:18 +284 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/fireworks_test.dart: inactive celebration preserves content when starting and reducing motion
+00:18 +285 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/figure_motion_test.dart: a sleepy friend yawns and never dances; a hungry one sniffs
+00:18 +286 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/figure_motion_test.dart: a sleepy friend yawns and never dances; a hungry one sniffs
+00:18 +287 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: true)
+00:18 +288 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: true)
+00:18 +289 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: true)
+00:18 +290 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: true)
+00:18 +291 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: true)
+00:18 +292 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: true)
+00:18 +293 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: true)
+00:18 +294 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/drawing_test.dart: width ripple is local and stable (reduced: true)
+00:18 +295 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: arrival finishes once and stays finished on the next question
+00:18 +296 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: arrival finishes once and stays finished on the next question
+00:18 +297 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: arrival finishes once and stays finished on the next question
+00:18 +298 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: arrival finishes once and stays finished on the next question
+00:18 +299 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: arrival finishes once and stays finished on the next question
+00:18 +300 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: arrival finishes once and stays finished on the next question
+00:18 +301 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: arrival finishes once and stays finished on the next question
+unhandled element <filter/>; Picture key: Svg loader
+00:19 +302 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: a tap mid-arrival finishes it and moves on
+00:19 +303 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: background pauses arrival and leaving disposes its ticker
+00:19 +304 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_arrival_test.dart: reduced motion shows a settled friend immediately
+00:19 +305 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_profile_choices_test.dart: every answer is one the character service takes
+00:19 +306 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_profile_choices_test.dart: the 말투 samples say the same thing, only the ending differs
+00:19 +307 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_profile_choices_test.dart: the introduction follows what was chosen
+00:19 +308 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/friend_profile_choices_test.dart: every introduction fits what the service keeps
+00:19 +309 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 손상된 기본 파일은 마지막 정상 저장본으로 읽고 이후 저장도 복구한다
+00:19 +310 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 정상 저장본이 없으면 원본을 덮어쓰거나 새 사용자로 취급하지 않는다
+00:19 +311 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: (setUpAll)
+00:19 +312 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: (setUpAll)
+00:19 +312 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 기본 파일이 유실되어도 정상 백업을 찾는다
+00:19 +313 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.float with its face drawn moving
+00:19 +314 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.float with its face drawn moving
+00:19 +315 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.float with its face drawn moving
+00:19 +316 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.float with its face drawn moving
+00:20 +316 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/hero_artwork_geometry_test.dart: mungle plain and animated pixels match in a 200.0 slot
+unhandled element <filter/>; Picture key: Svg loader
+00:20 +316 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.float with its face drawn moving
+unhandled element <filter/>; Picture key: Svg loader
+00:20 +316 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 이전 이야기에서 집주인과 손님의 아바타가 섞이지 않는다
+unhandled element <filter/>; Picture key: Svg loader
+00:20 +317 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.float with its face drawn moving
+00:20 +318 ~3 -14: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.float with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.float with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:20 +318 ~3 -15: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/home_header_test.dart: Figma 243:2201 layout holds at Size(1024.0, 768.0) / 1.0
+00:20 +318 ~3 -15: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.float with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.float with its face drawn moving
+
+00:20 +319 ~3 -15: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/home_header_test.dart: Figma 243:2201 layout holds at Size(1024.0, 768.0) / 1.0
+00:20 +320 ~3 -15: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:20 +321 ~3 -15: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:20 +322 ~3 -15: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:20 +322 ~3 -15: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.jelly with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.jelly with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:20 +322 ~3 -16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:20 +322 ~3 -16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.jelly with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.jelly with its face drawn moving
+
+00:21 +323 ~3 -16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:21 +324 ~3 -16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:21 +325 ~3 -16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:21 +326 ~3 -16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:21 +327 ~3 -16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:21 +327 ~3 -16: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.peekaboo with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.peekaboo with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:21 +327 ~3 -17: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:21 +327 ~3 -17: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.peekaboo with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.peekaboo with its face drawn moving
+
+00:21 +328 ~3 -17: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:21 +329 ~3 -17: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다
+00:21 +330 ~3 -17: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/home_header_test.dart: header icons: home marks where you are, news and settings
+00:21 +330 ~3 -17: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.freeze with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.freeze with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:21 +330 ~3 -18: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/home_header_test.dart: header icons: home marks where you are, news and settings
+00:21 +330 ~3 -18: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.freeze with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.freeze with its face drawn moving
+
+00:21 +330 ~3 -18: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/home_header_test.dart: header icons: home marks where you are, news and settings
+unhandled element <filter/>; Picture key: Svg loader
+00:21 +331 ~3 -18: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/hero_artwork_geometry_test.dart: nemorin plain and animated pixels match in a 200.0 slot
+00:21 +332 ~3 -18: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/frontend_recovery_test.dart: 글자 200%와 키보드에서도 입력 받침은 화면 안에 머문다
+00:21 +333 ~3 -18: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.sneak with its face drawn moving
+00:21 +334 ~3 -18: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.sneak with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.sneak with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:21 +334 ~3 -19: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/hero_artwork_geometry_test.dart: nemorin plain and animated pixels match in a 420.0 slot
+00:21 +334 ~3 -19: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.sneak with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.sneak with its face drawn moving
+
+00:22 +335 ~3 -19: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.startle with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.startle with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:22 +335 ~3 -20: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.startle with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.startle with its face drawn moving
+
+00:22 +335 ~3 -20: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.heartbeat with its face drawn moving
+00:22 +335 ~3 -20: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_chat_return_test.dart: (setUpAll)
+unhandled element <filter/>; Picture key: Svg loader
+00:22 +335 ~3 -20: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.heartbeat with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.heartbeat with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:22 +335 ~3 -21: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_chat_return_test.dart: (setUpAll)
+00:22 +335 ~3 -21: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.heartbeat with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.heartbeat with its face drawn moving
+
+00:22 +335 ~3 -21: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: (setUpAll)
+unhandled element <filter/>; Picture key: Svg loader
+00:22 +335 ~3 -21: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_details_test.dart: (setUpAll)
+unhandled element <filter/>; Picture key: Svg loader
+00:22 +335 ~3 -21: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.dizzy with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.dizzy with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:22 +335 ~3 -22: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_chat_return_test.dart: (setUpAll)
+00:22 +335 ~3 -22: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.dizzy with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.dizzy with its face drawn moving
+
+00:22 +335 ~3 -22: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: (setUpAll)
+00:23 +335 ~3 -22: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_details_test.dart: (setUpAll)
+00:23 +335 ~3 -22: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.puff with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.puff with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:23 +335 ~3 -23: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_details_test.dart: (setUpAll)
+00:23 +335 ~3 -23: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.puff with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.puff with its face drawn moving
+
+00:23 +335 ~3 -23: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a clip is read once: its length and where the friend is
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following _TypeError was thrown running a test:
+Null check operator used on a null value
+
+When the exception was thrown, this was the stack:
+#0      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart:91:74)
+<asynchronous suspension>
+#1      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#2      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  a clip is read once: its length and where the friend is
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:23 +335 ~3 -24: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_details_test.dart: (setUpAll)
+00:23 +335 ~3 -24: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a clip is read once: its length and where the friend is [E]
+  Test failed. See exception logs above.
+  The test description was: a clip is read once: its length and where the friend is
+
+00:23 +335 ~3 -24: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_chat_return_test.dart: 명시적인 집 복귀 버튼은 키보드 포커스를 해제하고 대화 기록은 유지한다
+00:23 +335 ~3 -24: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.waddle with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.waddle with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:23 +335 ~3 -25: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_chat_return_test.dart: 명시적인 집 복귀 버튼은 키보드 포커스를 해제하고 대화 기록은 유지한다
+00:23 +335 ~3 -25: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.waddle with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.waddle with its face drawn moving
+
+00:23 +335 ~3 -25: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.popcorn with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.popcorn with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:23 +335 ~3 -26: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_chat_return_test.dart: 명시적인 집 복귀 버튼은 키보드 포커스를 해제하고 대화 기록은 유지한다
+00:23 +335 ~3 -26: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.popcorn with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.popcorn with its face drawn moving
+
+00:24 +335 ~3 -26: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.yahoo with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.yahoo with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:24 +335 ~3 -27: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_chat_return_test.dart: 명시적인 집 복귀 버튼은 키보드 포커스를 해제하고 대화 기록은 유지한다
+00:24 +335 ~3 -27: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.yahoo with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.yahoo with its face drawn moving
+
+00:24 +336 ~3 -27: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:24 +336 ~3 -27: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.proud with its face drawn moving
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _WidgetPredicateWidgetFinder:<Found 0 widgets with widget matching predicate: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart:115:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart line 115
+The test description was:
+  a generated friend plays Act.proud with its face drawn moving
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:24 +336 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:24 +336 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/generated_friend_motion_test.dart: a generated friend plays Act.proud with its face drawn moving [E]
+  Test failed. See exception logs above.
+  The test description was: a generated friend plays Act.proud with its face drawn moving
+
+00:24 +337 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:24 +338 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:24 +339 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:25 +340 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:25 +341 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:25 +342 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:25 +342 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_test.dart: (setUpAll)
+unhandled element <filter/>; Picture key: Svg loader
+00:25 +343 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:25 +344 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:25 +345 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:25 +346 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:26 +347 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:26 +348 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:26 +349 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:26 +350 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:26 +351 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:26 +352 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:26 +353 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +354 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +355 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +356 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +357 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +358 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +359 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +360 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +361 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +362 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +363 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +364 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +365 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +366 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +367 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +368 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +369 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +370 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: 터치는 손 흔들기 클립에 가리지 않고 전체 동작을 한 번씩 보여 준다
+00:27 +371 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_test.dart: archive carousel moves between friends and opens a house
+00:28 +372 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_test.dart: archive carousel moves between friends and opens a house
+00:28 +373 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:28 +374 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:28 +374 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/loading_test.dart: a drawing becomes the new friend without a character service
+unhandled element <filter/>; Picture key: Svg loader
+00:28 +375 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:29 +376 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:29 +377 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:29 +378 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:29 +379 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:29 +380 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:30 +381 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:30 +382 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:30 +383 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:30 +384 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:30 +385 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+00:30 +386 ~3 -28: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: false
+  Actual: <true>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart:130:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart line 130
+The test description was:
+  a snack given while a clip plays ends it: the friend eats
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:31 +386 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:31 +386 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a snack given while a clip plays ends it: the friend eats [E]
+  Test failed. See exception logs above.
+  The test description was: a snack given while a clip plays ends it: the friend eats
+
+00:31 +387 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:31 +388 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/motion_service_test.dart: an unreachable service means no clips, and it tries again later
+00:31 +389 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/loading_test.dart: loading messages dissolve in place instead of switching abruptly
+00:31 +390 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/loading_test.dart: loading messages dissolve in place instead of switching abruptly
+00:31 +391 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:31 +392 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:31 +393 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:31 +394 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:31 +395 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:31 +396 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +397 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +398 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +399 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +400 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +401 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +402 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +403 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +404 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +405 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:32 +406 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:33 +407 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:33 +408 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:33 +409 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:33 +410 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:33 +411 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:33 +412 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_clip_test.dart: a pat while eating doesn't hide the friend behind a clip
+00:34 +413 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/loading_test.dart: logo reveals bottom-up once and waits for actual completion
+00:34 +414 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_glass_design_test.dart: 주문 글래스 미리보기 mindle Size(1366.0, 1024.0) 고대비 false
+00:34 +415 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_glass_design_test.dart: 주문 글래스 미리보기 mindle Size(1366.0, 1024.0) 고대비 false
+00:34 +416 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_glass_design_test.dart: 주문 글래스 미리보기 mindle Size(1366.0, 1024.0) 고대비 false
+00:34 +417 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/house_test.dart: every balloon stays on screen and clear of the cards at Size(1024.0, 768.0)
+00:34 +417 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_glass_design_test.dart: 주문 글래스 미리보기 mungle Size(1366.0, 1024.0) 고대비 false
+unhandled element <filter/>; Picture key: Svg loader
+00:34 +418 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/loading_test.dart: timeout can retry; late result never advances cancelled attempt
+00:34 +419 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/loading_test.dart: timeout can retry; late result never advances cancelled attempt
+00:34 +420 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: friend scrolling stays below the heading at Size(1024.0, 768.0)
+00:35 +421 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: friend scrolling stays below the heading at Size(1024.0, 768.0)
+00:35 +422 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: friend scrolling stays below the heading at Size(1024.0, 768.0)
+00:35 +423 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: friend scrolling stays below the heading at Size(1024.0, 768.0)
+00:35 +424 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: friend scrolling stays below the heading at Size(1024.0, 768.0)
+unhandled element <filter/>; Picture key: Svg loader
+00:35 +425 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: friend scrolling stays below the heading at Size(1024.0, 768.0)
+00:35 +426 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: friend scrolling stays below the heading at Size(1024.0, 768.0)
+00:36 +427 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/loading_test.dart: reduced motion bubbles split without starting a ticker
+00:36 +428 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +429 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +430 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +431 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +432 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +433 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +434 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +435 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +436 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:36 +437 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:37 +438 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/pencil_input_test.dart: double tap preserves pen settings and returns from eraser
+00:37 +439 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_capture_test.dart: look, focus, zoom, light, shoot, check, retake and use
+00:37 +440 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_capture_test.dart: look, focus, zoom, light, shoot, check, retake and use
+00:37 +441 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_capture_test.dart: look, focus, zoom, light, shoot, check, retake and use
+00:37 +442 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_capture_test.dart: look, focus, zoom, light, shoot, check, retake and use
+00:37 +443 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_capture_test.dart: look, focus, zoom, light, shoot, check, retake and use
+00:37 +444 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_capture_test.dart: look, focus, zoom, light, shoot, check, retake and use
+00:38 +445 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_design_test.dart: 사진 도구의 균형·분리된 대상 선택·모달 Size(1366.0, 1024.0) 글자 1.0
+00:38 +446 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_design_test.dart: 사진 도구의 균형·분리된 대상 선택·모달 Size(1366.0, 1024.0) 글자 1.0
+00:38 +447 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_design_test.dart: 사진 도구의 균형·분리된 대상 선택·모달 Size(1366.0, 1024.0) 글자 1.0
+00:38 +448 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_design_test.dart: 사진 도구의 균형·분리된 대상 선택·모달 Size(1366.0, 1024.0) 글자 1.0
+00:38 +449 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_design_test.dart: 사진 도구의 균형·분리된 대상 선택·모달 Size(1366.0, 1024.0) 글자 1.0
+00:38 +450 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_design_test.dart: 사진 도구의 균형·분리된 대상 선택·모달 Size(1366.0, 1024.0) 글자 1.0
+00:38 +451 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: pick, options, checkout and a placed order
+00:38 +452 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_capture_test.dart: the studio lets the camera go in the sketchbook and makes a friend from the photo
+unhandled element <filter/>; Picture key: Svg loader
+00:39 +453 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_design_test.dart: 사진 도구의 균형·분리된 대상 선택·모달 Size(1024.0, 768.0) 글자 1.0
+00:39 +454 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_design_test.dart: 사진 도구의 균형·분리된 대상 선택·모달 Size(1024.0, 768.0) 글자 1.0
+00:39 +455 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_capture_test.dart: cropping: drag a corner in, keep it, or cancel
+00:39 +456 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: every friend, 뭉글이 included, is drawn from its own artwork
+00:39 +457 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: every friend, 뭉글이 included, is drawn from its own artwork
+00:39 +458 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: every friend, 뭉글이 included, is drawn from its own artwork
+00:39 +459 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: every friend, 뭉글이 included, is drawn from its own artwork
+00:39 +460 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: every friend, 뭉글이 included, is drawn from its own artwork
+00:39 +461 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/order_test.dart: every friend, 뭉글이 included, is drawn from its own artwork
+00:39 +462 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_preparation_test.dart: 실제 PNG 정규화·크기 제한과 작은 사진 거절
+00:39 +463 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_preparation_test.dart: 어두움·단색 안내는 확인하되 사진을 훼손하거나 차단하지 않는다
+00:39 +464 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_preparation_test.dart: 정리 중 조작 잠금·원본 비교·명시적 채택
+00:40 +465 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/photo_preparation_test.dart: 정리 중 조작 잠금·원본 비교·명시적 채택
+00:40 +465 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: (setUpAll)
+unhandled element <filter/>; Picture key: Svg loader
+00:40 +466 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:41 +467 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:41 +468 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:41 +468 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_test.dart: landscape Size(1024.0, 768.0) lays out every section
+unhandled element <filter/>; Picture key: Svg loader
+00:41 +469 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:41 +470 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:41 +471 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:41 +472 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:42 +473 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:42 +474 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:42 +475 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:42 +476 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+00:42 +476 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/resilience_test.dart: (setUpAll)
+unhandled element <filter/>; Picture key: Svg loader
+00:42 +476 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 소개·활동·색상은 취소하면 유지하고 저장하면 화면에 보인다
+unhandled element <filter/>; Picture key: Svg loader
+00:42 +477 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_test.dart: profile edit validates, cancels and saves a friend avatar
+00:42 +478 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_test.dart: profile edit validates, cancels and saves a friend avatar
+00:43 +479 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_test.dart: profile edit validates, cancels and saves a friend avatar
+00:43 +480 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_details_test.dart: 작은 iPad 화면과 글자 배율 2.0 에서 하단 팝업이 스크롤된다
+00:43 +481 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/resilience_test.dart: an archive that cannot load says so and loads on retry
+00:43 +482 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/resilience_test.dart: an archive that cannot load says so and loads on retry
+00:43 +483 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/resilience_test.dart: an archive that cannot load says so and loads on retry
+00:43 +484 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/resilience_test.dart: an archive that cannot load says so and loads on retry
+00:43 +485 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_test.dart: profile header opens news while settings remain in their menu
+00:43 +486 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: address write failure preserves the entered form for retry
+00:44 +487 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: address write failure preserves the entered form for retry
+00:44 +488 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: address write failure preserves the entered form for retry
+00:44 +489 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: address write failure preserves the entered form for retry
+00:44 +490 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: address write failure preserves the entered form for retry
+00:44 +491 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: address write failure preserves the entered form for retry
+00:44 +492 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: address write failure preserves the entered form for retry
+00:44 +492 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: (setUpAll)
+unhandled element <filter/>; Picture key: Svg loader
+00:45 +492 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/release_readiness_test.dart: address write failure preserves the entered form for retry
+00:45 +493 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/profile_test.dart: orders: latest, previous rows, details and full list
+00:45 +494 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/resilience_test.dart: the chat from earlier visits is there when the house opens
+00:45 +495 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/resilience_test.dart: the chat from earlier visits is there when the house opens
+00:45 +496 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/resilience_test.dart: the chat from earlier visits is there when the house opens
+00:45 +497 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(1024.0, 768.0) 글자 1.0
+00:45 +498 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(1024.0, 768.0) 글자 1.0
+00:45 +499 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(1024.0, 768.0) 글자 1.0
+00:45 +500 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(1024.0, 768.0) 글자 1.0
+00:46 +501 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: name field keeps its input connection when the iPad keyboard resizes the scene
+00:46 +502 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: name field keeps its input connection when the iPad keyboard resizes the scene
+00:46 +503 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: name field keeps its input connection when the iPad keyboard resizes the scene
+00:46 +504 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: name field keeps its input connection when the iPad keyboard resizes the scene
+00:46 +505 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: name field keeps its input connection when the iPad keyboard resizes the scene
+00:46 +506 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: name field keeps its input connection when the iPad keyboard resizes the scene
+00:46 +507 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: name field keeps its input connection when the iPad keyboard resizes the scene
+00:47 +508 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: name field keeps its input connection when the iPad keyboard resizes the scene
+unhandled element <filter/>; Picture key: Svg loader
+00:47 +509 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:47 +510 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:47 +511 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +512 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +513 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +514 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +515 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +516 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +517 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +518 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +519 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:48 +520 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:49 +521 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:49 +522 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:49 +522 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/sketch_completion_test.dart: 생성 결과를 받으면 그림 초안만 초기화: GenerationSource.drawing
+unhandled element <filter/>; Picture key: Svg loader
+00:49 +523 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_speech_design_test.dart: 말투 설정 중앙 배치와 네 가지 직접 선택 Size(744.0, 600.0) 글자 2.0
+00:49 +524 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: answers one question at a time, then the friend greets
+00:49 +525 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/sketch_completion_test.dart: 생성 결과를 받으면 그림 초안만 초기화: GenerationSource.photo
+00:50 +526 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/sketch_completion_test.dart: 생성 결과를 받으면 그림 초안만 초기화: GenerationSource.photo
+00:50 +527 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/setup_test.dart: without speech recognition it falls back to typing
+00:50 +528 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/sketch_completion_test.dart: 생성 실패·취소와 취소 뒤 늦게 온 성공은 초안을 유지한다
+00:50 +529 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/sketch_completion_test.dart: 생성 실패·취소와 취소 뒤 늦게 온 성공은 초안을 유지한다
+00:50 +530 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/sketch_completion_test.dart: 생성 실패·취소와 취소 뒤 늦게 온 성공은 초안을 유지한다
+00:50 +531 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/sketch_completion_test.dart: 생성 실패·취소와 취소 뒤 늦게 온 성공은 초안을 유지한다
+00:50 +532 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/speech_style_test.dart: 느낌과 말끝을 빠르게 골라도 조합이 유지되고 기존 값은 저절로 바뀌지 않는다
+00:51 +533 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_motion_test.dart: the wordmark shows alone, then bubbles well up past it
+00:51 +534 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: startup fills landscape Size(1194.0, 834.0) without generation copy
+00:51 +535 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: startup fills landscape Size(1194.0, 834.0) without generation copy
+00:51 +536 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: startup fills landscape Size(1194.0, 834.0) without generation copy
+00:52 +537 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: startup fills landscape Size(1194.0, 834.0) without generation copy
+00:52 +538 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: startup fills landscape Size(1194.0, 834.0) without generation copy
+00:52 +539 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: empty sketch cannot start generation
+00:52 +540 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: empty sketch cannot start generation
+00:52 +541 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: empty sketch cannot start generation
+00:52 +542 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: preparation gates home and startup is replaced
+00:53 +543 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: home and reopening preserve ink, undo and tool settings
+00:53 +544 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: home and reopening preserve ink, undo and tool settings
+00:53 +545 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: home and reopening preserve ink, undo and tool settings
+00:53 +545 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: failed or stalled preparation cannot trap launch
+Startup artwork warm-up skipped: Bad state: asset failure
+00:53 +546 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: failed or stalled preparation cannot trap launch
+00:53 +547 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: failed or stalled preparation cannot trap launch
+00:53 +548 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: failed or stalled preparation cannot trap launch
+Startup artwork warm-up skipped: TimeoutException after 0:00:04.000000: Future not completed
+00:53 +549 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: archive undo restores care and memories, not just the card
+00:53 +550 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: archive undo restores care and memories, not just the card
+unhandled element <filter/>; Picture key: Svg loader
+00:54 +551 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/storage_recovery_v2_test.dart: 실제 앱 복구 안내에서 보류하면 원본 유지, 승인하면 보관 후 재시작한다
+00:54 +552 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/storage_recovery_v2_test.dart: 실제 앱 복구 안내에서 보류하면 원본 유지, 승인하면 보관 후 재시작한다
+00:54 +553 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/storage_recovery_v2_test.dart: 실제 앱 복구 안내에서 보류하면 원본 유지, 승인하면 보관 후 재시작한다
+00:54 +554 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/top_bar_test.dart: Bogle logo returns to the existing home through nested pages
+unhandled element <filter/>; Picture key: Svg loader
+00:55 +555 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +555 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/storage_recovery_v2_test.dart: 첫 방문이 오프라인이어도 다음 입장에서 서버 기록을 가져온다
+unhandled element <filter/>; Picture key: Svg loader
+00:55 +556 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +557 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +558 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +559 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +560 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +561 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +562 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +563 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +564 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +565 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +566 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:55 +567 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:56 +568 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:56 +569 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:56 +570 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/startup_test.dart: the wordmark glides without a jump on Size(1024.0, 768.0)
+00:57 +571 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: disposing preview during payment does not place a phantom order
+00:57 +572 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: home presents the primary creation journey
+00:57 +573 ~3 -29: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: home presents the primary creation journey
+00:57 +573 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: home presents the primary creation journey
+00:57 +573 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/window_views_test.dart: completed pair persists by filename and works offline after moving the container [E]
+  Expected: <Instance of 'FileImage'>
+    Actual: AssetImage:<AssetImage(bundle: null, name: "C:\Users\kimse\AppData\Local\Temp\window-cache-707b5162/art/window-day-1.png")>
+     Which: is not an instance of 'FileImage'
+
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\window_views_test.dart 104:7                   main.<fn>
+
+00:57 +574 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: home presents the primary creation journey
+00:57 +575 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: home presents the primary creation journey
+00:57 +576 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: home presents the primary creation journey
+00:58 +577 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: failed order persistence unlocks the page and permits retry
+00:58 +578 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: home idle motion pauses under pushed screens
+unhandled element <filter/>; Picture key: Svg loader
+00:58 +579 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: payment request failure is recoverable without recording an order
+00:59 +580 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/state_regression_test.dart: payment request failure is recoverable without recording an order
+00:59 +581 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: creation studio opens from the primary CTA
+00:59 +582 ~3 -30: C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/widget_test.dart: creation studio opens from the primary CTA
+00:59 +583 ~3 -30: Some tests failed.
+
+Failing tests:
+  C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/api_test.dart: SyncedCharacterRepository friends on the service but not on the iPad are brought in, pictures and face maps saved as files
+  C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: a generator's square canvas is cut to its figure, feet on the floor, and its face moves along; snug art is kept
+  C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: cut-out art from a file is measured; art with a background is a card; unreadable art is neither
+  C:/Users/kimse/AIKIM/Yeahsso/backend/frontend/test/art_source_test.dart: the invite tile shows a generated friend wherever it comes from, and 뭉글이 when it has no outline to take
+  ... and 26 more

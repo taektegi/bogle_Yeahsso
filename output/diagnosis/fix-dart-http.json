@@ -1,0 +1,462 @@
+{
+  "observations": [
+    {
+      "case": "personality_list",
+      "status": 200,
+      "count": 4
+    },
+    {
+      "case": "drawing_generate_download",
+      "pngOnDisk": true,
+      "jobIdPresent": true,
+      "faceOnDisk": true
+    },
+    {
+      "case": "drawing_app_save_replay",
+      "saved": true,
+      "sameId": true,
+      "personalityType": "cheerful_curious",
+      "face": true,
+      "responseLossInjected": true
+    },
+    {
+      "case": "photo_generate_download",
+      "pngOnDisk": true,
+      "jobIdPresent": true,
+      "faceOnDisk": true
+    },
+    {
+      "case": "photo_app_save_replay",
+      "saved": true,
+      "sameId": true,
+      "personalityType": "cheerful_curious",
+      "face": true,
+      "responseLossInjected": false
+    },
+    {
+      "case": "server_list_to_local",
+      "downloaded": true,
+      "sleepBedtime": 1260
+    },
+    {
+      "case": "edit_outbox_synced",
+      "serverNameChanged": true,
+      "localNameChanged": true,
+      "pending": 0
+    },
+    {
+      "case": "built_in_motion",
+      "builtIn": true,
+      "serverRequests": 0
+    },
+    {
+      "case": "chat_replay_history",
+      "sameReply": true,
+      "historyCount": 4
+    },
+    {
+      "case": "server_sleep_guard",
+      "appReturnsNull": true
+    },
+    {
+      "case": "ownership",
+      "status": 404
+    },
+    {
+      "case": "generation_failure_rejected",
+      "code": "generation_rejected",
+      "retryable": false
+    },
+    {
+      "case": "generation_failure_invalid_png",
+      "code": "generation_invalid_result",
+      "retryable": true
+    },
+    {
+      "case": "generation_failure_timeout",
+      "code": "generation_timeout",
+      "retryable": true
+    },
+    {
+      "case": "app_generation_cancel",
+      "cancelled": true
+    },
+    {
+      "case": "undo_before_deadline",
+      "serverPreserved": true
+    },
+    {
+      "case": "actual_delayed_delete",
+      "presentAt9Seconds": true,
+      "deletedAfterMs": 10215
+    },
+    {
+      "case": "server_delete_cascade",
+      "historyStatus": 404
+    },
+    {
+      "case": "server_counts",
+      "jobs": 5,
+      "friends": 1,
+      "aiCalls": 5,
+      "storageReadbacks": 9
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/auth/v1/token",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/personality-types",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/drawing",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/v1/token",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/2fd83e0e-9407-4aaa-b442-76361265b1cb",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/7954f7cc2d1a3086e4903d448d08c696129409b897b2e19c71fc55789148f666",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/33cb606521cf9fac0f22e9d88d603fef85962aff17c2879c78b44ab1fee596fc",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/personality-types",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/personality-types",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/photo",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/753adaa7-e572-4724-82de-c5f23040752a",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/a3cc61245b6d61b7ced5001a0bfafc3f6daffe842c523c5ca759139d99db2ec1",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/files/45e7a34d8f024cfb1d49f3de4665f17040530cb2f5168adfcd24470c5e9869c6",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/personality-types",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/v1/personality-types",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/fb854304-24c5-4f3e-b1f5-585802e2d28d",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/asleep",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda/messages",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/awake",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/v1/token",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/rejected",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/photo",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/9c10d666-a9e8-44d3-afee-21df5b6219c1",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/invalid_png",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/photo",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/6192ef13-a965-4a39-9064-1edf54edcd9a",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/timeout",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/photo",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/67f20c8d-9605-40d1-b8a2-99bbd81faf7c",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/generations/67f20c8d-9605-40d1-b8a2-99bbd81faf7c",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/diagnostic/control/success",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/input/drawing",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/v1/assets",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "path": "/v1/generations/74124fd2-c5ad-48b7-81b8-52d5546bdc01/cancel",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/v1/characters/3fe92c0f-55f9-46ad-a23a-37f7384d7eda/messages",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostic/observations",
+      "status": 200
+    }
+  ]
+}
