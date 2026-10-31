@@ -80,9 +80,11 @@ class AppServices {
     final outbox = Outbox(api, store: store);
     final art = DeviceArt(store.art);
     final windows = ApiWindowViews(api, store: store);
+    final conversations = ConversationArchive(store: store);
     final characters = SyncedCharacterRepository(
       api,
       onForget: windows.forget,
+      onCreated: windows.warm,
       local: InMemoryCharacterRepository(
         store: store,
         relocate: store.relocate,
@@ -104,8 +106,13 @@ class AppServices {
       profile: profile,
       orders: InMemoryOrderRepository(store: store),
       generator: ApiCharacterGenerator(api, art: art, store: store),
-      chat: ApiChatService(api, beforeReply: outbox.flush),
-      // 팀 서버의 GIF API 대신 LivingCharacter의 내장 모션을 사용한다.
+      conversations: conversations,
+      chat: ApiChatService(
+        api,
+        beforeReply: outbox.flush,
+        onExchange: conversations.recordExchange,
+      ),
+      // 팀 서버의 GIF 대신 기존 앱 내장 모션을 유지한다.
       motion: const NoMotionService(),
       sync: ServiceSync(
         characters: characters,

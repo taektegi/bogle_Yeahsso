@@ -196,7 +196,7 @@ class ProfileButton extends StatelessWidget {
       minimumSize: Size(0, large ? 48 : 44),
       padding: EdgeInsets.symmetric(horizontal: large ? 30 : 20),
       textStyle: TextStyle(
-        fontFamily: bogleBodyFont,
+        fontFamily: bogleDisplayFont,
         fontSize: large ? 16 : 15,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.2,

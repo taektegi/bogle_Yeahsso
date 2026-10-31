@@ -1099,6 +1099,7 @@ class _SetupFriendScreenState extends State<SetupFriendScreen>
   }
 
   static const _pillText = TextStyle(
+    fontFamily: bogleDisplayFont,
     fontSize: 24,
     fontWeight: FontWeight.w700,
     color: BogleColors.text,

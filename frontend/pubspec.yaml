@@ -43,6 +43,8 @@ dependencies:
   http: ^1.6.0
   path_provider: ^2.1.6
   webview_flutter: ^4.14.1
+  crypto: ^3.0.7
+  characters: ^1.4.1
 
 dev_dependencies:
   integration_test:
@@ -70,6 +72,7 @@ flutter:
 
   assets:
     - assets/figma/
+    - assets/icons/home/
     - assets/icons/photo/
   fonts:
     # 양진체 v0.9 (SIL OFL 1.1, assets/fonts/Yangjin-OFL.txt): the app's

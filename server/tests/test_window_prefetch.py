@@ -15,6 +15,7 @@ from app.images import input_reference
 from app.rate_limit import window_limiter
 from app.repositories.window_views import WindowViewRepository
 from app.storage import get_storage
+from app.window_images import day_prompt
 from app.window_worker import WindowWorker
 from tests.test_creation_db import FakeProvider, complete, creation, payload, uploaded  # noqa: F401
 from tests.test_creation_images import png
@@ -100,8 +101,9 @@ def test_friend_saved_while_queued_uses_only_art_and_reuses_the_job(
 
     provider = Provider()
     assert run_window(database, creation, provider)["status"] == "succeeded"
-    assert "산책" not in provider.calls[0][1]
-    assert "구름" not in provider.calls[0][1]
+    # 날씨 지시에 '구름'이 있어도 친구 설정을 추가한 것은 아니다.
+    # 저장된 친구 설정과 무관하게 공통 프롬프트만 전달됐는지 확인한다.
+    assert provider.calls[0][1] == day_prompt()
     assert len(window_jobs(seed_conn, user)) == 1
 
 

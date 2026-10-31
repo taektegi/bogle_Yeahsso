@@ -27,3 +27,10 @@ class LocalChatService implements ChatService {
   Future<List<ChatLine>> history(CharacterFriend friend) =>
       Future.value(const []);
 }
+
+/// Stable server identities; scripted/local replies need no server ID.
+typedef ServerChatLine = ({String id, ChatLine line});
+
+abstract interface class ServerChatHistory {
+  Future<List<ServerChatLine>> historyEntries(CharacterFriend friend);
+}

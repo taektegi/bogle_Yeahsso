@@ -39,8 +39,8 @@ const bogleDisplayFont = bogleFont;
 /// The friend's questions in setup.
 const bogleQuestionFont = bogleFont;
 
-/// Body copy.
-const bogleBodyFont = bogleFont;
+/// Reading text, settings explanations and editable content.
+const bogleBodyFont = bogleUiFont;
 
 /// Wraps a screen that sets its body copy in [font] ([bogleBodyFont] unless
 /// given). Dialogs opened from it capture this theme too.
@@ -52,8 +52,11 @@ Widget withBogleBodyFont(
   final base = Theme.of(context);
   return Theme(
     data: base.copyWith(
-      textTheme: base.textTheme.apply(fontFamily: font),
-      primaryTextTheme: base.primaryTextTheme.apply(fontFamily: font),
+      textTheme: base.textTheme.copyWith(
+        bodyLarge: base.textTheme.bodyLarge?.copyWith(fontFamily: font),
+        bodyMedium: base.textTheme.bodyMedium?.copyWith(fontFamily: font),
+        bodySmall: base.textTheme.bodySmall?.copyWith(fontFamily: font),
+      ),
     ),
     child: DefaultTextStyle.merge(
       style: TextStyle(fontFamily: font),
@@ -71,10 +74,44 @@ ThemeData buildBogleTheme() {
     useMaterial3: true,
     colorScheme: scheme,
     scaffoldBackgroundColor: BogleColors.cream,
-    fontFamily: bogleFont,
+    fontFamily: bogleBodyFont,
+    dialogTheme: const DialogThemeData(
+      titleTextStyle: TextStyle(
+        fontFamily: bogleDisplayFont,
+        fontSize: 24,
+        color: BogleColors.text,
+      ),
+      contentTextStyle: TextStyle(
+        fontFamily: bogleBodyFont,
+        fontSize: 16,
+        height: 1.5,
+        color: BogleColors.text,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        textStyle: const TextStyle(fontFamily: bogleDisplayFont),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        textStyle: const TextStyle(fontFamily: bogleDisplayFont),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        textStyle: const TextStyle(fontFamily: bogleDisplayFont),
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        textStyle: const TextStyle(fontFamily: bogleDisplayFont),
+      ),
+    ),
     splashFactory: InkSparkle.splashFactory,
     textTheme: const TextTheme(
       displayLarge: TextStyle(
+        fontFamily: bogleDisplayFont,
         fontSize: 52,
         height: 1.08,
         fontWeight: FontWeight.w800,
@@ -82,6 +119,7 @@ ThemeData buildBogleTheme() {
         color: BogleColors.ink,
       ),
       headlineLarge: TextStyle(
+        fontFamily: bogleDisplayFont,
         fontSize: 36,
         height: 1.15,
         fontWeight: FontWeight.w800,
@@ -89,6 +127,7 @@ ThemeData buildBogleTheme() {
         color: BogleColors.ink,
       ),
       headlineMedium: TextStyle(
+        fontFamily: bogleDisplayFont,
         fontSize: 27,
         height: 1.2,
         fontWeight: FontWeight.w700,
@@ -96,6 +135,7 @@ ThemeData buildBogleTheme() {
         color: BogleColors.ink,
       ),
       titleLarge: TextStyle(
+        fontFamily: bogleDisplayFont,
         fontSize: 22,
         height: 1.25,
         fontWeight: FontWeight.w700,
@@ -103,6 +143,7 @@ ThemeData buildBogleTheme() {
         color: BogleColors.ink,
       ),
       titleMedium: TextStyle(
+        fontFamily: bogleDisplayFont,
         fontSize: 18,
         height: 1.3,
         fontWeight: FontWeight.w700,
@@ -124,6 +165,7 @@ ThemeData buildBogleTheme() {
         color: BogleColors.muted,
       ),
       labelLarge: TextStyle(
+        fontFamily: bogleDisplayFont,
         fontSize: 16,
         height: 1.2,
         fontWeight: FontWeight.w700,

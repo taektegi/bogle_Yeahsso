@@ -1,5 +1,6 @@
 // 개인 백엔드 scripts/rehearse_flutter.py가 띄운 임시 HTTP 서버 전용 2차 검증.
 import 'dart:io';
+import 'package:bogle_app/src/screens/photo_edit.dart';
 
 import 'package:bogle_app/src/data/api/api_client.dart';
 import 'package:bogle_app/src/data/app_services.dart';
@@ -79,6 +80,8 @@ void main() {
       final friend = saved.first;
       // 편집한 성격·수면을 전송하고 서버 상태와 앱의 수면 판정을 대조한다.
       final edited = friend.copyWith(
+        name: '꼬마 별',
+        introduction: List.filled(70, '👨‍👩‍👧').join(),
         personality: personalityChoices.last,
         sleep: const SleepSchedule(bedtime: 0, wakeTime: 0),
       );
@@ -94,6 +97,40 @@ void main() {
         false,
       );
       expect(await services.chat.history(edited), isNotEmpty);
+      final current = await api.get('/v1/characters/${friend.id}');
+      expect(current['name'], '꼬마 별');
+      expect(current['introduction'], List.filled(70, '👨‍👩‍👧').join());
+      await api.patch('/v1/me', {
+        'nickname': List.filled(12, '👨‍👩‍👧').join(),
+        'bio': List.filled(60, '👨‍👩‍👧').join(),
+        'avatarCharacterId': friend.id,
+      });
+      final freshFolder = await Directory.systemTemp.createTemp(
+        'bogle_fresh_profile_',
+      );
+      addTearDown(() => freshFolder.delete(recursive: true));
+      final fresh = AppServices.remote(config, store: FileStore(freshFolder));
+      addTearDown(fresh.sync!.outbox.dispose);
+      await fresh.sync!.start();
+      final profile = await fresh.profile.fetchProfile();
+      final restoredFriends = await fresh.characters.fetchFriends();
+      expect(profile.nickname, List.filled(12, '👨‍👩‍👧').join());
+      expect(profile.bio, List.filled(60, '👨‍👩‍👧').join());
+      expect(
+        profile.avatar,
+        restoredFriends.firstWhere((f) => f.id == friend.id).assetPath,
+      );
+      // A rejected introduction must not lose the accompanying valid schedule/name.
+      await services.sync!.outbox.patchCharacter(friend.id, {
+        'introduction': List.filled(71, '가').join(),
+        'name': '반짝 별',
+        'bedtime': 0,
+        'wakeTime': 0,
+      });
+      await services.sync!.outbox.flush();
+      expect((await api.get('/v1/characters/${friend.id}'))['name'], '반짝 별');
+      expect(services.sync!.outbox.notice.value, isNotNull);
+
       // 서버가 자는 것으로 판단하는 일정으로 바꾸면 새 대화는 차단된다.
       final now = DateTime.now();
       final minute = now.hour * 60 + now.minute;
@@ -113,10 +150,14 @@ void main() {
       // AI 출력 실패는 생성 실패로 전달되고 원본은 재사용할 수 있다.
       for (final mode in ['timeout', 'invalid_png', 'rejected']) {
         await api.post('/test/failure/$mode');
-        final input = GenerationInput(
-          await api.download('$_url/test/input/photo'),
-          source: GenerationSource.photo,
-        );
+        final bytes = await api.download('$_url/test/input/photo');
+        final prepared = await renderPhotoForGeneration(bytes, (
+          quarterTurns:
+              ['timeout', 'invalid_png', 'rejected'].indexOf(mode) + 1,
+          crop: uneditedPhoto.crop,
+          brighten: false,
+        ));
+        final input = GenerationInput(prepared, source: GenerationSource.photo);
         await expectLater(
           services.generator.start(input).result,
           throwsA(

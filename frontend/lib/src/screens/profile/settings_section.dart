@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../data/profile_repository.dart';
+import '../../data/app_services.dart';
+import '../../widgets/sync_status_dialog.dart';
 import '../../theme/bogle_theme.dart';
 import 'profile_widgets.dart';
 import '../../widgets/bogle_dialog.dart';
@@ -32,6 +34,8 @@ class SettingsSection extends StatelessWidget {
       ),
       _Item(Icons.person_outline_rounded, '계정 관리', onEditProfile),
       _Item(Icons.credit_card_rounded, '결제 수단 관리', onPaymentMethods),
+      if (AppServices.of(context).sync != null)
+        _Item(Icons.sync_rounded, '동기화 상태', () => showSyncStatus(context)),
     ];
     final right = [
       _Item(Icons.location_on_outlined, '배송지 관리', onAddresses),

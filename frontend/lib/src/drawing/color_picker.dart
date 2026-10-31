@@ -63,7 +63,10 @@ class _StudioColorPickerState extends State<StudioColorPicker> {
                   child: Text(
                     '색상',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24),
+                    style: TextStyle(
+                      fontFamily: bogleDisplayFont,
+                      fontSize: 24,
+                    ),
                   ),
                 ),
                 IconButton(

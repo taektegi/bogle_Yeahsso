@@ -238,14 +238,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 art: _Floating(
                                   idle: _idle,
                                   lift: 10,
-                                  // The tail widens the image to the left;
-                                  // centre the head (x 644 of 987 px) instead.
-                                  child: FractionalTranslation(
-                                    translation: const Offset(-0.152, 0),
-                                    child: Image.asset(
-                                      'assets/figma/home_play_character.png',
-                                      width: 297,
-                                      height: 361,
+                                  child: Transform.scale(
+                                    scale: 1.2,
+                                    child: const SizedBox(
+                                      width: 360,
+                                      height: 300,
+                                      child: FriendArtwork(
+                                        assetPath:
+                                            'assets/figma/character_card.svg',
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -289,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             idle: _idle,
                                             lift: 5,
                                             offset: 0.5,
-                                            child: const _PhotoBadge(),
+                                            child: const _PhotoIllustration(),
                                           ),
                                         ],
                                       ),
