@@ -69,6 +69,8 @@ def dependency_for(limiter: RateLimiter) -> Callable[[CurrentUserDep], None]:
 # API 계약 2절의 한도 (사용자당)
 upload_limiter = RateLimiter("uploads", limit=30, window_seconds=3600)
 generation_limiter = RateLimiter("generations", limit=10, window_seconds=3600)
+# 배경은 친구 생성 한도를 소모하지 않고 별도로 제한한다.
+window_limiter = RateLimiter("window_views", limit=10, window_seconds=3600)
 message_limiter = RateLimiter("messages", limit=20, window_seconds=60)
 
 limit_uploads = dependency_for(upload_limiter)

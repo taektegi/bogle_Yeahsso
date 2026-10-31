@@ -48,6 +48,21 @@ class OpenRouterImages:
         self.transport = transport
 
     async def generate(self, reference: str) -> bytes:
+        return await self._generate(reference, prompt=PROMPT)
+
+    async def generate_window(self, reference: str, prompt: str) -> bytes:
+        return await self._generate(
+            reference, prompt=prompt, aspect_ratio="21:9", background="opaque"
+        )
+
+    async def _generate(
+        self,
+        reference: str,
+        *,
+        prompt: str,
+        aspect_ratio: str = "1:1",
+        background: str = "transparent",
+    ) -> bytes:
         key = self.settings.openrouter_api_key
         if key is None or not key.get_secret_value():
             raise GenerationError(
@@ -62,11 +77,11 @@ class OpenRouterImages:
                     headers={"Authorization": "Bearer " + key.get_secret_value()},
                     json={
                         "model": MODEL,
-                        "prompt": PROMPT,
+                        "prompt": prompt,
                         "n": 1,
-                        "aspect_ratio": "1:1",
+                        "aspect_ratio": aspect_ratio,
                         "quality": "medium",
-                        "background": "transparent",
+                        "background": background,
                         "provider": {"only": ["openai"], "allow_fallbacks": False},
                         "input_references": [
                             {"type": "image_url", "image_url": {"url": reference}}

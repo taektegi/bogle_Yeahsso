@@ -235,3 +235,11 @@ python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지
 - 멱등 키의 **엔드포인트 연결**: 공통 코드(`app/idempotency.py`)와 `friends` 컬럼은 준비됐고, 생성 작업·친구 저장·대화 API를 만들 때 `docs/idempotency-design.md`를 따라 붙입니다.
 - 요청 횟수 제한은 만들어 두었지만(`app/rate_limit.py`) 아직 어떤 라우터에도 붙어 있지 않습니다. 업로드·생성·대화 API를 만들 때 `Depends(limit_uploads)`, `Depends(limit_generations)`, `Depends(limit_messages)`를 붙이세요. 기록을 서버 메모리에 두므로 서버 1개 기준입니다.
 - 실제 Supabase로의 **나머지 확인**: 로컬 Supabase와 클라우드 개발 프로젝트(Supavisor transaction mode, Storage, ES256 토큰, 레거시 `service_role` 키)에서는 확인했습니다. 결과는 `docs/supabase-cloud-setup.md`의 "클라우드 검증 결과"를 보세요. Google 로그인(Web 클라이언트, 브라우저 방식)도 클라우드 프로젝트에서 확인했습니다. 아직 못 본 것은 아이패드 앱의 iOS 네이티브 로그인, 레거시 HS256 토큰(실제 토큰), 새 `sb_secret_...` 키, 정리 작업의 클라우드 동작입니다.
+
+## 창문 배경 생성
+
+캐릭터 PNG 저장·검증 후 같은 Flare 모델로 낮 배경 한 장을 비동기 생성한다.
+친구 설정·JSON 메타데이터는 AI 입력에 포함하지 않는다.
+`GET/POST /v1/characters/{id}/window-view`와 낮 단일 결과를 지원하는 Flutter 연동을 제공한다.
+서버를 업데이트하기 전에 새 배경 마이그레이션을 적용해야 한다.
+입력·설정·API·배포 순서는 [배경 생성 문서](../docs/window-background-generation.md)를 참고한다.

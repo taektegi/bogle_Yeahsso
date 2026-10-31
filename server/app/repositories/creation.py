@@ -199,6 +199,11 @@ class CreationRepository:
                         "face": Jsonb(job["face"]) if job["face"] is not None else None,
                     },
                 )
+                conn.execute(
+                    "update public.window_view_jobs set character_id=%s where user_id=%s "
+                    "and generation_job_id=%s and character_id is null",
+                    (row["id"], user_id, job["id"]),
+                )
                 return row["id"], new
         except psycopg.errors.UniqueViolation:
             raise ApiError(

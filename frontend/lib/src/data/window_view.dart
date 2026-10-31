@@ -53,7 +53,7 @@ class WindowView {
   static ImageProvider image(String source) =>
       source.startsWith('http://') || source.startsWith('https://')
       ? NetworkImage(source)
-      : source.startsWith('/') || source.startsWith('file://')
+      : File(source).isAbsolute || source.startsWith('file://')
       ? FileImage(
           File(
             source.startsWith('file://')

@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     )
     generation_concurrency: int = Field(default=2, ge=1, le=2)
     generation_timeout_seconds: float = Field(default=240, gt=0, le=240)
+    # 캐릭터 PNG 저장 직후 별도 큐에서 배경 한 장을 미리 만든다.
+    window_prefetch_after_generation: bool = True
+    window_generation_timeout_seconds: float = Field(default=240, gt=0, le=480)
 
     # 얼굴 분석은 OI-03에서 확정한 모델을 쓰며 키가 없으면 분석을 건너뛴다.
     openrouter_face_model: str = "openai/gpt-6-luna"
