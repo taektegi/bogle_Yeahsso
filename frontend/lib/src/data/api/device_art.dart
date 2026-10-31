@@ -43,6 +43,17 @@ class DeviceArt {
     return (art: artFile.path, thumbnail: thumbPath);
   }
 
+  /// 그림보다 늦게 온 [name]의 얼굴 좌표를 그림 옆에 저장한다.
+  /// 친구를 지워 그림이 더 이상 없으면 아무것도 남기지 않는다.
+  Future<void> keepFace(String name, Object face) async {
+    final artFile = File('${folder.path}/$name.png');
+    if (!await artFile.exists()) return;
+    await File(
+      '${folder.path}/$name.face.json',
+    ).writeAsString(jsonEncode(face), flush: true);
+    giveFaceMap(artFile.path, face);
+  }
+
   static Future<void> _validatePng(Uint8List bytes) async {
     const signature = [137, 80, 78, 71, 13, 10, 26, 10];
     if (bytes.length < signature.length ||

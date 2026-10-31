@@ -22,6 +22,15 @@ import 'package:http/http.dart' as http;
 
 import 'support/api_fixtures.dart';
 
+/// [check]가 참이 될 때까지 잠깐씩 기다린다. 2초 안에 안 되면 실패한다.
+Future<void> eventually(Future<bool> Function() check) async {
+  for (var i = 0; i < 200; i++) {
+    if (await check()) return;
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+  }
+  fail('the condition never came true');
+}
+
 Future<Directory> tempFolder() async {
   final folder = await Directory.systemTemp.createTemp('bogle_api_test_');
   addTearDown(() => folder.delete(recursive: true));
@@ -725,6 +734,115 @@ void main() {
 
       await after.finished(jobId);
       expect(await after.unfinished(), isNull);
+    });
+
+    test('the friend comes over before its face map, which follows on its '
+        'own and is kept next to the picture', () async {
+      final service = generating(
+        states: [
+          generationWaiting('queued'),
+          generationSucceededFace('pending'),
+          generationSucceededFace('pending'),
+          generationSucceeded(),
+        ],
+      );
+      final folder = await tempFolder();
+      final store = MemoryStore();
+      final face = Completer<void>();
+      final waits = <Duration>[];
+      final generator = ApiCharacterGenerator(
+        service.api(),
+        art: DeviceArt(folder),
+        store: store,
+        // 첫 번째는 생성 작업의 조회, 그다음은 얼굴 좌표 조회다.
+        wait: (d) {
+          waits.add(d);
+          return waits.length == 2 ? face.future : Future.value();
+        },
+      );
+
+      final art = await generator
+          .start(
+            GenerationInput(await pngBytes(), source: GenerationSource.drawing),
+          )
+          .result;
+
+      // 얼굴 분석을 기다리지 않고 그림부터 넘어온다.
+      final faceFile = File('${folder.path}/$jobId.face.json');
+      expect(File(art.assetPath).existsSync(), isTrue);
+      expect(faceFile.existsSync(), isFalse);
+      expect(await store.read('pending_faces'), [jobId]);
+
+      // 앱이 스스로 시작한 뒤따른 조회만으로 좌표가 저장돼야 한다.
+      face.complete();
+      await eventually(() async => faceFile.existsSync());
+      await eventually(
+        () async => (await store.read('pending_faces') as List).isEmpty,
+      );
+
+      expect((await faceMapFor(art.assetPath))?.mouth, isNotNull);
+      expect(service.to('/v1/generations/$jobId'), hasLength(3));
+    });
+
+    test('a face map the service could not work out leaves the friend as it '
+        'is', () async {
+      final service = generating(
+        states: [
+          generationWaiting('queued'),
+          generationSucceededFace('pending'),
+          generationSucceededFace('unavailable'),
+        ],
+      );
+      final folder = await tempFolder();
+      final store = MemoryStore();
+      final generator = ApiCharacterGenerator(
+        service.api(),
+        art: DeviceArt(folder),
+        store: store,
+        wait: (_) async {},
+      );
+
+      final art = await generator
+          .start(
+            GenerationInput(await pngBytes(), source: GenerationSource.drawing),
+          )
+          .result;
+      await eventually(
+        () async => service.to('/v1/generations/$jobId').length == 2,
+      );
+      await eventually(
+        () async => (await store.read('pending_faces') as List).isEmpty,
+      );
+
+      expect(File(art.assetPath).existsSync(), isTrue);
+      expect(File('${folder.path}/$jobId.face.json').existsSync(), isFalse);
+    });
+
+    test('a face map still to come when the app closed is asked for after '
+        'the relaunch', () async {
+      final folder = await tempFolder();
+      final store = MemoryStore();
+      await store.write('pending_faces', [jobId]);
+      final picture = File('${folder.path}/$jobId.png');
+      await picture.writeAsBytes(await pngBytes());
+      final service = FakeService({
+        'GET /v1/generations/$jobId': (_) => json(generationSucceeded()),
+      });
+      final generator = ApiCharacterGenerator(
+        service.api(),
+        art: DeviceArt(folder),
+        store: store,
+        wait: (_) async {},
+      );
+
+      expect(await generator.unfinished(), isNull);
+      final faceFile = File('${folder.path}/$jobId.face.json');
+      await eventually(() async => faceFile.existsSync());
+      await eventually(
+        () async => (await store.read('pending_faces') as List).isEmpty,
+      );
+
+      expect((await faceMapFor(picture.path))?.mouth, isNotNull);
     });
   });
 
