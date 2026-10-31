@@ -6,6 +6,7 @@ import 'package:bogle_app/src/data/chat_service.dart';
 import 'package:bogle_app/src/models/character_friend.dart';
 import 'package:bogle_app/src/models/friend_status.dart';
 import 'package:bogle_app/src/screens/friend_screen.dart';
+import 'package:bogle_app/src/screens/house/chat_panel.dart';
 import 'package:bogle_app/src/screens/house/house_widgets.dart';
 import 'package:bogle_app/src/screens/house/scene_speech.dart';
 import 'package:bogle_app/src/theme/bogle_theme.dart';
@@ -324,12 +325,18 @@ void main() {
     Size(1194, 834),
     Size(1366, 1024),
   ]) {
-    testWidgets('둘이 있는 대화와 키보드에서 얼굴·말풍선·입력창이 겹치지 않는다 $size', (tester) async {
+    testWidgets('둘이 있는 대화와 키보드에서 두 친구와 대화창이 겹치지 않는다 $size', (tester) async {
       await open(tester, size: size);
       await invite(tester);
       await tester.tap(find.bySemanticsLabel('대화하기'));
       await tester.pumpAndSettle();
       await capture(tester, 'chat-${size.width.toInt()}');
+      Rect panel() => tester.getRect(find.byKey(const ValueKey('chat')));
+      for (final name in ['뭉글이', '뚜치']) {
+        final character = tester.getRect(find.bySemanticsLabel('$name 쓰다듬기'));
+        expect(character.right, lessThan(panel().left), reason: name);
+        expect(character.left, greaterThanOrEqualTo(0), reason: name);
+      }
       await tester.enterText(
         find.byKey(const ValueKey('house-chat-field')),
         '같이 놀자',
@@ -337,21 +344,29 @@ void main() {
       await tester.pump();
       await tester.tap(find.byTooltip('보내기'));
       await tester.pump(const Duration(milliseconds: 600));
-      expect(find.byType(SceneSpeech), findsOneWidget);
-      final speech = tester.widget<SceneSpeech>(find.byType(SceneSpeech));
-      expect(speech.text, contains('구름'));
+      // 답은 방 안 말풍선이 아니라 대화창에 쌓인다.
+      expect(find.byType(SceneSpeech), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byType(ChatPanel),
+          matching: find.byWidgetPredicate(
+            (w) => w is Text && (w.semanticsLabel ?? '').contains('구름'),
+          ),
+        ),
+        findsOneWidget,
+      );
       await capture(tester, 'reply-${size.width.toInt()}');
       tester.view.viewInsets = const FakeViewPadding(bottom: 350);
       await tester.pumpAndSettle();
-      final dock = tester.getRect(find.byKey(const ValueKey('chat')));
+      final dock = panel();
+      expect(dock.bottom, lessThanOrEqualTo(size.height - 350));
+      expect(dock.top, greaterThanOrEqualTo(0));
       for (final name in ['뭉글이', '뚜치']) {
         final character = tester.getRect(find.bySemanticsLabel('$name 쓰다듬기'));
-        expect(character.bottom, lessThan(dock.top));
+        expect(character.bottom, lessThan(size.height - 350));
         expect(character.top, greaterThanOrEqualTo(0));
+        expect(character.right, lessThan(dock.left));
       }
-      final bubble = tester.getRect(find.byType(SceneSpeech));
-      expect(bubble.top, greaterThanOrEqualTo(0));
-      expect(bubble.bottom, lessThan(dock.top));
       await capture(tester, 'keyboard-${size.width.toInt()}');
       expect(tester.takeException(), isNull);
       tester.view.resetViewInsets();

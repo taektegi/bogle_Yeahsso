@@ -134,7 +134,7 @@ void main() {
     expect(cache.containsKey('deleted-art'), isFalse);
   });
 
-  testWidgets('이전 이야기에서 집주인과 손님의 아바타가 섞이지 않는다', (tester) async {
+  testWidgets('대화창에서 집주인과 손님의 아바타가 섞이지 않는다', (tester) async {
     final friends = starterFriends();
     await tester.pumpWidget(
       MaterialApp(
@@ -148,7 +148,6 @@ void main() {
             ],
             speakers: [friends.first, friends[1]],
             enabled: true,
-            readOnly: true,
             onSend: (_, _) {},
             onClose: () {},
           ),
@@ -164,7 +163,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('집을 나갔다 돌아와도 로컬 채팅이 이전 이야기에 남는다', (tester) async {
+  testWidgets('집을 나갔다 돌아와도 로컬 채팅이 대화창에 남는다', (tester) async {
     tester.view.physicalSize = const Size(1194, 834);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -205,8 +204,6 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await open();
     await tester.tap(find.bySemanticsLabel('대화하기'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('이전 이야기'));
     await tester.pumpAndSettle();
     final panel = tester.widget<ChatPanel>(find.byType(ChatPanel));
     expect(panel.lines.any((e) => e.mine && e.text == '우리의 저장된 이야기'), isTrue);

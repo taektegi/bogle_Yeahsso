@@ -173,10 +173,8 @@ void main() {
       ),
     );
 
+    // The conversation card opens on the whole chat, earlier visits too.
     await tester.tap(find.bySemanticsLabel('대화하기'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('이전 이야기'));
     await tester.pumpAndSettle();
     expect(chatLine('어제 뭐 했어?'), findsOneWidget);
     expect(chatLine('구름 구경했지요!'), findsOneWidget);

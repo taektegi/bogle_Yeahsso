@@ -90,12 +90,17 @@ class RoomScene extends StatelessWidget {
     required this.lightsOff,
     this.company = 0,
     this.bottomOverflow = 0,
+    this.rightOverflow = 0,
   });
   final WindowView view;
   final DayTime time;
   final bool lightsOff;
   final double company;
   final double bottomOverflow;
+
+  /// How far the wall and floor go on past the right edge, for a room
+  /// panned aside to make space for the conversation.
+  final double rightOverflow;
 
   static const _wallDay = Color(0xFFFFFEEE);
   static const _wallNight = Color(0xFFC7CCD9);
@@ -129,9 +134,15 @@ class RoomScene extends StatelessWidget {
         fit: StackFit.expand,
         clipBehavior: Clip.none,
         children: [
-          AnimatedContainer(
-            duration: fade,
-            color: lightsOff ? _wallNight : _wallDay,
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            right: -rightOverflow,
+            child: AnimatedContainer(
+              duration: fade,
+              color: lightsOff ? _wallNight : _wallDay,
+            ),
           ),
           Positioned.fromRect(
             rect: window,
@@ -147,15 +158,21 @@ class RoomScene extends StatelessWidget {
           ),
           Positioned(
             left: 0,
-            right: 0,
+            right: -rightOverflow,
             top: room.floor,
             bottom: -bottomOverflow,
             child: CustomPaint(painter: _FloorPainter(s)),
           ),
-          IgnorePointer(
-            child: AnimatedContainer(
-              duration: fade,
-              color: lightsOff ? _dark : Colors.transparent,
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            right: -rightOverflow,
+            child: IgnorePointer(
+              child: AnimatedContainer(
+                duration: fade,
+                color: lightsOff ? _dark : Colors.transparent,
+              ),
             ),
           ),
           Positioned.fromRect(

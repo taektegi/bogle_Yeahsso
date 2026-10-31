@@ -1,7 +1,6 @@
 import 'package:bogle_app/src/data/character_repository.dart';
 import 'package:bogle_app/src/screens/friend_screen.dart';
 import 'package:bogle_app/src/screens/house/chat_panel.dart';
-import 'package:bogle_app/src/screens/house/conversation_dock.dart';
 import 'package:bogle_app/src/screens/house/house_widgets.dart';
 import 'package:bogle_app/src/theme/bogle_theme.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,7 @@ void main() {
     }
   });
 
-  testWidgets('명시적인 집 복귀 버튼은 키보드 포커스를 해제하고 대화 기록은 유지한다', (tester) async {
+  testWidgets('대화창의 닫기 버튼은 키보드 포커스를 해제하고 대화 기록은 유지한다', (tester) async {
     final repo = InMemoryCharacterRepository();
     await show(
       tester,
@@ -30,39 +29,40 @@ void main() {
     );
     await tester.tap(find.bySemanticsLabel('대화하기'));
     await tester.pumpAndSettle();
-    final back = find.byKey(const ValueKey('house-chat-return'));
-    expect(find.text('집으로 돌아가기'), findsOneWidget);
-    expect(tester.getSize(back).height, greaterThanOrEqualTo(52));
+    final close = find.byKey(const ValueKey('house-chat-return'));
+    expect(find.byTooltip('대화 닫기'), findsOneWidget);
+    expect(tester.getSize(close).height, greaterThanOrEqualTo(52));
+    expect(tester.getSize(close).width, greaterThanOrEqualTo(52));
+    // 대화 중에는 간식주기·초대하기·대화하기 타일을 숨긴다.
+    for (final tile in ['대화하기', '간식주기', '초대하기']) {
+      expect(find.text(tile), findsNothing, reason: tile);
+    }
     await tester.tap(find.widgetWithText(ActionChip, '사랑해!'));
     await tester.pump(const Duration(seconds: 1));
+    Finder said(String text) => find.descendant(
+      of: find.byType(ChatPanel),
+      matching: find.byWidgetPredicate(
+        (w) => w is Text && w.semanticsLabel == text,
+      ),
+    );
+    // 보낸 말과 답이 따로 열지 않아도 대화창에 바로 쌓인다.
+    expect(said('사랑해!'), findsOneWidget);
     final field = find.byKey(const ValueKey('house-chat-field'));
     await tester.tap(field);
     await tester.pump();
     final focus = tester.widget<TextField>(field).focusNode!;
     expect(focus.hasFocus, true);
-    await tester.tap(back);
+    await tester.tap(close);
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('chat')), findsNothing);
     expect(find.byType(FriendScreen), findsOneWidget);
     expect(find.byType(EditableText), findsNothing);
+    for (final tile in ['대화하기', '간식주기', '초대하기']) {
+      expect(find.text(tile), findsOneWidget, reason: tile);
+    }
     await tester.tap(find.bySemanticsLabel('대화하기'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('이전 이야기'));
-    await tester.pumpAndSettle();
-    expect(find.byType(ChatPanel), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(ChatPanel),
-        matching: find.byWidgetPredicate(
-          (w) => w is Text && w.semanticsLabel == '사랑해!',
-        ),
-      ),
-      findsOneWidget,
-    );
-    await tester.tap(find.byKey(const ValueKey('house-history-return')));
-    await tester.pumpAndSettle();
-    expect(find.byType(ChatPanel), findsNothing);
-    expect(back, findsOneWidget);
+    expect(said('사랑해!'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
@@ -104,8 +104,9 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('작은 폭과 큰 글자에서도 생각 중·수면 중에 돌아갈 수 있다', (tester) async {
+  testWidgets('작은 폭과 큰 글자에서도 생각 중·수면 중에 닫을 수 있다', (tester) async {
     var closed = 0;
+    final friend = await firstFriend(InMemoryCharacterRepository());
     await tester.pumpWidget(
       MaterialApp(
         theme: buildBogleTheme(),
@@ -115,12 +116,14 @@ void main() {
             body: Center(
               child: SizedBox(
                 width: 320,
-                child: ConversationDock(
+                height: 520,
+                child: ChatPanel(
+                  friend: friend,
+                  lines: const [(mine: false, text: '쿨쿨')],
                   enabled: false,
                   thinking: true,
                   onSend: (_, _) {},
                   onClose: () => closed++,
-                  onHistory: () {},
                 ),
               ),
             ),
@@ -128,9 +131,9 @@ void main() {
         ),
       ),
     );
-    final back = find.byKey(const ValueKey('house-chat-return'));
-    expect(tester.getSize(back).height, greaterThanOrEqualTo(52));
-    await tester.tap(back);
+    final close = find.byKey(const ValueKey('house-chat-return'));
+    expect(tester.getSize(close).height, greaterThanOrEqualTo(52));
+    await tester.tap(close);
     expect(closed, 1);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
