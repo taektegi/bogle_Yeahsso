@@ -5,23 +5,29 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'support/api_fixtures.dart';
 
-/// The character service's API, as it describes itself. A copy of
-/// `docs/openapi.json` from the backend repository
-/// (quasiaward/bogle_backend_try), which checks that file against its own
-/// code. When the service's API changes, copy the new file here: these
-/// tests then say which of the app's pretend answers no longer match.
+/// 개인 서버와 팀 서버 계약을 분리한다. 서로 다른 서버의 필드를 합쳐
+/// 실제로 존재하지 않는 계약을 만들지 않는다.
 final _spec =
     jsonDecode(File('test/contract/openapi.json').readAsStringSync())
         as Map<String, dynamic>;
 
-Map<String, dynamic> _schema(String name) =>
-    ((_spec['components'] as Map)['schemas'] as Map)[name]
+final _teamSpec =
+    jsonDecode(File('test/contract/team_openapi.json').readAsStringSync())
+        as Map<String, dynamic>;
+
+Map<String, dynamic> _schema(String name, {Map<String, dynamic>? spec}) =>
+    (((spec ?? _spec)['components'] as Map)['schemas'] as Map)[name]
         as Map<String, dynamic>;
 
 /// [value] has every field [schema] requires and none it doesn't know;
 /// nested objects named by `$ref` are checked too.
-void expectMatches(Object? value, String schema, {String at = r'$'}) {
-  final s = _schema(schema);
+void expectMatches(
+  Object? value,
+  String schema, {
+  String at = r'$',
+  Map<String, dynamic>? spec,
+}) {
+  final s = _schema(schema, spec: spec);
   expect(value, isA<Map>(), reason: '$at should be a $schema');
   final map = (value! as Map).cast<String, Object?>();
   final properties = (s['properties'] as Map).cast<String, Object?>();
@@ -36,7 +42,7 @@ void expectMatches(Object? value, String schema, {String at = r'$'}) {
     );
     final ref = _refOf(properties[key]);
     if (ref != null && value != null) {
-      expectMatches(value, ref, at: '$at.$key');
+      expectMatches(value, ref, at: '$at.$key', spec: spec);
     }
   }
 }
@@ -58,9 +64,20 @@ void main() {
 
   test('every state of a generation is a GenerationOut', () {
     expectMatches(generationWaiting('queued'), 'GenerationOut');
-    expectMatches(generationSucceeded(), 'GenerationOut');
-    expectMatches(generationSucceededFace('pending'), 'GenerationOut');
-    expectMatches(generationSucceededFace('unavailable'), 'GenerationOut');
+    final personal = Map<String, dynamic>.of(generationSucceeded())
+      ..remove('faceStatus');
+    expectMatches(personal, 'GenerationOut');
+    expectMatches(generationSucceeded(), 'GenerationOut', spec: _teamSpec);
+    expectMatches(
+      generationSucceededFace('pending'),
+      'GenerationOut',
+      spec: _teamSpec,
+    );
+    expectMatches(
+      generationSucceededFace('unavailable'),
+      'GenerationOut',
+      spec: _teamSpec,
+    );
     expectMatches(
       generationFailed('generation_rejected', retryable: false),
       'GenerationOut',
@@ -86,6 +103,32 @@ void main() {
     expectMatches(me(), 'ProfileOut');
   });
 
+  test('프로필 확장 필드와 창문 배경 상태가 현재 서버 계약에 있다', () {
+    final fields = _schema('ProfileOut')['properties'] as Map;
+    expect(
+      fields.keys,
+      containsAll(['bio', 'interests', 'profileColor', 'avatarCharacterId']),
+    );
+    for (final status in [
+      'missing',
+      'queued',
+      'processing',
+      'succeeded',
+      'failed',
+      'cancelled',
+    ]) {
+      expectMatches({
+        'status': status,
+        'jobId': null,
+        'readyJobId': null,
+        'day': null,
+        'night': null,
+        'error': null,
+        'pollAfterMs': 2000,
+      }, 'WindowOut');
+    }
+  });
+
   test('every path the app calls is one the service has', () {
     final paths = (_spec['paths'] as Map).keys.toSet();
     for (final path in const [
@@ -98,6 +141,7 @@ void main() {
       '/v1/characters/{character_id}/messages',
       '/v1/characters/{character_id}/motion',
       '/v1/me',
+      '/v1/characters/{character_id}/window-view',
     ]) {
       expect(paths, contains(path));
     }

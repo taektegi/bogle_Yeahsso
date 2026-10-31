@@ -1,3 +1,4 @@
+import '../data/api/api_client.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -348,6 +349,9 @@ class _FriendScreenState extends State<FriendScreen>
 
   WindowView? _window;
   bool _windowBusy = false;
+
+  /// The service is still making the scenery: say so over the default view.
+  bool _windowWaiting = false;
   String? _windowError;
 
   Future<void> _loadWindow({bool regenerate = false}) async {
@@ -362,6 +366,9 @@ class _FriendScreenState extends State<FriendScreen>
         _friend,
         regenerate: regenerate,
         active: () => mounted,
+        onWaiting: () {
+          if (mounted) setState(() => _windowWaiting = true);
+        },
       );
       if (mounted && view != null) setState(() => _window = view);
     } catch (error) {
@@ -369,7 +376,12 @@ class _FriendScreenState extends State<FriendScreen>
         setState(() => _windowError = failureMessage(error, '배경을 만들지 못했어요.'));
       }
     } finally {
-      if (mounted) setState(() => _windowBusy = false);
+      if (mounted) {
+        setState(() {
+          _windowBusy = false;
+          _windowWaiting = false;
+        });
+      }
     }
   }
 
@@ -617,13 +629,20 @@ class _FriendScreenState extends State<FriendScreen>
     _loadingHistory = true;
     final friend = _friend.id;
     try {
-      if (!await _conversations.needsServerHistory(friend)) return;
-      final past = await _chat.history(_friend);
-      if (!mounted || request != _request || _friend.id != friend) return;
-      await _conversations.prepend(friend, [
-        for (final line in past)
-          ConversationEntry(line, speaker: line.mine ? null : _friend),
-      ]);
+      final chat = _chat;
+      if (chat is ServerChatHistory) {
+        final past = await (chat as ServerChatHistory).historyEntries(_friend);
+        if (!mounted || request != _request || _friend.id != friend) return;
+        await _conversations.mergeServer(_friend, past);
+      } else {
+        if (!await _conversations.needsServerHistory(friend)) return;
+        final past = await _chat.history(_friend);
+        if (!mounted || request != _request || _friend.id != friend) return;
+        await _conversations.prepend(friend, [
+          for (final line in past)
+            ConversationEntry(line, speaker: line.mine ? null : _friend),
+        ]);
+      }
       final combined = await _conversations.read(friend);
       if (!mounted || request != _request || _friend.id != friend) return;
       setState(() {
@@ -650,6 +669,14 @@ class _FriendScreenState extends State<FriendScreen>
     String? reply;
     try {
       reply = await _chat.replyTo(_friend, text);
+    } on ApiException catch (error) {
+      if (mounted) {
+        _tell(
+          error.statusCode == 429
+              ? '지금은 기기 안의 대사로 대화하고 있어요. 잠시 후 다시 이야기해 주세요.'
+              : '서버 연결이 어려워 기기 안의 대사로 답할게요.',
+        );
+      }
     } catch (_) {
       // Offline or failed: the friend answers itself.
     }
@@ -795,7 +822,7 @@ class _FriendScreenState extends State<FriendScreen>
     );
   }
 
-  double? _measuredDockHeight;
+  final _dockHeights = <(bool, double, double), double>{};
 
   Widget _house() {
     final status = _status;
@@ -806,13 +833,19 @@ class _FriendScreenState extends State<FriendScreen>
         final room = RoomLayout(_room);
         final scale = room.s;
         final media = MediaQuery.of(context);
+        final dockKey = (
+          media.viewInsets.bottom > 0,
+          w,
+          media.textScaler.scale(1),
+        );
+        final measuredDockHeight = _dockHeights[dockKey];
         final top = AppTopBar.bottomFor(media) + 32 * scale;
         final keyboard = _chatOpen ? media.viewInsets.bottom : 0.0;
         final chatBottom = keyboard > 0
             ? keyboard + 12
             : media.padding.bottom + 40 * scale + 109 * scale + 20;
         final dockHeight =
-            _measuredDockHeight ??
+            measuredDockHeight ??
             (keyboard > 0 ? 172.0 : ConversationDock.baseHeight) *
                 MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.35);
         final dockTop = h - chatBottom - dockHeight;
@@ -843,9 +876,9 @@ class _FriendScreenState extends State<FriendScreen>
                   compact: keyboard > 0,
                   onHeightChanged: (height) {
                     if (mounted &&
-                        (_measuredDockHeight == null ||
-                            (height - _measuredDockHeight!).abs() > .5)) {
-                      setState(() => _measuredDockHeight = height);
+                        (measuredDockHeight == null ||
+                            (height - measuredDockHeight).abs() > .5)) {
+                      setState(() => _dockHeights[dockKey] = height);
                     }
                   },
                   enabled: !status.asleep,
@@ -999,6 +1032,18 @@ class _FriendScreenState extends State<FriendScreen>
           ),
         ),
       ),
+      if (_windowWaiting && _window == null && !_chatOpen)
+        Positioned(
+          left: room.window.left,
+          width: room.window.width,
+          top: room.window.top + 30 * scale,
+          child: Center(
+            child: WindowPendingNotice(
+              key: const ValueKey('house-window-pending'),
+              scale: scale,
+            ),
+          ),
+        ),
       if (!_chatOpen &&
           AppServices.of(context).windowViews?.supports(_friend) == true)
         Positioned(

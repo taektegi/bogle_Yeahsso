@@ -13,7 +13,7 @@ class _Journey extends StatelessWidget {
     final sent = arrival.subtract(const Duration(days: 2));
     final steps = [
       (Icons.receipt_long_rounded, '주문 접수', koreanDate(ordered)),
-      (Icons.brush_rounded, '보글 공방에서 제작', '7–10일'),
+      (Icons.brush_rounded, '보글 공방에서 제작', '7~10일'),
       (Icons.local_shipping_outlined, '배송 출발', koreanDate(sent)),
       (Icons.redeem_rounded, '도착 예정', koreanDate(arrival)),
     ];
@@ -110,6 +110,7 @@ abstract final class _Type {
     color: BogleColors.muted,
   );
   static const total = TextStyle(
+    fontFamily: bogleDisplayFont,
     fontSize: 28,
     fontWeight: FontWeight.w800,
     letterSpacing: -0.5,

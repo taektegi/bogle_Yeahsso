@@ -2,6 +2,13 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 
+/// 보정된 픽셀과 실제 대상 분리 여부를 함께 전달한다.
+class PreparedPhoto {
+  const PreparedPhoto(this.bytes, {this.subjectSelected = false});
+  final Uint8List bytes;
+  final bool subjectSelected;
+}
+
 /// Device-only preparation. No AI credentials or network requests are involved.
 abstract final class PhotoPreparation {
   static const channel = MethodChannel('bogle/photo');

@@ -21,6 +21,67 @@ class BogleApp extends StatefulWidget {
 
 class _BogleAppState extends State<BogleApp> with WidgetsBindingObserver {
   late final AppServices _services = widget.services ?? AppServices.local();
+  final _messenger = GlobalKey<ScaffoldMessengerState>();
+  void _syncNotice() {
+    final notice = _services.sync?.outbox.notice;
+    final message = notice?.value;
+    if (message == null || !mounted) return;
+    final messenger = _messenger.currentState;
+    if (messenger == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _syncNotice());
+      return;
+    }
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        action: SnackBarAction(
+          label: '확인하기',
+          onPressed: () async {
+            final items = await _services.sync?.outbox.rejected ?? [];
+            if (!mounted || _navigator.currentContext == null) return;
+            const labels = {
+              'name': '이름',
+              'introduction': '소개',
+              'nickname': '닉네임',
+              'bio': '한 줄 소개',
+              'personality': '성격',
+              'speechStyle': '말투',
+              'bedtime': '잠드는 시간',
+              'wakeTime': '일어나는 시간',
+            };
+            await showDialog<void>(
+              context: _navigator.currentContext!,
+              builder: (context) => BogleDialog(
+                title: '저장하지 못한 변경',
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('확인'),
+                  ),
+                ],
+                child: Text(
+                  items.isEmpty
+                      ? '보관함이나 마이페이지에서 내용을 다시 확인해 주세요.'
+                      : [
+                          for (final item in items) ...[
+                            item['target'] == null
+                                ? '마이페이지에서 다시 수정해 주세요.'
+                                : '보관함의 친구 정보 수정에서 다시 입력해 주세요.',
+                            for (final entry in (item['fields'] as Map).entries)
+                              '${labels[entry.key] ?? '설정'}: ${entry.value}',
+                            '',
+                          ],
+                        ].join('\n'),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    notice?.value = null;
+  }
+
   final _navigator = GlobalKey<NavigatorState>();
   final _recoveries = <String, Future<bool>>{};
   Future<void> _recoveryQueue = Future.value();
@@ -78,6 +139,7 @@ class _BogleAppState extends State<BogleApp> with WidgetsBindingObserver {
     if (store is FileStore) store.onRecovery = _recoverDocument;
     // Bring in what the iPad doesn't have and send what the service hasn't
     // heard, without holding up the app.
+    _services.sync?.outbox.notice.addListener(_syncNotice);
     _services.sync?.start();
   }
 
@@ -91,6 +153,7 @@ class _BogleAppState extends State<BogleApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     final store = _services.draftStore;
     if (store is FileStore) store.onRecovery = null;
+    _services.sync?.outbox.notice.removeListener(_syncNotice);
     _studioDraft.dispose();
     super.dispose();
   }
@@ -99,6 +162,7 @@ class _BogleAppState extends State<BogleApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: _navigator,
+      scaffoldMessengerKey: _messenger,
       title: '보글',
       debugShowCheckedModeBanner: false,
       theme: buildBogleTheme(),

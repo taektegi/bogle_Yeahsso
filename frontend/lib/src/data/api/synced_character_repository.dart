@@ -30,6 +30,7 @@ class SyncedCharacterRepository implements CharacterRepository {
     required this.outbox,
     required this.art,
     this.onForget,
+    this.onCreated,
     this.undoWindow = const Duration(seconds: 10),
   });
 
@@ -40,6 +41,7 @@ class SyncedCharacterRepository implements CharacterRepository {
   final Outbox outbox;
   final DeviceArt art;
   final Future<void> Function(String friendId)? onForget;
+  final Future<void> Function(CharacterFriend friend)? onCreated;
 
   /// How long a deletion can still be undone before it reaches the service.
   final Duration undoWindow;
@@ -95,26 +97,59 @@ class SyncedCharacterRepository implements CharacterRepository {
   /// ones waiting to be deleted stay deleted.
   Future<int> pull() async {
     final json = await api.get('/v1/characters');
-    final have = {for (final f in await local.fetchFriends()) f.id};
+    final have = {for (final f in await local.fetchFriends()) f.id: f};
     var added = 0;
     for (final item in (json['items'] as List).reversed) {
-      final friend = (item as Map).cast<String, dynamic>();
-      final id = friend['id'] as String;
-      if (have.contains(id) || await outbox.isLeaving(id)) continue;
-      final artRef = ImageRef.fromJson(friend['art'] as Map<String, dynamic>);
-      final thumbJson = friend['thumbnail'] as Map<String, dynamic>?;
-      final kept = await art.keep(
-        id,
-        art: await api.download(artRef.url),
-        thumbnail: thumbJson == null
-            ? null
-            : await api.download(ImageRef.fromJson(thumbJson).url),
-        face: friend['face'],
-      );
-      await local.saveFriend(
-        friendFrom(friend, artPath: kept.art, thumbnailPath: kept.thumbnail),
-      );
-      added++;
+      try {
+        final friend = (item as Map).cast<String, dynamic>();
+        final id = friend['id'] as String;
+        if (await outbox.isLeaving(id)) continue;
+        if (have[id] case final existing?) {
+          final pending = await outbox.pendingFields(id);
+          await local.saveFriend(
+            existing.copyWith(
+              name: pending.contains('name') ? null : friend['name'] as String?,
+              personality: pending.contains('personality')
+                  ? null
+                  : (friend['personality'] ?? friend['personalityLabel'])
+                        as String?,
+              introduction: pending.contains('introduction')
+                  ? null
+                  : friend['introduction'] as String?,
+              speechStyle: pending.contains('speechStyle')
+                  ? null
+                  : friend['speechStyle'] as String?,
+              sleep: SleepSchedule(
+                bedtime: pending.contains('bedtime')
+                    ? existing.sleep.bedtime
+                    : (friend['bedtime'] as num?)?.toInt() ??
+                          existing.sleep.bedtime,
+                wakeTime: pending.contains('wakeTime')
+                    ? existing.sleep.wakeTime
+                    : (friend['wakeTime'] as num?)?.toInt() ??
+                          existing.sleep.wakeTime,
+              ),
+            ),
+          );
+          continue;
+        }
+        final artRef = ImageRef.fromJson(friend['art'] as Map<String, dynamic>);
+        final thumbJson = friend['thumbnail'] as Map<String, dynamic>?;
+        final kept = await art.keep(
+          id,
+          art: await api.download(artRef.url),
+          thumbnail: thumbJson == null
+              ? null
+              : await api.download(ImageRef.fromJson(thumbJson).url),
+          face: friend['face'],
+        );
+        await local.saveFriend(
+          friendFrom(friend, artPath: kept.art, thumbnailPath: kept.thumbnail),
+        );
+        added++;
+      } catch (_) {
+        // One missing image must not block the remaining friends.
+      }
     }
     return added;
   }
@@ -131,7 +166,9 @@ class SyncedCharacterRepository implements CharacterRepository {
         .cast<Map<String, dynamic>>()
         .where(
           (item) =>
-              item['label'] == label || item['code'] == friend.personality,
+              item['label'] == friend.personality ||
+              item['label'] == label ||
+              item['code'] == friend.personality,
         )
         .firstOrNull;
     if (selected == null) {
@@ -166,6 +203,12 @@ class SyncedCharacterRepository implements CharacterRepository {
       thumbnailPath: friend.thumbnailPath,
     );
     await local.saveFriend(created);
+    final warm = onCreated;
+    if (warm != null) {
+      unawaited(
+        Future<void>.sync(() => warm(created)).catchError((Object _) {}),
+      );
+    }
     // Setup writes an introduction from what the child chose; the service
     // picks its own when making the friend, so it hears this one after.
     if (friend.introduction.isNotEmpty &&
@@ -180,7 +223,6 @@ class SyncedCharacterRepository implements CharacterRepository {
     final before = (await local.fetchFriends())
         .where((f) => f.id == friend.id)
         .firstOrNull;
-    await local.saveFriend(friend);
     if (isServiceId(friend.id)) {
       await outbox.patchCharacter(friend.id, {
         if (before?.name != friend.name) 'name': friend.name,
@@ -196,6 +238,7 @@ class SyncedCharacterRepository implements CharacterRepository {
           'wakeTime': friend.sleep.wakeTime,
       });
     }
+    await local.saveFriend(friend);
     return friend;
   }
 

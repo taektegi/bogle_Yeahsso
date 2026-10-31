@@ -246,8 +246,8 @@ Color _commonColour(ByteData bytes, int w, int h, List<Offset> points) {
 }
 
 /// The face drawn over a flat picture, moving with [pose]: eyelids that
-/// blink and squeeze shut (with a line of lashes), a mouth that opens wide
-/// and chews, and a blush that rises with puffed cheeks. At rest it draws
+/// blink and squeeze shut (with a line of lashes), and cheeks can blush.
+/// The baked-in PNG mouth is preserved rather than painted over. At rest it draws
 /// nothing, so the picture shows as drawn.
 class FacePainter extends CustomPainter {
   FacePainter(this.face, this.pose) : super(repaint: pose);
@@ -313,57 +313,8 @@ class FacePainter extends CustomPainter {
       }
     }
 
-    if (face.mouth case final m? when p.mouth.abs() > .04) {
-      if (p.mouth > 0) {
-        // Open: a round dark mouth with a tongue, hinged at its top.
-        final open = p.mouth;
-        final width = m.width * (.55 + .35 * open);
-        final height = m.height * (.45 + 1.7 * open);
-        final mouth = Rect.fromLTWH(
-          m.center.dx - width / 2,
-          m.top + m.height * .2,
-          width,
-          height,
-        );
-        final shape = RRect.fromRectAndRadius(
-          mouth,
-          Radius.elliptical(width / 2, height / 2),
-        );
-        canvas
-          ..drawRRect(shape, Paint()..color = const Color(0xFF6B2A33))
-          ..save()
-          ..clipRRect(shape)
-          ..drawOval(
-            Rect.fromCenter(
-              center: Offset(mouth.center.dx, mouth.bottom),
-              width: width * .8,
-              height: height * .7,
-            ),
-            Paint()..color = const Color(0xFFFF8A8A),
-          )
-          ..restore();
-      } else {
-        // Chewing with the mouth shut: a little line that works.
-        final press = -p.mouth;
-        final width = m.width * (.4 + .55 * press);
-        final bend = m.height * .7 * (press - .3);
-        canvas.drawPath(
-          Path()
-            ..moveTo(m.center.dx - width / 2, m.center.dy)
-            ..quadraticBezierTo(
-              m.center.dx,
-              m.center.dy + bend,
-              m.center.dx + width / 2,
-              m.center.dy,
-            ),
-          Paint()
-            ..color = _lash
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = m.height * .22
-            ..strokeCap = StrokeCap.round,
-        );
-      }
-    }
+    // PNG mouth pixels are baked into the art. Do not draw a second mouth.
+    // SVG rigs still animate their separate mouth layer.
 
     if (p.cheeks > .02) {
       for (final (centre, r) in face.cheeks) {

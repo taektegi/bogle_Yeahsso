@@ -43,6 +43,8 @@ dependencies:
   http: ^1.6.0
   path_provider: ^2.1.6
   webview_flutter: ^4.14.1
+  crypto: ^3.0.7
+  characters: ^1.4.1
 
 dev_dependencies:
   integration_test:

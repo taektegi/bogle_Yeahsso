@@ -83,7 +83,7 @@ void main() {
     addTearDown(
       () => messenger.setMockMethodCallHandler(PhotoPreparation.channel, null),
     );
-    Uint8List? accepted;
+    PreparedPhoto? accepted;
     await tester.pumpWidget(
       MaterialApp(
         theme: buildBogleTheme(),
@@ -91,7 +91,7 @@ void main() {
           builder: (context) => Scaffold(
             body: FilledButton(
               onPressed: () async {
-                accepted = await showDialog<Uint8List>(
+                accepted = await showDialog<PreparedPhoto>(
                   context: context,
                   builder: (_) => PhotoPreparationDialog(photo: original),
                 );
@@ -133,7 +133,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('정리한 사진 사용'));
     await tester.pumpAndSettle();
-    expect(accepted, proposal);
+    expect(accepted!.bytes, proposal);
+    expect(accepted!.subjectSelected, isTrue);
     expect(tester.takeException(), isNull);
   });
   testWidgets('대상 채택 후 종이 그림자 없이 표시하고 원본 복원 시 프레임을 되돌린다', (tester) async {
@@ -153,7 +154,7 @@ void main() {
     addTearDown(
       () => messenger.setMockMethodCallHandler(PhotoPreparation.channel, null),
     );
-    Uint8List? submitted;
+    PreparedPhoto? submitted;
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -179,10 +180,15 @@ void main() {
     expect(find.byType(TornPaper), findsNothing);
     await tester.tap(find.byKey(const ValueKey('photo-use')));
     await tester.pumpAndSettle();
-    expect(submitted, cutout);
+    expect(submitted!.bytes, cutout);
+    expect(submitted!.subjectSelected, isTrue);
     await tester.tap(find.text('촬영 원본 복원'));
     await tester.pumpAndSettle();
     expect(find.byType(TornPaper), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('photo-use')));
+    await tester.pumpAndSettle();
+    expect(submitted!.bytes, original);
+    expect(submitted!.subjectSelected, isFalse);
     expect(tester.takeException(), isNull);
   });
   testWidgets('지원되지 않는 환경은 원본·수동 자르기로 복귀한다', (tester) async {

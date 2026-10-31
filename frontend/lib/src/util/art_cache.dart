@@ -5,7 +5,11 @@ import 'dart:collection';
 class ArtCache<K, V> extends MapBase<K, V> {
   ArtCache(this.capacity, {this.maxWeight}) {
     registerArtEvictor((path) {
-      if (path is K) remove(path);
+      for (final key in keys) {
+        if (key == path || (key is String && key.startsWith('$path#'))) {
+          remove(key);
+        }
+      }
     });
   }
   final int capacity;

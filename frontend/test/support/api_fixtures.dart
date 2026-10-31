@@ -144,6 +144,9 @@ Map<String, dynamic> message(String role, String text) => {
 /// `ProfileOut`.
 Map<String, dynamic> me({String nickname = '별빛'}) => {
   'nickname': nickname,
+  'bio': '',
+  'interests': <String>[],
+  'profileColor': 'blue',
   'avatarCharacterId': null,
   'friendNotifications': false,
   'orderNotifications': true,

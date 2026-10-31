@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -9,6 +10,7 @@ import 'package:bogle_app/src/models/character_friend.dart';
 import 'package:bogle_app/src/data/local_store.dart';
 import 'package:bogle_app/src/data/window_view.dart';
 import 'package:bogle_app/src/screens/house/house_widgets.dart';
+import 'package:bogle_app/src/screens/house/room_scene.dart';
 import 'package:bogle_app/src/widgets/character_preview_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -122,6 +124,146 @@ void main() {
       expect(cached!.day, startsWith(moved.path));
       await offline.forget(id);
       expect(await File(cached.day).exists(), false);
+    },
+  );
+
+  test(
+    'day-only scenery is ready after one download and survives offline restart',
+    () async {
+      final folder = await Directory.systemTemp.createTemp('window-day-');
+      addTearDown(() => folder.delete(recursive: true));
+      final png = await scenery();
+      var downloads = 0;
+      var offline = false;
+      final api = ApiClient(
+        baseUrl: 'https://api.test',
+        session: Session(),
+        client: MockClient((request) async {
+          if (offline) {
+            throw StateError('offline cache must not use the network');
+          }
+          if (request.url.host == 'images.test') {
+            downloads++;
+            return http.Response.bytes(png, 200);
+          }
+          expect(request.method, 'GET');
+          return http.Response(
+            jsonEncode({
+              'status': 'succeeded',
+              'day': ref('day-only'),
+              'night': null,
+            }),
+            200,
+          );
+        }),
+      );
+      final result = await ApiWindowViews(
+        api,
+        store: FileStore(folder),
+      ).load(friend);
+      expect(result!.night, isNull);
+      expect(result.pick(night: true), result.day);
+      expect(downloads, 1);
+      offline = true;
+      expect(
+        await ApiWindowViews(api, store: FileStore(folder)).load(friend),
+        result,
+      );
+    },
+  );
+
+  test('warming and house entry share polling and download', () async {
+    final folder = await Directory.systemTemp.createTemp('window-warm-');
+    addTearDown(() => folder.delete(recursive: true));
+    final png = await scenery();
+    final started = Completer<void>(), finish = Completer<void>();
+    var gets = 0, downloads = 0;
+    final service = ApiWindowViews(
+      ApiClient(
+        baseUrl: 'https://api.test',
+        session: Session(),
+        client: MockClient((request) async {
+          if (request.url.host == 'images.test') {
+            downloads++;
+            return http.Response.bytes(png, 200);
+          }
+          gets++;
+          if (gets == 1) {
+            return http.Response(jsonEncode({'status': 'processing'}), 200);
+          }
+          return http.Response(
+            jsonEncode({'status': 'succeeded', 'day': ref('warm-day')}),
+            200,
+          );
+        }),
+      ),
+      store: FileStore(folder),
+      wait: (_) async {
+        started.complete();
+        await finish.future;
+      },
+    );
+    final warm = service.warm(friend);
+    await started.future;
+    var notices = 0;
+    final house = service.load(friend, onWaiting: () => notices++);
+    expect(notices, 1);
+    finish.complete();
+    await warm;
+    expect((await house)!.night, isNull);
+    expect(gets, 2);
+    expect(downloads, 1);
+  });
+
+  test('forgetting during a download cannot resurrect scenery', () async {
+    final folder = await Directory.systemTemp.createTemp('window-forget-');
+    addTearDown(() => folder.delete(recursive: true));
+    final png = await scenery();
+    final started = Completer<void>(), finish = Completer<void>();
+    final store = FileStore(folder);
+    final service = ApiWindowViews(
+      ApiClient(
+        baseUrl: 'https://api.test',
+        session: Session(),
+        client: MockClient((request) async {
+          if (request.url.host == 'images.test') {
+            started.complete();
+            await finish.future;
+            return http.Response.bytes(png, 200);
+          }
+          return http.Response(
+            jsonEncode({'status': 'succeeded', 'day': ref('deleted-day')}),
+            200,
+          );
+        }),
+      ),
+      store: store,
+    );
+    final warm = service.warm(friend);
+    await started.future;
+    await service.forget(friend.id);
+    finish.complete();
+    await warm;
+    expect(await store.read('window-$id'), isNull);
+    expect(
+      await File('${store.art.path}/window-deleted-day.png').exists(),
+      isFalse,
+    );
+  });
+
+  test(
+    'night tint preserves scenery and never tints existing night art twice',
+    () {
+      final night = windowTint(DayTime.night);
+      expect(night.first.b, greaterThan(night.first.r));
+      expect(night.every((c) => c.a < 0.6), isTrue);
+      expect(windowTint(DayTime.day), [Colors.transparent, Colors.transparent]);
+      expect(windowTint(DayTime.night, hasNightImage: true), [
+        Colors.transparent,
+        Colors.transparent,
+      ]);
+      expect(windowTint(DayTime.day, lightsOff: true), night);
+      expect(windowTint(DayTime.evening), isNot(night));
     },
   );
 

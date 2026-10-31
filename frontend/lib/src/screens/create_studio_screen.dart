@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../data/character_repository.dart';
 import '../data/character_generation.dart';
+import '../data/photo_preparation.dart';
 import '../data/studio_camera.dart';
 import '../drawing/drawing_controller.dart';
 import '../drawing/color_picker.dart';
@@ -409,10 +410,18 @@ class _CreateStudioScreenState extends State<CreateStudioScreen>
 
   /// The drawing photographed on paper, chosen on the check screen. It goes
   /// to the character generator like a sketch does.
-  void _createFromPhoto(Uint8List photo) {
-    if (photo.isEmpty) return;
+  void _createFromPhoto(PreparedPhoto photo) {
+    if (photo.bytes.isEmpty) return;
     _keepDraft();
-    _openGeneration(GenerationInput(photo, source: GenerationSource.photo));
+    _openGeneration(
+      GenerationInput(
+        photo.bytes,
+        source: GenerationSource.photo,
+        photoMode: photo.subjectSelected
+            ? PhotoMode.subject
+            : PhotoMode.original,
+      ),
+    );
   }
 
   @override

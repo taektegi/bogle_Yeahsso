@@ -14,6 +14,24 @@ DayTime dayTimeOf(DateTime t) => switch (t.hour) {
   _ => DayTime.night,
 };
 
+/// 창밖에만 적용한다. 밤에도 지형과 색이 읽히는 밝기를 유지한다.
+List<Color> windowTint(
+  DayTime time, {
+  bool lightsOff = false,
+  bool hasNightImage = false,
+}) {
+  if (lightsOff || time == DayTime.night) {
+    return hasNightImage
+        ? const [Colors.transparent, Colors.transparent]
+        : const [Color(0x8A292F61), Color(0x593D426A)];
+  }
+  return switch (time) {
+    DayTime.morning => const [Color(0x12FFE9C9), Color(0x00FFE9C9)],
+    DayTime.evening => const [Color(0x36E8A5A3), Color(0x188D8BC0)],
+    _ => const [Colors.transparent, Colors.transparent],
+  };
+}
+
 /// Where the room's pieces go on a screen, from the 1194 × 834 Figma frame
 /// (568:2335). Sizes scale with [s]; across, things keep their place in
 /// the width; down, the room hangs from the floor line, which stays at
@@ -119,7 +137,11 @@ class RoomScene extends StatelessWidget {
             rect: window,
             child: _Window(
               source: view.pick(night: lightsOff || time == DayTime.night),
-              dim: (lightsOff || time == DayTime.night) && view.night == null,
+              tint: windowTint(
+                time,
+                lightsOff: lightsOff,
+                hasNightImage: view.night != null,
+              ),
               fade: fade,
             ),
           ),
@@ -163,11 +185,11 @@ class RoomScene extends StatelessWidget {
 /// frame with a cross of bars and a sill. Drawn in the 1046 × 306 units of
 /// Figma's window drawing.
 class _Window extends StatelessWidget {
-  const _Window({required this.source, required this.dim, required this.fade});
+  const _Window({required this.source, required this.tint, required this.fade});
   final String source;
 
   /// A night with no night picture: the day one, dimmed blue.
-  final bool dim;
+  final List<Color> tint;
   final Duration fade;
 
   static const wood = Color(0xFFB08361);
@@ -228,9 +250,14 @@ class _Window extends StatelessWidget {
                     rect: glass,
                     child: AnimatedContainer(
                       duration: fade,
-                      color: dim
-                          ? const Color(0x661C2350)
-                          : const Color(0x001C2350),
+                      key: const ValueKey('house-window-tint'),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: tint,
+                        ),
+                      ),
                     ),
                   ),
                 ],

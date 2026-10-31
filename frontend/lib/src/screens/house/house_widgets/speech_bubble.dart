@@ -47,6 +47,7 @@ class SpeechBubble extends StatelessWidget {
   static const narrowest = 96.0;
   static const _padding = EdgeInsets.symmetric(horizontal: 20, vertical: 14);
   static const textStyle = TextStyle(
+    fontFamily: bogleDisplayFont,
     fontSize: 18,
     height: 1.35,
     fontWeight: FontWeight.w700,

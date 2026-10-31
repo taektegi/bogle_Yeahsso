@@ -1,6 +1,7 @@
 import '../models/character_friend.dart';
 import '../models/friend_status.dart';
 import 'local_store.dart';
+import 'retired_friends.dart';
 import '../util/art_cache.dart';
 import 'starter_friends.dart';
 
@@ -82,6 +83,14 @@ class InMemoryCharacterRepository implements CharacterRepository {
        _relocate = relocate;
 
   final List<CharacterFriend> _friends;
+  late final _retired = RetiredFriends(
+    _store,
+    () => [
+      for (final friend in _friends) friend.assetPath,
+      for (final friend in _friends)
+        if (friend.thumbnailPath != null) friend.thumbnailPath!,
+    ],
+  );
   final Map<String, List<String>> _memories = {};
   final Map<String, FriendStatus> _status = {};
   final LocalStore? _store;
@@ -114,7 +123,10 @@ class InMemoryCharacterRepository implements CharacterRepository {
       if (doc['starters'] != null) doc['starters'] as List;
       return doc;
     });
-    if (saved == null) return;
+    if (saved == null) {
+      await _retired.sweep().catchError((Object _) {});
+      return;
+    }
     try {
       final starters = {for (final f in starterFriends()) f.id: f};
       final friends = [
@@ -172,6 +184,7 @@ class InMemoryCharacterRepository implements CharacterRepository {
             '$key': FriendStatus.fromJson((value as Map).cast()),
         });
       if (arrived.isNotEmpty) await _save();
+      await _retired.sweep().catchError((Object _) {});
     } on Object {
       // Keep an unreadable document intact; never save starter defaults
       // over a failed restore.
@@ -195,7 +208,7 @@ class InMemoryCharacterRepository implements CharacterRepository {
         },
       });
     } on Object {
-      // Not saved this time; the next change tries again.
+      rethrow;
     }
   }
 
@@ -244,13 +257,26 @@ class InMemoryCharacterRepository implements CharacterRepository {
     await _ready;
     final index = _friends.indexWhere((item) => item.id == friendId);
     if (index < 0) return null;
+    await _retired.retire(friendId, [
+      _friends[index].assetPath,
+      ?_friends[index].thumbnailPath,
+    ]);
     final deleted = DeletedFriend(
       friend: _friends.removeAt(index),
       index: index,
       status: _status.remove(friendId),
       memories: _memories.remove(friendId) ?? const [],
     );
-    await _save();
+    try {
+      await _save();
+    } catch (_) {
+      _friends.insert(index, deleted.friend);
+      if (deleted.status != null) _status[friendId] = deleted.status!;
+      _memories[friendId] = List.of(deleted.memories);
+      await _retired.cancel(friendId);
+      await _save();
+      rethrow;
+    }
     evictArtwork(deleted.friend.assetPath);
     if (deleted.friend.thumbnailPath case final path?) evictArtwork(path);
     return deleted;
@@ -266,6 +292,7 @@ class InMemoryCharacterRepository implements CharacterRepository {
     if (deleted.status != null) _status[id] = deleted.status!;
     _memories[id] = List.of(deleted.memories);
     await _save();
+    await _retired.cancel(id);
   }
 
   @override

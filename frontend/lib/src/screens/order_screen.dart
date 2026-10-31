@@ -267,6 +267,10 @@ class _OrderScreenState extends State<OrderScreen> {
                   final sy = box.maxHeight / 834;
                   final barBottom = AppTopBar.bottomFor(media);
                   final top = barBottom + 76 * sy;
+                  final backSize = (52 * math.min(sx, sy))
+                      .clamp(44.0, 52.0)
+                      .toDouble();
+                  final backTop = barBottom + (top - barBottom - backSize) / 2;
                   return Stack(
                     fit: StackFit.expand,
                     children: [
@@ -299,13 +303,12 @@ class _OrderScreenState extends State<OrderScreen> {
                           title: 'Order',
                         ),
                       ),
-                      // Figma 568:2488: 68 pt at (59, 147), solid like every
-                      // other page's back button.
+                      // 주문 패널 위 여백 안에 배치해 제목·미리보기와 겹치지 않는다.
                       Positioned(
-                        left: 59 * sx,
-                        top: top - 44 * sy,
+                        left: 43 * sx + media.padding.left,
+                        top: backTop,
                         child: BogleBackButton(
-                          size: math.max(48, 68 * math.min(sx, sy)),
+                          size: backSize,
                           inkKey: const ValueKey('order-back'),
                           onTap: _back,
                         ),
