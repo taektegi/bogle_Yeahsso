@@ -38,24 +38,15 @@ class _CardBubbles extends StatelessWidget {
   }
 }
 
-/// Figma's beige circle next to the palette, marking the photo option.
-class _PhotoBadge extends StatelessWidget {
-  const _PhotoBadge();
+/// Camera drawn in the same flat, glossy style as the palette and cart art.
+class _PhotoIllustration extends StatelessWidget {
+  const _PhotoIllustration();
   @override
-  Widget build(BuildContext context) => Stack(
-    alignment: Alignment.center,
-    children: [
-      SvgPicture.asset(
-        'assets/figma/home_photo_circle.svg',
-        width: 100,
-        height: 100,
-      ),
-      const Icon(
-        Icons.photo_camera_rounded,
-        size: 44,
-        color: Color(0xFFE59A5C),
-      ),
-    ],
+  Widget build(BuildContext context) => SvgPicture.asset(
+    'assets/icons/home/camera.svg',
+    width: 140,
+    height: 128,
+    excludeFromSemantics: true,
   );
 }
 

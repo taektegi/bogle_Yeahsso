@@ -72,6 +72,7 @@ flutter:
 
   assets:
     - assets/figma/
+    - assets/icons/home/
     - assets/icons/photo/
   fonts:
     # 양진체 v0.9 (SIL OFL 1.1, assets/fonts/Yangjin-OFL.txt): the app's
