@@ -145,6 +145,9 @@ def test_real_upload_generate_save_query_delete(app, database, seed_conn, creati
     response = client.get(f"/v1/generations/{job_id}")
     assert response.json()["status"] == "succeeded"
     assert response.json()["art"]["width"] == 256
+    # 얼굴 분석기가 꺼져 있으면 기다릴 분석이 없다.
+    assert response.json()["faceStatus"] == "unavailable"
+    assert response.json()["pollAfterMs"] is None
     save = payload(job).model_dump(mode="json", by_alias=True)
     save_key = {"Idempotency-Key": str(uuid4())}
     first = client.post("/v1/characters", json=save, headers=save_key)
@@ -382,7 +385,7 @@ def test_face_flows_from_generated_png_to_job_response_and_saved_friend(app, cre
     generated = png(color=(240, 180, 200, 255))
     analyzer = FakeFaceAnalyzer()
     job = complete(creation, database, source, FakeProvider(generated), analyzer)
-    assert job["face"] == FACE
+    assert job["face"] == FACE and job["face_status"] == "ready"
     [(data, width, height, content_type, thread)] = analyzer.calls
     assert data == generated and (width, height, content_type) == (256, 256, "image/png")
     assert thread != threading.get_ident()
@@ -392,7 +395,9 @@ def test_face_flows_from_generated_png_to_job_response_and_saved_friend(app, cre
     app.dependency_overrides[get_settings] = lambda: settings
     app.dependency_overrides[get_current_user] = lambda: CurrentUser(user)
     client = TestClient(app)
-    assert client.get(f"/v1/generations/{job['id']}").json()["face"] == FACE
+    state = client.get(f"/v1/generations/{job['id']}").json()
+    assert state["face"] == FACE and state["faceStatus"] == "ready"
+    assert state["pollAfterMs"] is None
     key = {"Idempotency-Key": "save-face-001"}
     body = payload(job).model_dump(mode="json", by_alias=True)
     first = client.post("/v1/characters", json=body, headers=key)
@@ -413,6 +418,7 @@ def test_face_failure_or_late_result_keeps_generation_and_friend_successful(
     analyzer = FakeFaceAnalyzer(mode, delay)
     job = complete(creation, database, analyzer=analyzer)
     assert job["status"] == "succeeded" and job["face"] is None
+    assert job["face_status"] == "unavailable"
     friend_id, _ = repo.save_friend(user, payload(job), "save-without-face-001")
     assert CharacterRepository(database).get_for_user(user, friend_id).face is None
     app.dependency_overrides[get_database] = lambda: database
@@ -420,7 +426,10 @@ def test_face_failure_or_late_result_keeps_generation_and_friend_successful(
     app.dependency_overrides[get_current_user] = lambda: CurrentUser(user)
     response = TestClient(app).get(f"/v1/generations/{job['id']}")
     assert response.status_code == 200 and response.json()["face"] is None
+    assert response.json()["faceStatus"] == "unavailable"
+    time.sleep(delay)
     assert repo.job(user, job["id"])["face"] is None  # 늦게 완료된 분석도 반영하지 않는다.
+    assert CharacterRepository(database).get_for_user(user, friend_id).face is None
 
 
 def test_face_analyzer_is_initialized_once_and_reused(creation, database, monkeypatch):
@@ -447,11 +456,153 @@ def test_face_analyzer_is_initialized_once_and_reused(creation, database, monkey
     assert built == [settings] and len(analyzer.calls) == 2
 
 
-def test_face_analysis_skipped_when_only_file_storage_budget_remains():
+def test_face_analysis_keeps_its_own_budget_after_a_long_generation():
+    # 작업은 이미 성공했으므로 그림 생성에 4분 가까이 걸렸어도 얼굴 분석을 건너뛰지 않는다.
     analyzer = FakeFaceAnalyzer()
     settings = Settings(_env_file=None)
     worker = GenerationWorker(None, None, settings, FakeProvider(), analyzer)
-    job = {"id": uuid4(), "started_at": datetime.now(UTC) - timedelta(seconds=220)}
+    job = {"id": uuid4(), "started_at": datetime.now(UTC) - timedelta(seconds=235)}
     image = SimpleNamespace(art=png(), width=256, height=256)
-    assert asyncio.run(worker.analyze_face(job, image)) is None
-    assert analyzer.calls == []
+    assert asyncio.run(worker.analyze_face(job, image)) == FACE
+    assert len(analyzer.calls) == 1
+
+
+class BlockingFaceAnalyzer(FakeFaceAnalyzer):
+    """release가 설정될 때까지 분석을 끝내지 않는다."""
+
+    def __init__(self):
+        super().__init__()
+        self.release = threading.Event()
+
+    def analyze(self, image, *, width, height, content_type):
+        self.calls.append((image, width, height, content_type, threading.get_ident()))
+        assert self.release.wait(5), "test did not release the face analysis"
+        return validate_face_payload(FACE, width=width, height=height)
+
+
+async def wait_until(check, timeout=5):
+    async with asyncio.timeout(timeout):
+        while not await asyncio.to_thread(check):
+            await asyncio.sleep(0.02)
+
+
+def test_success_is_recorded_before_face_analysis_and_face_fills_saved_friend(
+    app, creation, database
+):
+    user, repo, storage, settings = creation
+    source = uploaded(creation)
+    row, _ = repo.enqueue(user, source.id, "drawing", str(uuid4()))
+    analyzer = BlockingFaceAnalyzer()
+    worker = GenerationWorker(database, storage, settings, FakeProvider(), analyzer)
+    repo.acquire_lease(worker.owner)
+    app.dependency_overrides[get_database] = lambda: database
+    app.dependency_overrides[get_storage] = lambda: storage
+    app.dependency_overrides[get_current_user] = lambda: CurrentUser(user)
+    client = TestClient(app)
+    characters = CharacterRepository(database)
+
+    async def scenario():
+        task = asyncio.create_task(worker.process(repo.claim(worker.owner)))
+        try:
+            # 얼굴 분석이 끝나지 않아도 작업은 먼저 성공하고 앱은 다음 화면으로 갈 수 있다.
+            await wait_until(lambda: repo.job(user, row["id"])["status"] == "succeeded")
+            state = (await asyncio.to_thread(client.get, f"/v1/generations/{row['id']}")).json()
+            assert state["status"] == "succeeded" and state["art"] is not None
+            assert state["faceStatus"] == "pending" and state["face"] is None
+            assert state["pollAfterMs"] == 2000
+            assert len(analyzer.calls) == 1 and not task.done()
+
+            # 아이가 분석 중에 친구를 저장하면 친구의 face는 우선 비어 있다.
+            friend_id, _ = await asyncio.to_thread(
+                repo.save_friend, user, payload(repo.job(user, row["id"])), "save-pending-001"
+            )
+            assert characters.get_for_user(user, friend_id).face is None
+
+            analyzer.release.set()
+            await task
+            return friend_id
+        finally:
+            analyzer.release.set()
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+
+    friend_id = asyncio.run(scenario())
+    repo.release_lease(worker.owner)
+    job = repo.job(user, row["id"])
+    assert job["face_status"] == "ready" and job["face"] == FACE
+    # 분석 결과가 이미 저장된 친구에도 채워진다.
+    assert characters.get_for_user(user, friend_id).face is not None
+    assert client.get(f"/v1/characters/{friend_id}").json()["face"] == FACE
+    state = client.get(f"/v1/generations/{row['id']}").json()
+    assert state["faceStatus"] == "ready" and state["face"] == FACE
+    assert state["pollAfterMs"] is None
+    assert len(analyzer.calls) == 1
+
+
+def test_face_analysis_does_not_hold_a_generation_slot(creation, database):
+    user, repo, storage, settings = creation
+    jobs = []
+    for _ in range(3):
+        source = uploaded(creation)
+        job, _ = repo.enqueue(user, source.id, "drawing", str(uuid4()))
+        jobs.append(job["id"])
+    provider = FakeProvider()
+    analyzer = BlockingFaceAnalyzer()
+
+    async def scenario():
+        worker = GenerationWorker(database, storage, settings, provider, analyzer)
+        task = asyncio.create_task(worker.run())
+        try:
+            # 얼굴 분석 2개가 멈춰 있어도 세 번째 생성이 끝까지 진행된다.
+            await wait_until(
+                lambda: all(repo.job(user, key)["status"] == "succeeded" for key in jobs), 8
+            )
+            assert provider.calls == 3
+            assert [repo.job(user, key)["face_status"] for key in jobs] == ["pending"] * 3
+            # 얼굴 분석은 분리 전과 같이 동시에 최대 2개만 진행한다.
+            assert len(analyzer.calls) == 2
+            analyzer.release.set()
+            await wait_until(
+                lambda: all(repo.job(user, key)["face_status"] == "ready" for key in jobs), 8
+            )
+            assert len(analyzer.calls) == 3
+        finally:
+            analyzer.release.set()
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+
+    asyncio.run(scenario())
+
+
+def test_restart_ends_pending_face_without_paid_retry_and_blocks_other_users(
+    creation, database, seed_conn
+):
+    user, repo, storage, settings = creation
+    analyzer = FakeFaceAnalyzer()
+    job = complete(creation, database, analyzer=analyzer)
+    friend_id, _ = repo.save_friend(user, payload(job), "save-restart-001")
+    # 얼굴 분석 중에 서버가 꺼진 상태를 만든다.
+    seed_conn.execute(
+        "update public.generation_jobs set face=null,face_status='pending' where id=%s",
+        (job["id"],),
+    )
+    seed_conn.execute("update public.friends set face=null where id=%s", (friend_id,))
+    owner = job["worker_owner"]
+    assert repo.acquire_lease(owner)
+    try:
+        # 다른 사용자 ID로는 남의 작업과 친구에 얼굴 좌표를 쓸 수 없다.
+        other = make_user(seed_conn)
+        assert not repo.finish_face(other, job["id"], owner, FACE)
+        assert repo.job(user, job["id"])["face_status"] == "pending"
+        # 다른 워커는 이 작업의 결과를 기록할 수 없다.
+        assert not repo.finish_face(user, job["id"], uuid4(), FACE)
+
+        repo.recover()
+        assert repo.job(user, job["id"])["face_status"] == "unavailable"
+        # 복구 뒤에 늦게 도착한 결과는 반영하지 않는다.
+        assert not repo.finish_face(user, job["id"], owner, FACE)
+    finally:
+        repo.release_lease(owner)
+    assert repo.job(user, job["id"])["face"] is None
+    assert CharacterRepository(database).get_for_user(user, friend_id).face is None
+    assert len(analyzer.calls) == 1  # 재시작 후 자동으로 다시 분석하지 않는다.
