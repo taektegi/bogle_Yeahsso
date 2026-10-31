@@ -79,6 +79,46 @@ def payload(job):
     return SaveFriendIn(**settings_payload(generationJobId=str(job["id"])))
 
 
+@pytest.mark.parametrize(
+    "style",
+    [
+        "~지요!",
+        "해요체",
+        "반말",
+        "plain_casual",
+        "plain_polite",
+        "bouncy_casual",
+        "bouncy_polite",
+        "story_casual",
+        "story_polite",
+        "robot_casual",
+        "robot_polite",
+    ],
+)
+def test_save_all_speech_styles_round_trip_replay_and_ownership(
+    app, database, seed_conn, creation, style
+):
+    user, _, storage, _ = creation
+    job = complete(creation, database)
+    app.dependency_overrides[get_database] = lambda: database
+    app.dependency_overrides[get_storage] = lambda: storage
+    app.dependency_overrides[get_current_user] = lambda: CurrentUser(user)
+    client = TestClient(app)
+    body = settings_payload(generationJobId=str(job["id"]), speechStyle=style)
+    headers = {"Idempotency-Key": str(uuid4())}
+    first = client.post("/v1/characters", json=body, headers=headers)
+    assert first.status_code == 201
+    assert first.json()["speechStyle"] == style
+    again = client.post("/v1/characters", json=body, headers=headers)
+    assert again.status_code == 200 and again.json() == first.json()
+    path = f"/v1/characters/{first.json()['id']}"
+    assert client.get(path).json()["speechStyle"] == style
+    other = make_user(seed_conn)
+    app.dependency_overrides[get_current_user] = lambda: CurrentUser(other)
+    assert client.get(path).status_code == 404
+    assert client.patch(path, json={"speechStyle": style}).status_code == 404
+
+
 def test_real_upload_generate_save_query_delete(app, database, seed_conn, creation):
     user, repo, storage, settings = creation
     app.dependency_overrides[get_database] = lambda: database

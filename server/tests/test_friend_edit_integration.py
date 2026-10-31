@@ -58,6 +58,32 @@ def test_edit_ownership_and_no_login(owned):
     assert client.get(path, headers=headers(me)).json()["name"] == "원래이름"
 
 
+@pytest.mark.parametrize(
+    "style",
+    [
+        "plain_casual",
+        "plain_polite",
+        "bouncy_casual",
+        "bouncy_polite",
+        "story_casual",
+        "story_polite",
+        "robot_casual",
+        "robot_polite",
+    ],
+)
+def test_new_speech_style_edit_is_kept_in_db_and_chat_profile(owned, database, style):
+    client, me, other, friend = owned
+    path = f"/v1/characters/{friend}"
+    assert (
+        client.patch(path, json={"speechStyle": style}, headers=headers(other)).status_code == 404
+    )
+    result = client.patch(path, json={"speechStyle": style}, headers=headers(me))
+    assert result.status_code == 200
+    assert result.json()["speechStyle"] == style
+    assert client.get(path, headers=headers(me)).json()["speechStyle"] == style
+    assert MessageRepository(database).get_friend_profile(me, friend).speech_style == style
+
+
 def test_edit_counts_visible_characters_and_partial_patch_keeps_settings(owned):
     client, me, _, friend = owned
     path = f"/v1/characters/{friend}"

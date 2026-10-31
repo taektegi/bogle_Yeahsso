@@ -7,6 +7,7 @@ import regex
 from pydantic import ConfigDict, Field, field_validator
 
 from app.schemas import CamelModel
+from app.speech_styles import SpeechStyle
 
 FAVORITE_THINGS = ("사과", "친구랑 놀기", "산책", "구름", "낮잠", "그림", "노래", "바다")
 INTRODUCTIONS = (
@@ -26,7 +27,7 @@ class SaveFriendIn(CamelModel):
     name: str
     personality_type: Literal["cheerful_curious", "quiet_brave", "gentle_smiling", "imaginative"]
     favorite_things: list[str]
-    speech_style: Literal["~지요!", "해요체", "반말"]
+    speech_style: SpeechStyle
     bedtime: int = Field(default=21 * 60, ge=0, le=1439, strict=True)
     wake_time: int = Field(default=7 * 60, ge=0, le=1439, strict=True)
 
@@ -57,7 +58,7 @@ class EditFriendIn(CamelModel):
     introduction: str = Field(
         default=None, max_length=2048, description="보이는 글자 기준 최대 70자"
     )
-    speech_style: Literal["~지요!", "해요체", "반말"] = Field(default=None)
+    speech_style: SpeechStyle = Field(default=None)
     bedtime: int = Field(default=None, ge=0, le=1439, strict=True)
     wake_time: int = Field(default=None, ge=0, le=1439, strict=True)
 

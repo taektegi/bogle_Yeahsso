@@ -2344,7 +2344,15 @@
             "enum": [
               "~지요!",
               "해요체",
-              "반말"
+              "반말",
+              "plain_casual",
+              "plain_polite",
+              "bouncy_casual",
+              "bouncy_polite",
+              "story_casual",
+              "story_polite",
+              "robot_casual",
+              "robot_polite"
             ],
             "title": "Speechstyle"
           },
