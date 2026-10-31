@@ -189,8 +189,27 @@ class GenerationWorker:
                 self.owner,
             )
         logger.info("generation finished jobId=%s", job["id"])
+        if image is not None:
+            # 생성 성공은 이미 게시됐다. 배경 대기열 등록 실패가 성공을 취소하지 않는다.
+            await asyncio.to_thread(self.prefetch_window, job)
         if image is not None and self.describes_faces:
             await self.describe_face(job, image)
+
+    def prefetch_window(self, job):
+        """얼굴 분석과 독립적으로 배경을 예약한다. AI 응답은 여기서 기다리지 않는다."""
+        if (
+            not self.settings.window_prefetch_after_generation
+            or not self.settings.openrouter_api_key
+        ):
+            return
+        from app.repositories.window_views import WindowViewRepository
+
+        try:
+            WindowViewRepository(self.repo.db).prefetch(job["user_id"], job["id"])
+        except Exception as exc:
+            logger.warning(
+                "window prefetch skipped jobId=%s errorType=%s", job["id"], type(exc).__name__
+            )
 
     async def run(self):
         acquired = False

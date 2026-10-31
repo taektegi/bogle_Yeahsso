@@ -12,6 +12,7 @@ from app.generation_worker import background_generations
 from app.request_context import RequestContextMiddleware, configure_logging
 from app.routers import api_routers
 from app.storage import get_storage
+from app.window_worker import background_windows
 
 API_PREFIX = "/v1"
 
@@ -29,6 +30,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         # 미사용 에셋을 주기적으로 정리한다. 서버가 종료되면 함께 멈춘다.
         async with (
             background_generations(database, storage, settings),
+            background_windows(database, storage, settings),
             background_cleanup(
                 database,
                 storage,

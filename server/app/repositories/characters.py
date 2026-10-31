@@ -178,6 +178,19 @@ class CharacterRepository:
                 if row[column] is not None
             ]
             # 같은 원본의 다른 생성 작업까지 지워 삭제 후 늦은 결과가 저장되지 않게 한다.
+            windows = conn.execute(
+                "delete from public.window_view_jobs where user_id=%s and "
+                "(character_id=%s or source_asset_id in (select art_asset_id from "
+                "public.generation_jobs where user_id=%s and source_asset_id=%s)) "
+                "returning day_asset_id,night_asset_id",
+                (user_id, character_id, user_id, row["source_asset_id"]),
+            ).fetchall()
+            asset_ids.extend(
+                asset_id
+                for job in windows
+                for asset_id in (job["day_asset_id"], job["night_asset_id"])
+                if asset_id is not None
+            )
             jobs = conn.execute(
                 "delete from public.generation_jobs where user_id=%s and source_asset_id=%s "
                 "returning art_asset_id,thumbnail_asset_id",

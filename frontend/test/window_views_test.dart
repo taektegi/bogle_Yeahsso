@@ -150,6 +150,50 @@ void main() {
     expect(posts, 0);
   });
 
+  test('day-only result downloads once and stays available offline', () async {
+    final folder = await Directory.systemTemp.createTemp('window-day-only-');
+    addTearDown(() => folder.delete(recursive: true));
+    final data = await scenery();
+    var downloads = 0;
+    final service = ApiWindowViews(
+      ApiClient(
+        baseUrl: 'https://api.test',
+        session: Session(),
+        client: MockClient((request) async {
+          if (request.url.host == 'images.test') {
+            downloads++;
+            return http.Response.bytes(data, 200);
+          }
+          return http.Response(
+            jsonEncode({
+              'status': 'succeeded',
+              'day': ref('day-only'),
+              'night': null,
+            }),
+            200,
+          );
+        }),
+      ),
+      store: FileStore(folder),
+    );
+    final view = await service.load(friend);
+    expect(downloads, 1);
+    expect(view!.night, isNull);
+    expect(view.pick(night: true), view.day);
+    expect(WindowView.image(view.day), isA<FileImage>());
+    final offline = ApiWindowViews(
+      ApiClient(
+        baseUrl: 'https://api.test',
+        session: Session(),
+        client: MockClient((_) async => throw StateError('offline')),
+      ),
+      store: FileStore(folder),
+    );
+    expect(await offline.load(friend), view);
+    await offline.forget(id);
+    expect(await File(view.day).exists(), false);
+  });
+
   test('invalid night output cannot publish half a pair', () async {
     final folder = await Directory.systemTemp.createTemp('window-invalid-');
     addTearDown(() => folder.delete(recursive: true));

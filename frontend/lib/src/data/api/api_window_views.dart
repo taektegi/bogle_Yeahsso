@@ -34,17 +34,16 @@ class ApiWindowViews implements WindowViewService {
     if (json is! Map) return null;
     final day = json['day'], night = json['night'];
     if (day is! String ||
-        night is! String ||
         !_name.hasMatch(day) ||
-        !_name.hasMatch(night)) {
+        (night != null && (night is! String || !_name.hasMatch(night)))) {
       return null;
     }
     final d = File('${store.art.path}/$day');
-    final n = File('${store.art.path}/$night');
+    final n = night == null ? null : File('${store.art.path}/$night');
     try {
       await _validate(await d.readAsBytes());
-      await _validate(await n.readAsBytes());
-      return WindowView(day: d.path, night: n.path);
+      if (n != null) await _validate(await n.readAsBytes());
+      return WindowView(day: d.path, night: n?.path);
     } on Exception {
       return null;
     }
@@ -84,7 +83,7 @@ class ApiWindowViews implements WindowViewService {
       }
       final day = state['day'], night = state['night'];
       if (day is Map &&
-          night is Map &&
+          (night == null || night is Map) &&
           state['status'] != 'queued' &&
           state['status'] != 'processing') {
         final view = await _keep(friend.id, day, night);
@@ -124,8 +123,8 @@ class ApiWindowViews implements WindowViewService {
     );
   }
 
-  Future<WindowView> _keep(String friendId, Map day, Map night) async {
-    final refs = [day, night];
+  Future<WindowView> _keep(String friendId, Map day, Map? night) async {
+    final refs = [day, ?night];
     final files = <File>[];
     final bytes = <Uint8List>[];
     for (final ref in refs) {
@@ -151,7 +150,7 @@ class ApiWindowViews implements WindowViewService {
     final previous = await store.read('window-$friendId');
     await store.write('window-$friendId', {
       'day': files[0].uri.pathSegments.last,
-      'night': files[1].uri.pathSegments.last,
+      'night': files.length > 1 ? files[1].uri.pathSegments.last : null,
     });
     // Only remove replaced files after the new complete pair is persisted.
     if (previous is Map) {
@@ -164,7 +163,10 @@ class ApiWindowViews implements WindowViewService {
         }
       }
     }
-    return WindowView(day: files[0].path, night: files[1].path);
+    return WindowView(
+      day: files[0].path,
+      night: files.length > 1 ? files[1].path : null,
+    );
   }
 
   Future<void> forget(String friendId) async {

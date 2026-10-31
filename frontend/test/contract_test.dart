@@ -52,6 +52,21 @@ String? _refOf(Object? property) {
 }
 
 void main() {
+  test('창문 배경은 낮 이미지 한 장과 null 밤 이미지를 지원한다', () {
+    expectMatches({
+      'status': 'succeeded',
+      'day': {
+        'assetId': '11111111-1111-4111-8111-111111111111',
+        'url': 'https://images.test/day.png',
+        'contentType': 'image/png',
+        'width': 2048,
+        'height': 576,
+        'expiresAt': '2026-10-31T15:00:00Z',
+      },
+      'night': null,
+    }, 'WindowOut');
+  });
+
   test('a friend is a CharacterOut', () {
     expectMatches(serverFriend(), 'CharacterOut');
   });

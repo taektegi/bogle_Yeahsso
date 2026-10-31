@@ -27,6 +27,7 @@ import psycopg
 
 from app.db import Database
 from app.repositories.creation import CreationRepository
+from app.repositories.window_views import WindowViewRepository
 from app.storage import StorageClient, StorageError
 
 logger = logging.getLogger(__name__)
@@ -41,6 +42,8 @@ ASSET_REFERENCES: list[str] = [
     "exists (select 1 from public.generation_jobs j where "
     "(j.source_asset_id=a.id or j.art_asset_id=a.id or j.thumbnail_asset_id=a.id) "
     "and (j.status in ('queued','processing') or j.created_at>now()-interval '24 hours'))",
+    "exists (select 1 from public.window_view_jobs w where "
+    "w.source_asset_id=a.id or w.day_asset_id=a.id or w.night_asset_id=a.id)",
 ]
 
 BATCH_SIZE = 100
@@ -87,6 +90,7 @@ def _delete_rows(db: Database, asset_ids: list) -> int:
 
 def cleanup_assets(db: Database, storage: StorageClient, retention: timedelta) -> CleanupResult:
     """미사용 에셋을 한 번 정리한다. 동기 함수라서 스레드에서 실행한다."""
+    WindowViewRepository(db).cleanup_jobs(retention)
     CreationRepository(db).cleanup_jobs(retention)
     deleted = 0
     for _ in range(MAX_BATCHES_PER_RUN):
