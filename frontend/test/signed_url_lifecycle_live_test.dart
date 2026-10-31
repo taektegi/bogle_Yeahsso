@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -194,8 +193,9 @@ void main() {
           throw StateError('temporary_path_check');
         }
         await root.delete(recursive: true);
-        await File(Platform.environment['BOGLE_DIAG_RESULT_PATH']!)
-            .writeAsString(const JsonEncoder.withIndent('  ').convert(result));
+        await File(
+          Platform.environment['BOGLE_DIAG_RESULT_PATH']!,
+        ).writeAsString(const JsonEncoder.withIndent('  ').convert(result));
       }
       expect(result.containsKey('failedStage'), isFalse, reason: '결과 JSON 확인');
     },

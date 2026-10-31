@@ -5,9 +5,9 @@ import 'package:flutter/painting.dart';
 import '../models/character_friend.dart';
 
 /// What a friend sees out of its window (Figma 568:2335 / 568:2533): a
-/// picture behind the arched window frame, one for the day and one for the
-/// night. Each friend's is to be painted for it by an image model from
-/// [WindowViewPrompt]; until it has one, the Figma aquarium shows.
+/// picture behind the arched window frame. New server views use one day
+/// picture, with night colour applied by the room. Old day/night assets remain
+/// supported; until a view is ready, the bundled scenery shows.
 ///
 /// [day] and [night] are asset paths or http(s) URLs.
 class WindowView {

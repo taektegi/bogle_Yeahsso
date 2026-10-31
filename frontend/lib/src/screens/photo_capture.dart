@@ -43,7 +43,7 @@ class PhotoCapture extends StatefulWidget {
   final PhotoPicker pickPhoto;
 
   /// The photo the child chose, with its edits applied.
-  final ValueChanged<Uint8List> onUse;
+  final ValueChanged<PreparedPhoto> onUse;
 
   /// Off while the studio shows the sketchbook: the camera is let go.
   final bool active;
@@ -70,6 +70,7 @@ class _PhotoCaptureState extends State<PhotoCapture>
   Size? _size;
   bool _fromLibrary = false;
   bool _preparedPhoto = false;
+  bool _subjectSelected = false;
   PhotoEdit _edit = uneditedPhoto;
 
   /// The crop before the crop screen opened, to put back on "취소".
@@ -237,6 +238,7 @@ class _PhotoCaptureState extends State<PhotoCapture>
     setState(() {
       _photo = photo;
       _preparedPhoto = false;
+      _subjectSelected = false;
       _assessment = PhotoPreparation.assess(photo);
       _size = null;
       _thumbnail = photo;
@@ -265,7 +267,9 @@ class _PhotoCaptureState extends State<PhotoCapture>
     setState(() => _rendering = true);
     try {
       final done = await widget.render(photo, _edit);
-      if (mounted) widget.onUse(done);
+      if (mounted) {
+        widget.onUse(PreparedPhoto(done, subjectSelected: _subjectSelected));
+      }
     } on FormatException catch (error) {
       if (mounted) _say(error.message);
     } catch (_) {
@@ -284,7 +288,7 @@ class _PhotoCaptureState extends State<PhotoCapture>
       // The modal owns its progress state; avoid a spinning submit button
       // behind it while the child is simply choosing a subject.
       setState(() => _rendering = false);
-      final result = await showDialog<Uint8List>(
+      final result = await showDialog<PreparedPhoto>(
         context: context,
         barrierDismissible: false,
         builder: (_) => PhotoPreparationDialog(photo: snapshot),
@@ -292,13 +296,14 @@ class _PhotoCaptureState extends State<PhotoCapture>
       if (mounted && result != null) {
         setState(() {
           _rendering = true;
-          _photo = result;
+          _photo = result.bytes;
+          _subjectSelected = result.subjectSelected;
           _preparedPhoto = true;
-          _assessment = PhotoPreparation.assess(result);
+          _assessment = PhotoPreparation.assess(result.bytes);
           _edit = uneditedPhoto;
           _size = null;
         });
-        final size = await photoSize(result);
+        final size = await photoSize(result.bytes);
         if (mounted) setState(() => _size = size);
       }
     } on FormatException catch (error) {

@@ -4,7 +4,9 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart';
-import 'package:flutter/foundation.dart' show listEquals;
+import 'package:flutter/foundation.dart' show listEquals, compute;
+import 'package:crypto/crypto.dart';
+import 'package:characters/characters.dart';
 
 import 'dart:convert';
 import 'dart:io';
@@ -28,7 +30,7 @@ import 'synced_character_repository.dart';
 /// Makes friends with the character service: uploads the drawing or photo
 /// once, starts a generation and follows it every `pollAfterMs` until it
 /// succeeds or fails. A retry of the same picture reuses the upload and
-/// starts a new job (a new `Idempotency-Key`), as the service asks.
+/// reuses its idempotency key until the server confirms a terminal failure.
 class ApiCharacterGenerator implements CharacterGenerator {
   ApiCharacterGenerator(
     this.api, {
@@ -69,12 +71,50 @@ class ApiCharacterGenerator implements CharacterGenerator {
     final pending = await _store?.read(_pendingName);
     final id = pending is Map ? pending['jobId'] : pending;
     final revision = pending is Map ? pending['sketchRevision'] : null;
-    if (id is! String) return null;
+    if (id is! String && !(pending is Map && pending['requestKey'] is String)) {
+      return null;
+    }
+    if (id is! String) {
+      return _DeferredGeneration(() async {
+        final Map<String, dynamic> state;
+        try {
+          state = await api.post(
+            '/v1/generations',
+            body: {
+              'sourceAssetId': (pending as Map)['sourceAssetId'],
+              'sourceType': pending['sourceType'],
+              if (pending['photoMode'] != null)
+                'photoMode': pending['photoMode'],
+            },
+            idempotencyKey: pending['requestKey'] as String,
+          );
+        } on ApiException catch (error) {
+          if (error.statusCode == 404 || error.statusCode == 410) {
+            await _remember(null);
+          }
+          throw GenerationError(
+            error.code,
+            error.message,
+            retryable: error.retryable,
+          );
+        }
+        final job = _ApiGenerationJob(
+          this,
+          null,
+          jobId: state['jobId'] as String,
+          first: state,
+          sketchRevision: revision is String ? revision : null,
+        )..run();
+        return job;
+      });
+    }
     final Map<String, dynamic> state;
     try {
       state = await api.get('/v1/generations/$id');
     } on ApiException catch (e) {
-      if (e.statusCode == 404) await _remember(null); // gone after a day
+      if (e.statusCode == 404 || e.statusCode == 410) {
+        await _remember(null);
+      }
       return null;
     }
     if (state['status'] case 'failed' || 'cancelled') {
@@ -84,7 +124,7 @@ class ApiCharacterGenerator implements CharacterGenerator {
     return _ApiGenerationJob(
       this,
       null,
-      jobId: id,
+      jobId: state['jobId'] as String? ?? id as String?,
       first: state,
       sketchRevision: revision is String ? revision : null,
     )..run();
@@ -92,6 +132,13 @@ class ApiCharacterGenerator implements CharacterGenerator {
 
   @override
   Future<void> finished(String jobId) async {
+    final used = _jobInputs.remove(jobId);
+    if (used != null) {
+      _attempts.remove(used.$1);
+      _uploads.remove(used.$1);
+      final input = used.$2.target;
+      if (input != null) _completed[input] = null;
+    }
     final pending = await _store?.read(_pendingName);
     if ((pending is Map ? pending['jobId'] : pending) == jobId) {
       await _remember(null);
@@ -103,8 +150,26 @@ class ApiCharacterGenerator implements CharacterGenerator {
   /// 그림보다 늦게 오는 얼굴 좌표를 기다리는 시간. 서버는 최대 2분 안에 분석을 끝낸다.
   final Duration faceGiveUpAfter;
   final Future<void> Function(Duration) _wait;
-  final _uploads = Expando<Future<String>>();
+  final _inputHashes = Expando<Future<String>>();
+  final _uploads = <String, Future<String>>{};
+  final _attempts = <String, String>{};
+  Future<String> _inputKey(GenerationInput input) =>
+      _inputHashes[input] ??= compute(
+        _imageDigest,
+        input.image,
+      ).then((hash) => '${input.source.name}-${input.photoMode.name}-$hash');
+
+  Future<void> _clearAttempt(
+    GenerationInput input, {
+    bool forgetSource = false,
+  }) async {
+    final digest = await _inputKey(input);
+    _attempts.remove(digest);
+    if (forgetSource) _uploads.remove(digest);
+  }
+
   final _completed = Expando<String>();
+  final _jobInputs = <String, (String, WeakReference<GenerationInput>)>{};
 
   // -------------------------------------------------------------------------
   // 얼굴 좌표는 그림보다 늦게 온다. 서버는 그림이 완성되면 바로 succeeded를
@@ -202,16 +267,23 @@ class ApiCharacterGenerator implements CharacterGenerator {
       _ApiGenerationJob(this, input, jobId: _completed[input])..run();
 
   /// The uploaded picture's asset id, uploading it the first time.
-  Future<String> source(GenerationInput input) {
-    final known = _uploads[input];
+  Future<String> source(GenerationInput input) async {
+    final digest = await _inputKey(input);
+    final known = _uploads[digest];
     if (known != null) return known;
+    if (_uploads.length >= 8) {
+      final oldest = _uploads.keys.first;
+      _uploads.remove(oldest);
+      _attempts.remove(oldest);
+    }
     final upload = _upload(input);
-    _uploads[input] = upload;
-    upload.catchError((Object _) {
-      _uploads[input] = null; // try again next time
-      return '';
-    });
-    return upload;
+    _uploads[digest] = upload;
+    try {
+      return await upload;
+    } catch (_) {
+      _uploads.remove(digest);
+      rethrow;
+    }
   }
 
   Future<String> _upload(GenerationInput input) async {
@@ -317,6 +389,7 @@ class _ApiGenerationJob implements CharacterGenerationJob {
   final _result = Completer<GeneratedArt>();
   String? _jobId;
   bool _cancelled = false;
+  bool _terminal = false;
 
   ApiClient get _api => generator.api;
 
@@ -329,6 +402,7 @@ class _ApiGenerationJob implements CharacterGenerationJob {
     // friend is still to be made from it, so nothing to cancel.
     if (_cancelled || _result.isCompleted) return;
     _cancelled = true;
+    if (input case final source?) unawaited(generator._clearAttempt(source));
     _result.completeError(GenerationCancelled());
     final id = _jobId;
     unawaited(generator._remember(null));
@@ -349,8 +423,16 @@ class _ApiGenerationJob implements CharacterGenerationJob {
       if (!_result.isCompleted) _result.complete(art);
     } catch (error, stack) {
       // A failed or cancelled job is not one to pick up again.
-      if (error is GenerationError || error is GenerationCancelled) {
-        unawaited(generator._remember(null));
+      if (error is GenerationCancelled ||
+          (error is GenerationError && (!error.retryable || _terminal))) {
+        await generator._remember(null);
+      }
+      if (input case final source?) {
+        if (error is GenerationError &&
+            (error.code == 'generation_expired' || error.code == 'not_found')) {
+          generator._completed[source] = null;
+          await generator._clearAttempt(source, forgetSource: true);
+        }
       }
       if (!_result.isCompleted) _result.completeError(error, stack);
     }
@@ -413,16 +495,40 @@ class _ApiGenerationJob implements CharacterGenerationJob {
       try {
         final source = await generator.source(input);
         if (_cancelled) throw GenerationCancelled();
+        final digest = await generator._inputKey(input);
+        final key = generator._attempts.putIfAbsent(digest, _api.newKey);
+        await generator._store?.write(ApiCharacterGenerator._pendingName, {
+          'requestKey': key,
+          'sourceAssetId': source,
+          'sourceType': input.source.name,
+          if (input.photoMode == PhotoMode.subject)
+            'photoMode': input.photoMode.name,
+          'sketchRevision': sketchRevision,
+        });
         started = await _api.post(
           '/v1/generations',
-          body: {'sourceAssetId': source, 'sourceType': input.source.name},
-          idempotencyKey: _api.newKey(),
+          body: {
+            'sourceAssetId': source,
+            'sourceType': input.source.name,
+            if (input.photoMode == PhotoMode.subject)
+              'photoMode': input.photoMode.name,
+          },
+          idempotencyKey: key,
         );
       } on ApiException catch (e) {
         throw _from(e);
       }
     }
     final id = _jobId = started['jobId'] as String? ?? _jobId!;
+    if (input case final source?) {
+      generator._jobInputs[id] = (
+        await generator._inputKey(source),
+        WeakReference(source),
+      );
+      while (generator._jobInputs.length > 8) {
+        generator._jobInputs.remove(generator._jobInputs.keys.first);
+      }
+    }
     // Remembered until the friend is made, so a relaunch can pick it up.
     await generator._remember(id, sketchRevision: sketchRevision);
     if (_cancelled) {
@@ -454,6 +560,8 @@ class _ApiGenerationJob implements CharacterGenerationJob {
             sketchRevision: sketchRevision,
           );
         case 'failed':
+          _terminal = true;
+          if (input case final source?) await generator._clearAttempt(source);
           final error = (state['error'] as Map?)?.cast<String, dynamic>();
           throw GenerationError(
             error?['code'] as String? ?? 'generation_unavailable',
@@ -461,6 +569,7 @@ class _ApiGenerationJob implements CharacterGenerationJob {
             retryable: error?['retryable'] as bool? ?? true,
           );
         case 'cancelled':
+          if (input case final source?) await generator._clearAttempt(source);
           throw GenerationCancelled();
       }
       if (DateTime.now().isAfter(deadline)) {
@@ -492,8 +601,10 @@ class _ApiGenerationJob implements CharacterGenerationJob {
 /// The friend's answers come from the service (AI, or its own scripted
 /// lines when the AI can't). Starter friends, and a friend the service says
 /// is asleep, answer from the app's lines.
-class ApiChatService implements ChatService {
-  ApiChatService(this.api, {this.beforeReply});
+class ApiChatService implements ChatService, ServerChatHistory {
+  ApiChatService(this.api, {this.beforeReply, this.onExchange});
+  final Future<void> Function(CharacterFriend, List<ServerChatLine>)?
+  onExchange;
   final ApiClient api;
   final Future<void> Function()? beforeReply;
 
@@ -508,15 +619,58 @@ class ApiChatService implements ChatService {
         '/v1/characters/${friend.id}/messages',
         body: {
           'clientMessageId': api.newKey(),
-          'text': message.length > 200 ? message.substring(0, 200) : message,
+          'text': message.characters.take(200).toString(),
         },
         timeout: const Duration(seconds: 25),
       );
+      if (onExchange != null) {
+        try {
+          await onExchange!(friend, [
+            for (final key in ['userMessage', 'assistantMessage'])
+              if (json[key] case {
+                'id': final String id,
+                'text': final String text,
+              })
+                (id: id, line: (mine: key == 'userMessage', text: text)),
+          ]);
+        } catch (_) {
+          /* The next server import repairs missing IDs. */
+        }
+      }
       return (json['assistantMessage'] as Map?)?['text'] as String?;
     } on ApiException catch (e) {
       if (e.code == 'character_asleep') return null;
       rethrow;
     }
+  }
+
+  @override
+  Future<List<ServerChatLine>> historyEntries(CharacterFriend friend) async {
+    if (!SyncedCharacterRepository.isServiceId(friend.id)) return [];
+    final newest = <ServerChatLine>[];
+    String? cursor;
+    final seen = <String>{};
+    do {
+      final page = await api.get(
+        '/v1/characters/${friend.id}/messages',
+        query: {'limit': '100', 'before': ?cursor},
+      );
+      for (final item in page['items'] as List) {
+        if (item case {
+          'id': final String id,
+          'role': final String role,
+          'text': final String text,
+        }) {
+          if (seen.add(id)) {
+            newest.add((id: id, line: (mine: role == 'user', text: text)));
+          }
+        }
+      }
+      final next = page['nextCursor'] as String?;
+      if (next == cursor) break;
+      cursor = next;
+    } while (cursor != null && newest.length < 500);
+    return newest.take(500).toList().reversed.toList();
   }
 
   /// The last 30 lines, oldest first.
@@ -706,7 +860,6 @@ class SyncedProfileRepository implements ProfileRepository {
   @override
   Future<UserProfile> saveProfile(UserProfile profile) async {
     final before = await local.fetchProfile();
-    final saved = await local.saveProfile(profile);
     final friends = await characters.fetchFriends();
     final avatar = friends
         .where((f) => f.assetPath == profile.avatar)
@@ -728,23 +881,46 @@ class SyncedProfileRepository implements ProfileRepository {
         'orderNotifications': profile.orderNotifications,
       if (before.avatar != profile.avatar) 'avatarCharacterId': avatarId,
     });
-    return saved;
+    return local.saveProfile(profile);
   }
 
   /// On a fresh install the iPad has no profile yet: take the nickname and
   /// settings the service kept.
   Future<void> pull() async {
-    if (await _store?.read('profile') != null) return;
+    final pending = await outbox.pendingFields(null);
     final json = await api.get('/v1/me');
     final current = await local.fetchProfile();
+    final avatarId = json['avatarCharacterId'];
+    final friends = avatarId == null
+        ? <CharacterFriend>[]
+        : await characters.fetchFriends();
+    final avatar = friends.where((friend) => friend.id == avatarId).firstOrNull;
+    // Retry on the next sync if its picture could not be restored yet.
+    await _store?.write(
+      'pending_profile_avatar',
+      avatarId != null && avatar == null ? avatarId : null,
+    );
     await local.saveProfile(
       current.copyWith(
-        nickname: json['nickname'] as String?,
-        bio: json['bio'] as String?,
-        interests: (json['interests'] as List?)?.cast<String>(),
-        profileColor: json['profileColor'] as String?,
-        friendNotifications: json['friendNotifications'] as bool?,
-        orderNotifications: json['orderNotifications'] as bool?,
+        avatar: pending.contains('avatarCharacterId')
+            ? null
+            : avatar?.assetPath,
+        nickname: pending.contains('nickname')
+            ? null
+            : json['nickname'] as String?,
+        bio: pending.contains('bio') ? null : json['bio'] as String?,
+        interests: pending.contains('interests')
+            ? null
+            : (json['interests'] as List?)?.cast<String>(),
+        profileColor: pending.contains('profileColor')
+            ? null
+            : json['profileColor'] as String?,
+        friendNotifications: pending.contains('friendNotifications')
+            ? null
+            : json['friendNotifications'] as bool?,
+        orderNotifications: pending.contains('orderNotifications')
+            ? null
+            : json['orderNotifications'] as bool?,
       ),
     );
   }
@@ -770,7 +946,7 @@ class ServiceSync {
 
   /// Never fails: offline just means next time.
   Future<void> start() async {
-    for (final step in [outbox.flush, profile.pull, characters.pull]) {
+    for (final step in [outbox.flush, characters.pull, profile.pull]) {
       try {
         await step();
       } on Object {
@@ -779,5 +955,30 @@ class ServiceSync {
     }
   }
 
-  Future<void> resumed() => outbox.flush();
+  Future<void> resumed() => start();
+}
+
+String _imageDigest(Uint8List image) => sha256.convert(image).toString();
+
+class _DeferredGeneration implements CharacterGenerationJob {
+  _DeferredGeneration(this.create);
+  final Future<CharacterGenerationJob> Function() create;
+  Future<GeneratedArt>? _result;
+  CharacterGenerationJob? _job;
+  bool _cancelled = false;
+  @override
+  Future<GeneratedArt> get result => _result ??= () async {
+    if (_cancelled) throw GenerationCancelled();
+    _job = await create();
+    if (_cancelled) {
+      _job!.cancel();
+      throw GenerationCancelled();
+    }
+    return _job!.result;
+  }();
+  @override
+  void cancel() {
+    _cancelled = true;
+    _job?.cancel();
+  }
 }

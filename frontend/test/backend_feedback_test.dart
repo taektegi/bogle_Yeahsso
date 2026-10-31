@@ -112,6 +112,11 @@ void main() {
   test('서버 저장 후 응답이 끊겨도 재실행 후 같은 저장 키로 복구한다', () async {
     var loseResponse = true;
     final service = FakeService({
+      'GET /v1/personality-types': (_) => json({
+        'items': [
+          {'code': 'imaginative', 'label': '엉뚱한 상상가예요'},
+        ],
+      }),
       'POST /v1/characters': (_) {
         if (loseResponse) {
           throw http.ClientException('response lost after commit');
@@ -121,7 +126,7 @@ void main() {
     });
     const input = NewFriend(
       name: '구름이',
-      personality: '엉뚱해요',
+      personality: '엉뚱한 상상가',
       favoriteThings: ['구름'],
       speechStyle: '해요체',
       assetPath: '/kept/job.png',

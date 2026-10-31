@@ -7,13 +7,25 @@ import 'package:flutter/foundation.dart';
 
 enum GenerationSource { drawing, photo }
 
+/// 사진의 대상을 사용자가 확정했는지 서버에 명시한다.
+enum PhotoMode { original, subject }
+
 /// Read-only input snapshot for the character generator. Capturing pixels
 /// is a frontend responsibility; nothing may silently discard them.
 class GenerationInput {
-  GenerationInput(Uint8List image, {required this.source, this.sketchRevision})
-    : image = Uint8List.fromList(image).asUnmodifiableView();
+  GenerationInput(
+    Uint8List image, {
+    required this.source,
+    this.photoMode = PhotoMode.original,
+    this.sketchRevision,
+  }) : image = Uint8List.fromList(image).asUnmodifiableView() {
+    if (source != GenerationSource.photo && photoMode != PhotoMode.original) {
+      throw ArgumentError('대상 선택은 사진 입력에서만 사용할 수 있어요.');
+    }
+  }
   final Uint8List image;
   final GenerationSource source;
+  final PhotoMode photoMode;
 
   /// 기기 안에서만 쓰는 초안 식별자. AI 요청에는 보내지 않는다.
   final String? sketchRevision;

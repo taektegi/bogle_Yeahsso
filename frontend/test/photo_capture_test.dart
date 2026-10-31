@@ -126,7 +126,7 @@ void main() {
         body: PhotoCapture(
           camera: () => (cameras..add(FakeCamera())).last,
           pickPhoto: () async => null,
-          onUse: (p) => used = p,
+          onUse: (p) => used = p.bytes,
           render: (photo, edit) async {
             rendered = edit;
             return photo;

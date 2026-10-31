@@ -145,6 +145,7 @@ class _TimeWheel extends StatelessWidget {
                   child: Text(
                     timeOfDayLabel(m),
                     style: const TextStyle(
+                      fontFamily: bogleBodyFont,
                       fontSize: 18,
                       color: BogleColors.text,
                     ),

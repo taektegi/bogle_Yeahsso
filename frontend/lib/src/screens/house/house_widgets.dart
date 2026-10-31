@@ -23,6 +23,7 @@ part 'house_widgets/speech_bubble.dart';
 part 'house_widgets/art_looks.dart';
 part 'house_widgets/silhouettes.dart';
 part 'house_widgets/action_tiles.dart';
+part 'house_widgets/window_notice.dart';
 
 /// Figma's white cards: 0 0 4 1 shadow at 15 % black.
 BoxDecoration houseCard([double radius = 15]) => BoxDecoration(

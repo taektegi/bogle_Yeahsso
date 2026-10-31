@@ -52,8 +52,33 @@ class FileStore implements LocalStore {
     }
   }
 
-  static Future<String> _encode(Object? json) =>
-      Isolate.run(() => jsonEncode(json));
+  static Future<String> _encode(Object? json) {
+    // Stop estimating as soon as the budget is crossed; never encode twice.
+    int size(Object? v, int budget) {
+      if (v is String) return v.length * 6 + 2;
+      if (v is List) {
+        var n = 2;
+        for (final item in v) {
+          n += size(item, budget - n) + 1;
+          if (n >= budget) break;
+        }
+        return n;
+      }
+      if (v is Map) {
+        var n = 2;
+        for (final e in v.entries) {
+          n += e.key.toString().length * 6 + size(e.value, budget - n) + 4;
+          if (n >= budget) break;
+        }
+        return n;
+      }
+      return 24;
+    }
+
+    return size(json, 65536) < 65536
+        ? Future.value(jsonEncode(json))
+        : Isolate.run(() => jsonEncode(json));
+  }
 
   static Future<Object?> _decode(String text) => text.length < 65536
       ? Future.value(jsonDecode(text))
@@ -66,8 +91,9 @@ class FileStore implements LocalStore {
     var damaged = false;
     for (final file in [_file(name), File('${_file(name).path}.bak')]) {
       if (!await file.exists()) continue;
-      final text = await file.readAsString();
+      final bytes = await file.readAsBytes();
       try {
+        final text = utf8.decode(bytes);
         final json = await _decode(text);
         final value = json == null ? null : decode(json);
         if (file.path == _file(name).path) {
@@ -133,8 +159,9 @@ class FileStore implements LocalStore {
         var damaged = false;
         for (final file in [_file(name), File('${_file(name).path}.bak')]) {
           if (!await file.exists()) continue;
-          final candidate = await file.readAsString();
+          final bytes = await file.readAsBytes();
           try {
+            final candidate = utf8.decode(bytes);
             await _decode(candidate);
             old = candidate;
             if (file.path != _file(name).path) _repair.add(name);
@@ -155,6 +182,26 @@ class FileStore implements LocalStore {
     });
     _queue[name] = next.catchError((Object _) {});
     return next;
+  }
+
+  Future<void> removeDocument(String name) async {
+    await _queue[name];
+    for (final suffix in ['', '.bak', '.tmp']) {
+      final file = File('${_file(name).path}$suffix');
+      if (await file.exists()) await file.delete();
+    }
+    if (await folder.exists()) {
+      await for (final file in folder.list()) {
+        if (file is File &&
+            (file.path.startsWith('${_file(name).path}.corrupt-') ||
+                file.path.startsWith('${_file(name).path}.bak.corrupt-'))) {
+          await file.delete();
+        }
+      }
+    }
+    _snapshots.remove(name);
+    _blocked.remove(name);
+    _repair.remove(name);
   }
 
   /// Where friends' pictures made on the device are kept.

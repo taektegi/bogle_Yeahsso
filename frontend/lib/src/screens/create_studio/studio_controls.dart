@@ -97,6 +97,7 @@ class Segmented<T> extends StatelessWidget {
                 label,
                 style: TextStyle(
                   color: color,
+                  fontFamily: bogleDisplayFont,
                   fontSize: fontSize,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                 ),

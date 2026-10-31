@@ -76,7 +76,10 @@ class _PhotoPreparationDialogState extends State<PhotoPreparationDialog> {
       onPressed: _busy || (ready && _original)
           ? null
           : ready
-          ? () => Navigator.pop(context, _proposal)
+          ? () => Navigator.pop(
+              context,
+              PreparedPhoto(_proposal!, subjectSelected: !_paper),
+            )
           : _prepare,
       style: FilledButton.styleFrom(
         backgroundColor: BogleColors.logo,

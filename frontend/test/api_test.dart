@@ -39,8 +39,12 @@ Future<Directory> tempFolder() async {
 
 /// The pieces of the app wired to [service], kept in [store] and [folder].
 class Wired {
-  Wired(this.service, this.store, Directory folder)
-    : art = DeviceArt(Directory('${folder.path}/art')) {
+  Wired(
+    this.service,
+    this.store,
+    Directory folder, {
+    Future<void> Function(CharacterFriend)? onCreated,
+  }) : art = DeviceArt(Directory('${folder.path}/art')) {
     api = service.api();
     outbox = Outbox(api, store: store);
     characters = SyncedCharacterRepository(
@@ -48,6 +52,7 @@ class Wired {
       local: InMemoryCharacterRepository(store: store),
       outbox: outbox,
       art: art,
+      onCreated: onCreated,
       undoWindow: const Duration(milliseconds: 80),
     );
   }
@@ -333,7 +338,17 @@ void main() {
         }),
         'POST /v1/characters': (_) => json(serverFriend(), 201),
       });
-      final wired = Wired(service, MemoryStore(), await tempFolder());
+      final background = Completer<void>();
+      CharacterFriend? warming;
+      final wired = Wired(
+        service,
+        MemoryStore(),
+        await tempFolder(),
+        onCreated: (friend) {
+          warming = friend;
+          return background.future;
+        },
+      );
 
       final made = await wired.characters.createFriend(
         const NewFriend(
@@ -354,6 +369,9 @@ void main() {
       expect(jsonDecode(sent.body)['personalityType'], 'imaginative');
       expect(jsonDecode(sent.body).containsKey('personality'), isFalse);
       expect(made.id, friendId);
+      expect(warming!.id, made.id);
+      expect(background.isCompleted, isFalse);
+      background.complete();
       expect(made.assetPath, '/kept/job.png');
       expect((await wired.characters.fetchFriends()).last.id, friendId);
     });
@@ -394,6 +412,33 @@ void main() {
         expect(made.id, friendId);
       });
     }
+
+    test('새 개인 서버의 성격 표시명도 원래 코드로 저장한다', () async {
+      final service = FakeService({
+        'GET /v1/personality-types': (_) => json({
+          'items': [
+            {'code': 'explorer', 'label': '호기심 많은 탐험가'},
+          ],
+        }),
+        'POST /v1/characters': (_) => json(serverFriend(), 201),
+      });
+      final wired = Wired(service, MemoryStore(), await tempFolder());
+      await wired.characters.createFriend(
+        const NewFriend(
+          name: '구름이',
+          personality: '호기심 많은 탐험가',
+          favoriteThings: ['구름'],
+          speechStyle: '해요체',
+          assetPath: '/kept/job.png',
+          accentHex: 0xFFBDCFFF,
+          generationJobId: jobId,
+        ),
+      );
+      expect(
+        jsonDecode(service.to('/v1/characters').single.body)['personalityType'],
+        'explorer',
+      );
+    });
 
     test('서버에서 찾을 수 없는 성격은 임의의 코드로 저장하지 않는다', () async {
       final service = FakeService({
@@ -1009,8 +1054,9 @@ void main() {
           'profileColor': 'mint',
           'avatarCharacterId': friendId,
         });
-        await profile.pull(); // already set up: the iPad's profile stays
-        expect((await profile.fetchProfile()).nickname, '별빛');
+        await profile
+            .pull(); // server changes are imported once local edits are delivered
+        expect((await profile.fetchProfile()).nickname, '새벽');
       },
     );
   });
