@@ -772,6 +772,9 @@ void main() {
       expect(File(art.assetPath).existsSync(), isTrue);
       expect(faceFile.existsSync(), isFalse);
       expect(await store.read('pending_faces'), [jobId]);
+      // 설정 화면은 이 future로 얼굴 좌표를 기다릴 수 있다.
+      final stillComing = generator.faceStillComing(jobId);
+      expect(stillComing, isNotNull);
 
       // 앱이 스스로 시작한 뒤따른 조회만으로 좌표가 저장돼야 한다.
       face.complete();
@@ -780,7 +783,9 @@ void main() {
         () async => (await store.read('pending_faces') as List).isEmpty,
       );
 
+      await stillComing;
       expect((await faceMapFor(art.assetPath))?.mouth, isNotNull);
+      expect(generator.faceStillComing(jobId), isNull);
       expect(service.to('/v1/generations/$jobId'), hasLength(3));
     });
 

@@ -126,6 +126,9 @@ class ApiCharacterGenerator implements CharacterGenerator {
         _followingFaces.remove(jobId);
       });
 
+  @override
+  Future<void>? faceStillComing(String jobId) => _followingFaces[jobId];
+
   Future<void> _followFace(String jobId) async {
     final deadline = DateTime.now().add(faceGiveUpAfter);
     var delay = const Duration(seconds: 2);

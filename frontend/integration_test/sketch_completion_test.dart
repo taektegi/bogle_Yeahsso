@@ -35,6 +35,8 @@ class _Generator implements CharacterGenerator {
   Future<CharacterGenerationJob?> unfinished() async => null;
   @override
   Future<void> finished(String jobId) async {}
+  @override
+  Future<void>? faceStillComing(String jobId) => null;
 }
 
 void main() {

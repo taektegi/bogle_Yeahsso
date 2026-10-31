@@ -24,6 +24,7 @@ import '../widgets/friend_arrival.dart';
 import 'archive_screen.dart';
 import 'friend_screen.dart';
 import 'house/house_widgets.dart';
+import 'loading_screen.dart';
 import '../app_lifecycle.dart';
 
 part 'setup/setup_controls.dart';
@@ -324,6 +325,9 @@ class _SetupFriendScreenState extends State<SetupFriendScreen>
   /// the friend's introduction first).
   bool _saving = false;
 
+  /// 친구는 저장했지만 얼굴 좌표가 아직 오는 중이라 로딩 모습으로 기다리는 중.
+  bool _awaitingFace = false;
+
   Future<void> _next() async {
     if (!_canGoOn || _saving) return;
     await _stopListening();
@@ -416,10 +420,22 @@ class _SetupFriendScreenState extends State<SetupFriendScreen>
     }
     if (widget.art.jobId case final job?) {
       unawaited(generator.finished(job));
+      // 얼굴 좌표가 아직 오는 중이면 로딩 화면으로 기다렸다가, 표정까지 갖춘 친구로 만난다.
+      // 좌표가 없다고 확정되거나 기다리기를 그만두면 몸 전체만 움직이는 친구로 넘어간다.
+      final face = generator.faceStillComing(job);
+      if (face != null && mounted) {
+        setState(() => _awaitingFace = true);
+        try {
+          await face;
+        } on Object {
+          // 얼굴 좌표는 선택 기능이다. 받지 못해도 친구는 이미 저장됐다.
+        }
+      }
     }
     if (!mounted) return;
     _saving = false;
     setState(() {
+      _awaitingFace = false;
       _friend = friend;
       _step = _Step.friend;
       _line = 0;
@@ -515,7 +531,7 @@ class _SetupFriendScreenState extends State<SetupFriendScreen>
               focusTarget: _friendArt,
               keepClear: _farewellButtons,
               child: _SpeechBackdrop(
-                enabled: _step == _Step.speech,
+                enabled: _step == _Step.speech && !_awaitingFace,
                 child: Column(
                   children: [
                     // Figma 285:3691: "Setting" while getting to know the
@@ -526,7 +542,9 @@ class _SetupFriendScreenState extends State<SetupFriendScreen>
                       title: _step == _Step.friend ? 'Hello' : 'Setting',
                     ),
                     Expanded(
-                      child: _step == _Step.friend
+                      child: _awaitingFace
+                          ? const FriendArrivingView()
+                          : _step == _Step.friend
                           ? _friendMade()
                           : _tapOnward(
                               Stack(
