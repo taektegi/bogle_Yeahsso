@@ -1,9 +1,25 @@
 # 보글 BOGLE
 
+🏆 **2026 예술적인 소프트웨어 우수상** · 그린고블린팀
+
 ### 상상이 보글보글, 친구가 되다
 
 보글은 **그림과 사진 속 상상을 나만의 AI 캐릭터 친구로 만드는 아이패드 앱**입니다.
 캐릭터의 이름·성격·말투를 정하고, 대화와 움직임을 통해 나만의 친구를 만날 수 있습니다.
+
+![보글 발표 1페이지](docs/images/presentation/slide-01.png)
+
+![보글 발표 9페이지](docs/images/presentation/slide-09.png)
+
+![보글 발표 10페이지](docs/images/presentation/slide-10.png)
+
+![보글 발표 11페이지](docs/images/presentation/slide-11.png)
+
+![보글 발표 12페이지](docs/images/presentation/slide-12.png)
+
+![보글 발표 13페이지](docs/images/presentation/slide-13.png)
+
+![보글 발표 14페이지](docs/images/presentation/slide-14.png)
 
 ## 주요 기능
 
