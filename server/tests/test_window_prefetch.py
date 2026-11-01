@@ -12,7 +12,6 @@ from app.cleanup import cleanup_assets
 from app.config import get_settings
 from app.db import get_database
 from app.images import input_reference
-from app.rate_limit import window_limiter
 from app.repositories.window_views import WindowViewRepository
 from app.storage import get_storage
 from app.window_images import day_prompt
@@ -139,18 +138,6 @@ def test_prefetch_failure_keeps_character_generation_success(database, creation,
 
     monkeypatch.setattr(WindowViewRepository, "prefetch", unavailable)
     assert complete(creation, database)["status"] == "succeeded"
-
-
-def test_window_limit_skips_prefetch_but_generation_succeeds(
-    database,
-    seed_conn,
-    creation,  # noqa: F811
-):
-    user = creation[0]
-    for _ in range(window_limiter.limit):
-        window_limiter.check(user)
-    assert complete(creation, database)["status"] == "succeeded"
-    assert window_jobs(seed_conn, user) == []
 
 
 def test_unsaved_prefetched_background_is_cleaned_up(database, seed_conn, creation):  # noqa: F811

@@ -2,9 +2,7 @@
 
 from datetime import timedelta
 
-from app.errors import ApiError
 from app.idempotency import fingerprint, idempotency_conflict, insert_or_replay
-from app.rate_limit import window_limiter
 from app.repositories.creation import MODEL, CreationRepository, asset_row, not_found
 from app.window_images import PROMPT_VERSION
 
@@ -55,8 +53,6 @@ class WindowViewRepository(CreationRepository):
             if current:
                 self._remember(conn, user_id, key, digest, current["id"])
                 return current, False
-            # 친구 생성과 분리된 배경 전용 한도를 사용한다. 재전송·캐시 조회는 차감하지 않는다.
-            window_limiter.check(user_id)
             job, new = insert_or_replay(
                 conn,
                 table="public.window_view_jobs",
@@ -75,7 +71,7 @@ class WindowViewRepository(CreationRepository):
             return job, new
 
     def prefetch(self, user_id, generation_job_id):
-        """캐릭터 생성 직후 배경을 예약한다. 이미 있거나 한도를 넘으면 건너뛴다 (None)."""
+        """캐릭터 생성 직후 배경을 예약한다. 이미 있으면 건너뛴다 (None)."""
         with self.db.connection() as conn:
             # 친구 저장과 같은 생성 작업 행을 잠가 저장 전·후 어느 쪽이든 친구에 한 번 연결한다.
             job = conn.execute(
@@ -102,11 +98,6 @@ class WindowViewRepository(CreationRepository):
                     (user_id, friend["id"]),
                 ).fetchone()
             ):
-                return None
-            try:
-                window_limiter.check(user_id)
-            except ApiError:
-                # 집에 들어갈 때 앱이 다시 요청하므로 미리 만들기만 생략한다.
                 return None
             row, _ = insert_or_replay(
                 conn,

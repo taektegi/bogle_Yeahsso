@@ -11,7 +11,7 @@ API 계약의 기준은 서버를 띄우면 열리는 **`/docs`(OpenAPI)** 입�
 친구 만들기(FR-03~05)의 구현·설정·작업 정책은 [친구 만들기 구현 문서](../docs/friend-creation-implementation.md)를 참고하세요.
 원본 업로드, OpenRouter 이미지 생성, 상태·취소, 성격 목록과 친구 저장 API가 추가되었습니다.
 `server/.env`에 `OPENROUTER_API_KEY`를 입력합니다. 기존 `openrouter_key`도 인식합니다.
-내부 워커와 메모리 횟수 제한을 위해 서버는 **`--workers 1`**로 실행하세요.
+내부 워커를 위해 서버는 **`--workers 1`**로 실행하세요.
 `uv sync --locked --extra dev`로 잠금 파일의 의존성을 설치할 수 있습니다.
 
 ## AI 연결 기준
@@ -122,7 +122,6 @@ server/
 │   ├── personality.py      성격 유형 목록
 │   ├── sleep.py            수면 시간 판정 (한국 시간 22:00–06:00)
 │   ├── clock.py            현재 시각 (테스트에서 고정할 수 있게 의존성으로 분리)
-│   ├── rate_limit.py       사용자별 요청 횟수 제한 (429). limit_generations 등을 라우터에 붙인다
 │   ├── idempotency.py      멱등 키: 헤더 검사, 요청 지문, insert_or_replay (설계: docs/idempotency-design.md)
 │   ├── cleanup.py          미사용 에셋 정리 (서버가 1시간마다 실행). 새 테이블이 에셋을 가리키면 ASSET_REFERENCES에 추가
 │   ├── errors.py           공통 오류 형식과 ApiError
@@ -233,7 +232,7 @@ python -m scripts.seed --email you@example.com --clean    # 시드 친구만 지
 ## 아직 없는 것
 
 - 멱등 키의 **엔드포인트 연결**: 공통 코드(`app/idempotency.py`)와 `friends` 컬럼은 준비됐고, 생성 작업·친구 저장·대화 API를 만들 때 `docs/idempotency-design.md`를 따라 붙입니다.
-- 요청 횟수 제한은 만들어 두었지만(`app/rate_limit.py`) 아직 어떤 라우터에도 붙어 있지 않습니다. 업로드·생성·대화 API를 만들 때 `Depends(limit_uploads)`, `Depends(limit_generations)`, `Depends(limit_messages)`를 붙이세요. 기록을 서버 메모리에 두므로 서버 1개 기준입니다.
+- 사용자별 요청 횟수 제한은 2026-11-01 사용자 결정으로 없앴습니다. 업로드·생성·창문 배경·대화 API는 429 `rate_limited`를 내지 않습니다.
 - 실제 Supabase로의 **나머지 확인**: 로컬 Supabase와 클라우드 개발 프로젝트(Supavisor transaction mode, Storage, ES256 토큰, 레거시 `service_role` 키)에서는 확인했습니다. 결과는 `docs/supabase-cloud-setup.md`의 "클라우드 검증 결과"를 보세요. Google 로그인(Web 클라이언트, 브라우저 방식)도 클라우드 프로젝트에서 확인했습니다. 아직 못 본 것은 아이패드 앱의 iOS 네이티브 로그인, 레거시 HS256 토큰(실제 토큰), 새 `sb_secret_...` 키, 정리 작업의 클라우드 동작입니다.
 
 ## 창문 배경 생성

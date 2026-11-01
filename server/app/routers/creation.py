@@ -16,7 +16,6 @@ from app.friend_settings import SaveFriendIn
 from app.idempotency import IdempotencyKeyHeader
 from app.images import MAX_UPLOAD_BYTES, InvalidImage, open_image
 from app.personality import PERSONALITY_TYPES
-from app.rate_limit import limit_uploads
 from app.repositories.characters import CharacterRepositoryDep
 from app.repositories.creation import CreationRepository
 from app.routers.characters import CharacterOut, _assets_of, _to_out
@@ -87,7 +86,6 @@ def job_out(repo, storage, user_id, row):
     "/assets",
     status_code=201,
     response_model=ImageRef,
-    dependencies=[Depends(limit_uploads)],
     summary="그림·사진 원본 업로드",
 )
 def upload_asset(
