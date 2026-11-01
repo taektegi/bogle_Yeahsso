@@ -18,6 +18,19 @@ part 'doll_options/portrait.dart';
 part 'doll_options/options_form.dart';
 part 'doll_options/option_controls.dart';
 
+/// How big the order panels are drawn. Side by side they follow Figma's
+/// 1108-wide panel, but never so big that the options (566 high, inside
+/// 22 of padding all round) outgrow the screen's height: an iPad wider for
+/// its height (11-inch, mini) gets them a little smaller instead of a
+/// scrolling form. The friend step uses the same size, so the portrait
+/// doesn't jump between the steps. Stacked, they follow the width.
+double _panelScale(BuildContext context, BoxConstraints box) {
+  if (BogleViewport.of(context).stackPanels(box.maxWidth)) {
+    return (box.maxWidth / 700).clamp(.85, 1.1);
+  }
+  return math.min(box.maxWidth / 1108, box.maxHeight / (566 + 2 * 22));
+}
+
 /// Figma 470:2336: one paper panel, a circular portrait on the left,
 /// two numbered choices and a price summary on the right. Prices and
 /// dimensions come from the demo catalog, not the wireframe's sample text.
@@ -46,9 +59,7 @@ class DollOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
-      final scale = BogleViewport.of(context).stackPanels(box.maxWidth)
-          ? (box.maxWidth / 700).clamp(.85, 1.1)
-          : box.maxWidth / 1108;
+      final scale = _panelScale(context, box);
       final padding = 22 * scale;
       final gap = 43 * scale;
       final textScale = scale.clamp(.9, 1.2);
@@ -83,7 +94,7 @@ class DollOptions extends StatelessWidget {
               // Split View or larger accessibility text reduces space.
               final minimum = 566 * scale;
               final enlarged = MediaQuery.textScalerOf(context).scale(1);
-              if (formBox.maxHeight < minimum || enlarged > 1.15) {
+              if (formBox.maxHeight < minimum - .5 || enlarged > 1.15) {
                 return SingleChildScrollView(
                   child: SizedBox(
                     height: minimum * math.max(1, enlarged),
@@ -122,9 +133,7 @@ class DollFriendPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
-      final scale = BogleViewport.of(context).stackPanels(box.maxWidth)
-          ? (box.maxWidth / 700).clamp(.85, 1.1)
-          : box.maxWidth / 1108;
+      final scale = _panelScale(context, box);
       final textScale = scale.clamp(.9, 1.2);
       final friend = friends[selected];
       final motion = Duration(

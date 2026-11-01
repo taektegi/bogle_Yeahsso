@@ -14,6 +14,7 @@ import '../theme/bogle_viewport.dart';
 import '../widgets/adaptive_panels.dart';
 import '../widgets/bogle_widgets.dart';
 import '../widgets/fireworks.dart';
+import '../widgets/fit_to_height.dart';
 import '../widgets/top_bar.dart';
 import 'order/doll_options.dart';
 import 'order/address_book_screen.dart';
@@ -402,216 +403,234 @@ class _OrderScreenState extends State<OrderScreen> {
     final accent = Color(_friend.accentHex);
     return LayoutBuilder(
       builder: (context, box) {
-        final minimumHeight =
-            720.0 * math.max(1, MediaQuery.textScalerOf(context).scale(1));
+        final enlarged = MediaQuery.textScalerOf(context).scale(1);
+        final minimumHeight = 720.0 * math.max(1, enlarged);
+        final leading = _Panel(
+          padding: const EdgeInsets.fromLTRB(28, 26, 28, 26),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('주문 상품', style: _Type.panelTitle),
+              const SizedBox(height: 18),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ArtTile(
+                    asset: _friend.assetPath,
+                    size: 124,
+                    radius: 22,
+                    color: Color.lerp(accent, Colors.white, .35)!,
+                  ),
+                  const SizedBox(width: 18),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${_friend.name} 인형',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: BogleColors.text,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [for (final l in _doll.labels) _Tag(l)],
+                        ),
+                        const SizedBox(height: 10),
+                        Text('수량 ${_doll.quantity}개', style: _Type.muted),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 40, color: BogleColors.line),
+              _PriceRow(
+                '상품 금액',
+                '${formatWon(_doll.unitPrice)} × ${_doll.quantity}',
+              ),
+              _PriceRow(
+                '배송비',
+                _doll.shipping == 0 ? '무료' : formatWon(_doll.shipping),
+              ),
+              const SizedBox(height: 18),
+              const Text('도착까지', style: _Type.panelTitle),
+              const SizedBox(height: 14),
+              Expanded(child: _Journey(ordered: _now)),
+              const Divider(height: 28, color: BogleColors.line),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      '총 결제 금액',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: BogleColors.text,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(formatWon(_doll.total), style: _Type.total),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+        final trailing = _Panel(
+          padding: const EdgeInsets.fromLTRB(28, 22, 28, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text('배송 정보', style: _Type.panelTitle),
+                  const Spacer(),
+                  if (address != null)
+                    TextButton.icon(
+                      onPressed: _chooseAddress,
+                      icon: const Icon(Icons.swap_horiz_rounded, size: 20),
+                      label: const Text('배송지 변경'),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (address != null)
+                _AddressCard(address: address)
+              else
+                _NewAddressCard(onTap: _addAddress),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _note,
+                decoration: const InputDecoration(
+                  labelText: '배송 메모',
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
+                ),
+                items: [
+                  for (final n in deliveryNotes)
+                    DropdownMenuItem(value: n, child: Text(n)),
+                ],
+                onChanged: (n) => setState(() => _note = n ?? _note),
+              ),
+              const SizedBox(height: 22),
+              Row(
+                children: [
+                  const Text('결제 수단', style: _Type.panelTitle),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: _choosePayment,
+                    child: const Text('결제 수단 관리'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  for (final (i, p) in PaymentMethod.values.indexed)
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: i == 0 ? 0 : 10),
+                        child: _ChoiceCard(
+                          selected: _payment == p,
+                          onTap: () => setState(() {
+                            _payment = p;
+                            _paymentId = _paymentMethods
+                                .where((m) => m.kind == p)
+                                .firstOrNull
+                                ?.id;
+                          }),
+                          leading: Icon(
+                            switch (p) {
+                              PaymentMethod.easyPay =>
+                                Icons.account_balance_wallet_outlined,
+                              PaymentMethod.card => Icons.credit_card_rounded,
+                              PaymentMethod.transfer =>
+                                Icons.account_balance_outlined,
+                            },
+                            color: BogleColors.logo,
+                            size: 26,
+                          ),
+                          title: p.label,
+                          note: _savedPayment?.kind == p
+                              ? _savedPayment!.summary
+                              : p.note,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const Spacer(),
+              _Agreement(
+                value: _agreed,
+                onChanged: (v) => setState(() => _agreed = v),
+              ),
+              const SizedBox(height: 12),
+              if (_paymentError != null) ...[
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    _paymentError!,
+                    key: const ValueKey('order-payment-error'),
+                    style: const TextStyle(color: BogleColors.blueStrong),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+              PrimaryButton(
+                expanded: true,
+                label: _paying ? '결제하는 중…' : '${formatWon(_doll.total)} 결제하기',
+                icon: _paying
+                    ? Icons.hourglass_top_rounded
+                    : Icons.check_circle_outline_rounded,
+                onPressed: _agreed && !_paying && address != null ? _pay : null,
+              ),
+            ],
+          ),
+        );
         final panels = BoglePanelFlow(
           leadingFlex: 5,
           trailingFlex: 6,
           compactLeadingHeight: minimumHeight,
           compactTrailingHeight: minimumHeight,
-          leading: _Panel(
-            padding: const EdgeInsets.fromLTRB(28, 26, 28, 26),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('주문 상품', style: _Type.panelTitle),
-                const SizedBox(height: 18),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ArtTile(
-                      asset: _friend.assetPath,
-                      size: 124,
-                      radius: 22,
-                      color: Color.lerp(accent, Colors.white, .35)!,
-                    ),
-                    const SizedBox(width: 18),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${_friend.name} 인형',
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                              color: BogleColors.text,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 6,
-                            runSpacing: 6,
-                            children: [for (final l in _doll.labels) _Tag(l)],
-                          ),
-                          const SizedBox(height: 10),
-                          Text('수량 ${_doll.quantity}개', style: _Type.muted),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const Divider(height: 40, color: BogleColors.line),
-                _PriceRow(
-                  '상품 금액',
-                  '${formatWon(_doll.unitPrice)} × ${_doll.quantity}',
-                ),
-                _PriceRow(
-                  '배송비',
-                  _doll.shipping == 0 ? '무료' : formatWon(_doll.shipping),
-                ),
-                const SizedBox(height: 18),
-                const Text('도착까지', style: _Type.panelTitle),
-                const SizedBox(height: 14),
-                Expanded(child: _Journey(ordered: _now)),
-                const Divider(height: 28, color: BogleColors.line),
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        '총 결제 금액',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: BogleColors.text,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Flexible(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(formatWon(_doll.total), style: _Type.total),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          trailing: _Panel(
-            padding: const EdgeInsets.fromLTRB(28, 22, 28, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Text('배송 정보', style: _Type.panelTitle),
-                    const Spacer(),
-                    if (address != null)
-                      TextButton.icon(
-                        onPressed: _chooseAddress,
-                        icon: const Icon(Icons.swap_horiz_rounded, size: 20),
-                        label: const Text('배송지 변경'),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                if (address != null)
-                  _AddressCard(address: address)
-                else
-                  _NewAddressCard(onTap: _addAddress),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: _note,
-                  decoration: const InputDecoration(
-                    labelText: '배송 메모',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 14,
-                    ),
-                  ),
-                  items: [
-                    for (final n in deliveryNotes)
-                      DropdownMenuItem(value: n, child: Text(n)),
-                  ],
-                  onChanged: (n) => setState(() => _note = n ?? _note),
-                ),
-                const SizedBox(height: 22),
-                Row(
-                  children: [
-                    const Text('결제 수단', style: _Type.panelTitle),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: _choosePayment,
-                      child: const Text('결제 수단 관리'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    for (final (i, p) in PaymentMethod.values.indexed)
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: i == 0 ? 0 : 10),
-                          child: _ChoiceCard(
-                            selected: _payment == p,
-                            onTap: () => setState(() {
-                              _payment = p;
-                              _paymentId = _paymentMethods
-                                  .where((m) => m.kind == p)
-                                  .firstOrNull
-                                  ?.id;
-                            }),
-                            leading: Icon(
-                              switch (p) {
-                                PaymentMethod.easyPay =>
-                                  Icons.account_balance_wallet_outlined,
-                                PaymentMethod.card => Icons.credit_card_rounded,
-                                PaymentMethod.transfer =>
-                                  Icons.account_balance_outlined,
-                              },
-                              color: BogleColors.logo,
-                              size: 26,
-                            ),
-                            title: p.label,
-                            note: _savedPayment?.kind == p
-                                ? _savedPayment!.summary
-                                : p.note,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const Spacer(),
-                _Agreement(
-                  value: _agreed,
-                  onChanged: (v) => setState(() => _agreed = v),
-                ),
-                const SizedBox(height: 12),
-                if (_paymentError != null) ...[
-                  Semantics(
-                    liveRegion: true,
-                    child: Text(
-                      _paymentError!,
-                      key: const ValueKey('order-payment-error'),
-                      style: const TextStyle(color: BogleColors.blueStrong),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-                PrimaryButton(
-                  expanded: true,
-                  label: _paying ? '결제하는 중…' : '${formatWon(_doll.total)} 결제하기',
-                  icon: _paying
-                      ? Icons.hourglass_top_rounded
-                      : Icons.check_circle_outline_rounded,
-                  onPressed: _agreed && !_paying && address != null
-                      ? _pay
-                      : null,
-                ),
-              ],
-            ),
-          ),
+          leading: leading,
+          trailing: trailing,
         );
         if (BogleViewport.of(context).stackPanels(box.maxWidth)) return panels;
-        if (box.maxHeight < minimumHeight) {
-          return SingleChildScrollView(
-            child: SizedBox(height: minimumHeight, child: panels),
-          );
+        // Larger accessibility text keeps its size and scrolls instead.
+        if (enlarged > 1.15) {
+          if (box.maxHeight < minimumHeight) {
+            return SingleChildScrollView(
+              child: SizedBox(height: minimumHeight, child: panels),
+            );
+          }
+          return panels;
         }
-        return panels;
+        // Checkout is one screen on every iPad: on a shorter one (11-inch,
+        // mini) the two panels shrink together by just as much as they
+        // need, as the other steps scale with the screen, instead of
+        // scrolling the pay button out of sight.
+        return FitToHeight(
+          key: const ValueKey('order-checkout-fit'),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(flex: 5, child: leading),
+              const SizedBox(width: 24),
+              Expanded(flex: 6, child: trailing),
+            ],
+          ),
+        );
       },
     );
   }
