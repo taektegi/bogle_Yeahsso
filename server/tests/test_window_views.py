@@ -244,20 +244,12 @@ def test_rls_blocks_other_users(seed_conn, scene):
         assert not seed_conn.execute("select 1 from public.window_view_requests").fetchone()
 
 
-def test_background_uses_its_own_quota(scene, monkeypatch):
-    from app.rate_limit import generation_limiter, window_limiter
-
+def test_in_flight_background_is_reused_for_new_key(scene):
     user, character, repo, _, _ = scene
-    hits = []
-    monkeypatch.setattr(
-        generation_limiter, "check", lambda _: pytest.fail("친구 생성 한도를 차감하면 안 됨")
-    )
-    monkeypatch.setattr(window_limiter, "check", lambda uid: hits.append(uid))
     first, new = repo.enqueue(user, character, str(uuid4()))
     assert new
     second, new = repo.enqueue(user, character, str(uuid4()))
     assert not new and first["id"] == second["id"]
-    assert hits == [user]
 
 
 def test_readback_failure_does_not_publish_or_replace_previous_day(database, scene):

@@ -12,7 +12,6 @@ from app.db import Database
 from app.errors import ApiError
 from app.friend_settings import INTRODUCTIONS, SaveFriendIn
 from app.idempotency import fingerprint, idempotency_conflict, insert_or_replay
-from app.rate_limit import generation_limiter
 
 MODEL = "openai/gpt-image-2.5-flare"
 PROMPT_VERSION = "bogle-flat-v1-20261009"
@@ -100,7 +99,6 @@ class CreationRepository:
                 (user_id, source_id),
             ).fetchone():
                 raise ApiError(409, "source_already_used", "이미 친구로 저장한 그림이에요.")
-            generation_limiter.check(user_id)
             return insert_or_replay(
                 conn,
                 table="public.generation_jobs",

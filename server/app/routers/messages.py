@@ -16,7 +16,6 @@ from app.clock import NowDep
 from app.config import Settings, get_settings
 from app.errors import ERROR_RESPONSES, ApiError
 from app.idempotency import IdempotencyKey
-from app.rate_limit import limit_messages
 from app.repositories.messages import MessageRecord, MessageRepository, MessageRepositoryDep
 from app.schemas import CamelModel
 from app.sleep import ClientUtcOffset, sleep_status
@@ -116,7 +115,6 @@ def _wait_for_reply(
     "/{character_id}/messages",
     response_model=MessagePairOut,
     response_model_exclude_none=True,
-    dependencies=[Depends(limit_messages)],
     summary="대화 보내기",
 )
 def send_message(
