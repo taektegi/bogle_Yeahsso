@@ -765,6 +765,7 @@ void main() {
     );
     final figure = find.byKey(const ValueKey('house-figure'));
     final before = tester.getRect(figure);
+    final rugBefore = tester.getRect(find.byKey(const ValueKey('house-rug')));
     await tester.tap(find.bySemanticsLabel('대화하기'));
     await tester.pumpAndSettle();
 
@@ -776,6 +777,13 @@ void main() {
 
     const above = 834 - keyboard;
     final after = tester.getRect(figure);
+    // The whole rug stays above the keyboard, shrunk with the friend.
+    final rug = tester.getRect(find.byKey(const ValueKey('house-rug')));
+    expect(rug.bottom, lessThanOrEqualTo(above));
+    expect(
+      rug.width / after.width,
+      closeTo(rugBefore.width / before.width, .01),
+    );
     expect(after.width, lessThanOrEqualTo(before.width));
     expect(after.bottom, lessThanOrEqualTo(above));
     expect(after.top, greaterThanOrEqualTo(0));

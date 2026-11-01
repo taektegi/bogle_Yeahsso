@@ -91,6 +91,7 @@ class RoomScene extends StatelessWidget {
     this.company = 0,
     this.bottomOverflow = 0,
     this.rightOverflow = 0,
+    this.rugScale = 1,
   });
   final WindowView view;
   final DayTime time;
@@ -101,6 +102,9 @@ class RoomScene extends StatelessWidget {
   /// How far the wall and floor go on past the right edge, for a room
   /// panned aside to make space for the conversation.
   final double rightOverflow;
+
+  /// The rug's size beside its usual one, about its middle.
+  final double rugScale;
 
   static const _wallDay = Color(0xFFFFFEEE);
   static const _wallNight = Color(0xFFC7CCD9);
@@ -176,11 +180,15 @@ class RoomScene extends StatelessWidget {
             ),
           ),
           Positioned.fromRect(
-            rect: room.rug,
+            rect: Rect.fromCenter(
+              center: room.rug.center,
+              width: room.rug.width * rugScale,
+              height: room.rug.height * rugScale,
+            ),
             child: RepaintBoundary(
               child: CustomPaint(
                 key: const ValueKey('house-rug'),
-                painter: _RugPainter(s),
+                painter: _RugPainter(s * rugScale),
               ),
             ),
           ),

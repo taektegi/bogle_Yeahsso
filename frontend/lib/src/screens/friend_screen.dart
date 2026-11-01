@@ -129,6 +129,10 @@ class _FriendScreenState extends State<FriendScreen>
   /// chat card's left edge is on screen while it's open: the friend's
   /// balloon keeps to the room between the two.
   double _stagePanX = 0;
+
+  /// The rug's size beside its usual one, shrunk with the friend while
+  /// the keyboard is up.
+  double _rugScale = 1;
   double? _chatLeft;
   final _deferredAnswers = <({String text, TalkTopic topic})>[];
   void _companyChanged() {
@@ -852,9 +856,16 @@ class _FriendScreenState extends State<FriendScreen>
             ? ((h - keyboard) / 600).clamp(.58, .9)
             : 1.0;
         _stageSize = room.host * factor;
-        // With the keyboard up the room rises till the friend's feet clear it.
+        // The rug shrinks with the friend, and with the keyboard up the room
+        // rises till the whole rug clears it, so the friend stands on all of
+        // it rather than on a rug cut off at the keyboard.
+        _rugScale = factor;
+        final rug = RoomLayout(_room, company: _together).rug;
         final pan = keyboard > 0
-            ? math.max(0.0, room.feet - (h - keyboard - 16))
+            ? math.max(
+                0.0,
+                rug.center.dy + rug.height * factor / 2 - (h - keyboard - 14),
+              )
             : 0.0;
         _stagePan = pan;
         _stagePanX = panX;
@@ -939,6 +950,7 @@ class _FriendScreenState extends State<FriendScreen>
           time: _time,
           lightsOff: status?.asleep ?? false,
           company: _together,
+          rugScale: _rugScale,
           bottomOverflow: pan,
           rightOverflow: panX,
         ),

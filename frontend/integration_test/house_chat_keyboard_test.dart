@@ -68,10 +68,12 @@ void main() {
           tester.view.viewInsets.bottom / tester.view.devicePixelRatio;
       final bubble = tester.getRect(find.byType(SceneSpeech));
       final figure = tester.getRect(find.byKey(const ValueKey('house-figure')));
+      final rug = tester.getRect(find.byKey(const ValueKey('house-rug')));
       report[step] = {
         'keyboard': inset,
         'bubble': [bubble.left, bubble.top, bubble.right, bubble.bottom],
         'figure': [figure.left, figure.top, figure.right, figure.bottom],
+        'rug': [rug.left, rug.top, rug.right, rug.bottom],
         'panel': [panel().left, panel().top, panel().right, panel().bottom],
       };
       expect(bubble.top, greaterThanOrEqualTo(0), reason: step);
@@ -79,6 +81,7 @@ void main() {
       expect(bubble.right, lessThan(panel().left), reason: step);
       expect(bubble.bottom, lessThanOrEqualTo(screen.height - inset));
       expect(figure.bottom, lessThanOrEqualTo(screen.height - inset));
+      expect(rug.bottom, lessThanOrEqualTo(screen.height - inset));
       expect(panel().bottom, lessThanOrEqualTo(screen.height - inset));
     }
 

@@ -381,6 +381,8 @@ void main() {
         expect(character.right, lessThan(dock.left));
       }
       bubbleInRoom(size.height - 350);
+      final rug = tester.getRect(find.byKey(const ValueKey('house-rug')));
+      expect(rug.bottom, lessThanOrEqualTo(size.height - 350));
       await capture(tester, 'keyboard-${size.width.toInt()}');
       expect(tester.takeException(), isNull);
       tester.view.resetViewInsets();
