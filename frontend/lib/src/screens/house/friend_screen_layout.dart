@@ -374,10 +374,29 @@ extension on _FriendScreenState {
             maxWidth: speechWidth,
             sideTail: sideTail,
             tailRight: flip,
+            // In conversation it stays till the next line; in the room it
+            // fades once glanced at.
+            holds: _chatOpen,
+            onFaded: () => _speechFaded(text),
           ),
         ),
       ),
     );
+  }
+}
+
+extension on _FriendScreenState {
+  /// The room's balloon has faded: nobody is saying anything now. Only if
+  /// [text] is still what's said (a newer line keeps its own clock).
+  void _speechFaded(String text) {
+    if (!mounted) return;
+    final showing = _guestSpeaking ? _guestBubble : _bubble;
+    if (showing != text || _thinking > 0) return;
+    _update(() {
+      _bubble = null;
+      _guestBubble = null;
+      _guestSpeaking = false;
+    });
   }
 }
 

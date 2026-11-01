@@ -202,14 +202,25 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  test('초대 대사 길이에 따라 읽는 시간과 답할 간격을 확보한다', () {
-    expect(greetingReplyDelay('안녕!'), const Duration(milliseconds: 4650));
+  test('초대 대사 길이에 따라 답할 간격을 짧게 두고, 말풍선이 사라지기 전에 답한다', () {
+    expect(greetingReplyDelay('안녕!'), const Duration(milliseconds: 2500));
     expect(
       greetingReplyDelay('아' * 30),
       greaterThan(greetingReplyDelay('안녕!')),
     );
-    expect(greetingReplyDelay('아' * 200), const Duration(milliseconds: 9150));
+    expect(greetingReplyDelay('아' * 200), const Duration(milliseconds: 4800));
     expect(greetingReplyDelay('안 녕!'), greetingReplyDelay('안녕!'));
+    for (final length in [1, 10, 20, 30, 46, 80, 200]) {
+      final line = '아' * length;
+      // 손님은 집주인 말풍선이 떠 있는 동안 답한다.
+      expect(
+        greetingReplyDelay(line),
+        lessThan(speechHold(speechPages(line).first)),
+        reason: '$length',
+      );
+    }
+    expect(speechHold('안녕!'), const Duration(milliseconds: 3500));
+    expect(speechHold('아' * 200), const Duration(seconds: 8));
   });
 
   testWidgets('이름 표시는 없이 집주인의 인사를 읽은 뒤 손님이 답한다', (tester) async {
@@ -257,11 +268,16 @@ void main() {
     await tester.tap(find.bySemanticsLabel('뭉글이 쓰다듬기'));
     await tester.pumpAndSettle();
     final reply = tester.widget<SceneSpeech>(find.byType(SceneSpeech)).text;
-    await tester.pump(const Duration(seconds: 10));
+    // 늦게 도착한 손님 인사가 끼어들지 않고, 쓰다듬은 반응은 잠시 뒤 사라진다.
+    for (var t = 0; t < 10000; t += 250) {
+      await tester.pump(const Duration(milliseconds: 250));
+      final speech = find.byType(SceneSpeech);
+      if (speech.evaluate().isEmpty) continue;
+      expect(tester.widget<SceneSpeech>(speech).speaker, '뭉글이');
+      expect(tester.widget<SceneSpeech>(speech).text, reply);
+    }
     await tester.pumpAndSettle();
-    final speech = tester.widget<SceneSpeech>(find.byType(SceneSpeech));
-    expect(speech.speaker, '뭉글이');
-    expect(speech.text, reply);
+    expect(find.byType(SceneSpeech), findsNothing);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
