@@ -25,8 +25,6 @@
 | 안전성 검사 | OpenAI Moderation | 사용자 입력과 AI 답변의 유해성 검사 |
 | 배포·협업 | Render · GitHub Actions | 백엔드 배포, 코드 검사 및 배포 연동 |
 
-> 캐릭터의 움직임은 매번 AI 영상을 생성하는 방식이 아니라, 앱의 애니메이션 코드로 구현합니다.
-
 ## 프로젝트 구성
 
 - [`frontend/`](frontend/) — Flutter 앱과 실행 안내
