@@ -7,6 +7,7 @@ import 'package:bogle_app/src/models/character_friend.dart';
 import 'package:bogle_app/src/models/friend_status.dart';
 import 'package:bogle_app/src/screens/archive_screen.dart';
 import 'package:bogle_app/src/screens/friend_screen.dart';
+import 'package:bogle_app/src/screens/house/chat_panel.dart';
 import 'package:bogle_app/src/screens/house/figure_motion.dart';
 import 'package:bogle_app/src/screens/house/house_widgets.dart';
 import 'package:bogle_app/src/screens/house/room_scene.dart';
@@ -717,8 +718,8 @@ void main() {
   });
 
   for (final size in const [Size(1366, 1024), Size(1194, 834)]) {
-    testWidgets('the open chat stays clear of the tiles above the home '
-        'indicator (${size.width.toInt()} wide)', (tester) async {
+    testWidgets('the open chat stands tall beside the friend and the tiles '
+        'make way (${size.width.toInt()} wide)', (tester) async {
       tester.view.padding = const FakeViewPadding(top: 24, bottom: 20);
       addTearDown(tester.view.resetPadding);
       final repo = InMemoryCharacterRepository();
@@ -734,15 +735,18 @@ void main() {
       await tester.tap(find.bySemanticsLabel('대화하기'));
       await tester.pumpAndSettle();
       final chat = tester.getRect(find.byKey(const ValueKey('chat')));
-      for (final tile in ['대화 닫기', '간식주기', '초대하기']) {
-        final rect = tester.getRect(
-          find
-              .ancestor(of: find.text(tile), matching: find.byType(InkWell))
-              .first,
-        );
-        expect(chat.overlaps(rect), isFalse, reason: tile);
-        expect(rect.top - chat.bottom, greaterThanOrEqualTo(16), reason: tile);
+      final figure = tester.getRect(find.byKey(const ValueKey('house-figure')));
+      // Beside the friend, not over it, and most of the screen tall.
+      expect(figure.right, lessThan(chat.left));
+      expect(figure.left, greaterThanOrEqualTo(0));
+      expect(chat.height, greaterThan(size.height * .6));
+      expect(chat.width, greaterThanOrEqualTo(440));
+      expect(chat.bottom, lessThanOrEqualTo(size.height - 20));
+      // Snacks and invites wait outside the conversation.
+      for (final tile in ['대화하기', '간식주기', '초대하기']) {
+        expect(find.text(tile), findsNothing, reason: tile);
       }
+      expect(tester.takeException(), isNull);
     });
   }
 
@@ -761,6 +765,7 @@ void main() {
     );
     final figure = find.byKey(const ValueKey('house-figure'));
     final before = tester.getRect(figure);
+    final rugBefore = tester.getRect(find.byKey(const ValueKey('house-rug')));
     await tester.tap(find.bySemanticsLabel('대화하기'));
     await tester.pumpAndSettle();
 
@@ -772,13 +777,20 @@ void main() {
 
     const above = 834 - keyboard;
     final after = tester.getRect(figure);
+    // The whole rug stays above the keyboard, shrunk with the friend.
+    final rug = tester.getRect(find.byKey(const ValueKey('house-rug')));
+    expect(rug.bottom, lessThanOrEqualTo(above));
+    expect(
+      rug.width / after.width,
+      closeTo(rugBefore.width / before.width, .01),
+    );
     expect(after.width, lessThanOrEqualTo(before.width));
     expect(after.bottom, lessThanOrEqualTo(above));
     expect(after.top, greaterThanOrEqualTo(0));
     final chat = tester.getRect(find.byKey(const ValueKey('chat')));
     expect(chat.bottom, lessThanOrEqualTo(above));
-    expect(chat.height, lessThan(200));
-    expect(after.bottom, lessThan(chat.top));
+    expect(chat.top, greaterThanOrEqualTo(0));
+    expect(after.right, lessThan(chat.left));
     expect(tester.takeException(), isNull);
 
     // Writing its own line, the quick replies make way; the field keeps
@@ -790,8 +802,17 @@ void main() {
     expect(tester.widget<TextField>(field).controller!.text, '안녕');
     await tester.tap(find.byTooltip('보내기'));
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('나: 안녕'), findsOneWidget);
-    expect(find.bySemanticsLabel('생각하는 중'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(ChatPanel),
+        matching: find.byWidgetPredicate(
+          (w) => w is Text && w.semanticsLabel == '안녕',
+        ),
+      ),
+      findsOneWidget,
+    );
+    // The friend thinks in its balloon and in the chat card alike.
+    expect(find.bySemanticsLabel('생각하는 중'), findsWidgets);
     expect(tester.widget<TextField>(field).focusNode!.hasFocus, isTrue);
     await tester.pump(const Duration(seconds: 1));
     expect(find.bySemanticsLabel('생각하는 중'), findsNothing);

@@ -20,7 +20,6 @@ import '../theme/bogle_theme.dart';
 import '../widgets/bogle_widgets.dart';
 import '../widgets/top_bar.dart';
 import 'house/chat_panel.dart';
-import 'house/conversation_dock.dart';
 import 'house/scene_speech.dart';
 import 'house/figure_motion.dart';
 import 'house/house_widgets.dart';
@@ -75,7 +74,7 @@ class FriendScreen extends StatefulWidget {
 }
 
 class _FriendScreenState extends State<FriendScreen>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   /// The friend, as last saved here (bedtime, memories and level change).
   late CharacterFriend _friend = widget.friend;
   late final FriendTalk _talk = FriendTalk(_friend, random: widget.random);
@@ -117,7 +116,24 @@ class _FriendScreenState extends State<FriendScreen>
     duration: const Duration(milliseconds: 800),
     reverseDuration: const Duration(milliseconds: 800),
   )..addListener(_companyChanged);
+
+  /// The conversation sliding in beside the friend, and the room panning
+  /// over to make space for it.
+  late final _chatView = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 380),
+  )..addListener(_companyChanged);
   double _stageSize = 0, _stagePan = 0;
+
+  /// How far the room is panned left for the conversation, and where the
+  /// chat card's left edge is on screen while it's open: the friend's
+  /// balloon keeps to the room between the two.
+  double _stagePanX = 0;
+
+  /// The rug's size beside its usual one, shrunk with the friend while
+  /// the keyboard is up.
+  double _rugScale = 1;
+  double? _chatLeft;
   final _deferredAnswers = <({String text, TalkTopic topic})>[];
   void _companyChanged() {
     if (mounted) setState(() {});
@@ -338,6 +354,7 @@ class _FriendScreenState extends State<FriendScreen>
     _gaze.dispose();
     _guestGaze.dispose();
     _company.dispose();
+    _chatView.dispose();
     _performance?.cancel();
     _serve?.cancel();
     _guestServe?.cancel();
@@ -778,10 +795,28 @@ class _FriendScreenState extends State<FriendScreen>
 
   final _messages = GlobalKey<ScaffoldMessengerState>();
 
+  void _openChat() {
+    setState(() {
+      _chatOpen = true;
+      _snackTray = false;
+      _inviteTray = false;
+    });
+    _slideChat();
+  }
+
   void _closeChat() {
     FocusScope.of(context).unfocus();
     setState(() => _chatOpen = false);
+    _slideChat();
   }
+
+  void _slideChat() => _chatView.animateTo(
+    _chatOpen ? 1 : 0,
+    duration: MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : const Duration(milliseconds: 380),
+    curve: Curves.easeInOutCubic,
+  );
 
   /// A short note at the bottom of the house (something didn't save).
   void _tell(String message) => _messages.currentState
@@ -796,34 +831,6 @@ class _FriendScreenState extends State<FriendScreen>
     }
   }
 
-  void _showHistory() {
-    FocusScope.of(context).unfocus();
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheet) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: SizedBox(
-            height: MediaQuery.sizeOf(sheet).height * .72,
-            child: ChatPanel(
-              friend: _friend,
-              lines: List.of(_lines),
-              speakers: List.of(_lineSpeakers),
-              enabled: true,
-              readOnly: true,
-              onSend: (_, _) {},
-              onClose: () => Navigator.pop(sheet),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  final _dockHeights = <(bool, double, double), double>{};
-
   Widget _house() {
     final status = _status;
     return LayoutBuilder(
@@ -833,28 +840,36 @@ class _FriendScreenState extends State<FriendScreen>
         final room = RoomLayout(_room);
         final scale = room.s;
         final media = MediaQuery.of(context);
-        final dockKey = (
-          media.viewInsets.bottom > 0,
-          w,
-          media.textScaler.scale(1),
-        );
-        final measuredDockHeight = _dockHeights[dockKey];
         final top = AppTopBar.bottomFor(media) + 32 * scale;
         final keyboard = _chatOpen ? media.viewInsets.bottom : 0.0;
-        final chatBottom = keyboard > 0
-            ? keyboard + 12
-            : media.padding.bottom + 40 * scale + 109 * scale + 20;
-        final dockHeight =
-            measuredDockHeight ??
-            (keyboard > 0 ? 172.0 : ConversationDock.baseHeight) *
-                MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.35);
-        final dockTop = h - chatBottom - dockHeight;
+        // The conversation stands tall on the right and the room pans left
+        // to keep the friend, rug and all, in the middle of what is left.
+        // Too narrow for both (a split screen), the card has the width.
+        final chat = _chatView.value;
+        final narrow = w < 900;
+        final margin = narrow ? 16.0 : 24.0;
+        final panelWidth = narrow
+            ? w - 2 * margin
+            : (w * .44).clamp(440.0, 600.0);
+        final panX = narrow ? 0.0 : (panelWidth + margin) / 2 * chat;
         final factor = keyboard > 0
             ? ((h - keyboard) / 600).clamp(.58, .9)
             : 1.0;
         _stageSize = room.host * factor;
-        final pan = _chatOpen ? math.max(0.0, room.feet - (dockTop - 24)) : 0.0;
+        // The rug shrinks with the friend, and with the keyboard up the room
+        // rises till the whole rug clears it, so the friend stands on all of
+        // it rather than on a rug cut off at the keyboard.
+        _rugScale = factor;
+        final rug = RoomLayout(_room, company: _together).rug;
+        final pan = keyboard > 0
+            ? math.max(
+                0.0,
+                rug.center.dy + rug.height * factor / 2 - (h - keyboard - 14),
+              )
+            : 0.0;
         _stagePan = pan;
+        _stagePanX = panX;
+        _chatLeft = _chatOpen ? w - margin - panelWidth : null;
         return Stack(
           children: [
             Positioned.fill(
@@ -862,30 +877,36 @@ class _FriendScreenState extends State<FriendScreen>
                 offset: Offset(0, -pan),
                 child: Stack(
                   clipBehavior: Clip.none,
-                  children: _stage(status, room, w, h, top, pan),
+                  children: _stage(status, room, w, h, top, pan, panX),
                 ),
               ),
             ),
-            if (status != null && _chatOpen)
+            if (status != null && (_chatOpen || chat > 0))
               Positioned(
-                left: math.max(24, (w - ConversationDock.preferredWidth) / 2),
-                right: math.max(24, (w - ConversationDock.preferredWidth) / 2),
-                bottom: chatBottom,
-                child: ConversationDock(
-                  key: const ValueKey('chat'),
-                  compact: keyboard > 0,
-                  onHeightChanged: (height) {
-                    if (mounted &&
-                        (measuredDockHeight == null ||
-                            (height - measuredDockHeight).abs() > .5)) {
-                      setState(() => _dockHeights[dockKey] = height);
-                    }
-                  },
-                  enabled: !status.asleep,
-                  thinking: _thinking > 0 || _deferredAnswers.isNotEmpty,
-                  onSend: _send,
-                  onClose: _closeChat,
-                  onHistory: _showHistory,
+                top: keyboard > 0 ? media.padding.top + 16 : top,
+                bottom: keyboard > 0
+                    ? keyboard + 16
+                    : media.padding.bottom + margin,
+                right: margin,
+                width: panelWidth,
+                child: IgnorePointer(
+                  ignoring: !_chatOpen,
+                  child: Opacity(
+                    opacity: chat,
+                    child: Transform.translate(
+                      offset: Offset((1 - chat) * panelWidth * .3, 0),
+                      child: ChatPanel(
+                        key: const ValueKey('chat'),
+                        friend: _friend,
+                        lines: _lines,
+                        speakers: _lineSpeakers,
+                        enabled: !status.asleep,
+                        thinking: _thinking > 0 || _deferredAnswers.isNotEmpty,
+                        onSend: _send,
+                        onClose: _closeChat,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             if (_welcome)
@@ -903,7 +924,9 @@ class _FriendScreenState extends State<FriendScreen>
   }
 
   /// The room and everything in it but the chat: it pans up as one while
-  /// the child types.
+  /// the child types. The room itself and whoever is in it also pan [panX]
+  /// to the left, out of the conversation's way; the header, back button
+  /// and tiles stay put.
   List<Widget> _stage(
     FriendStatus? status,
     RoomLayout room,
@@ -911,6 +934,7 @@ class _FriendScreenState extends State<FriendScreen>
     double h,
     double top,
     double pan,
+    double panX,
   ) {
     // Panned up for the keyboard, the header and back button slip off the
     // top: they fade on the way rather than hang half cut.
@@ -919,14 +943,16 @@ class _FriendScreenState extends State<FriendScreen>
     final feet = h - room.feet;
     final scale = room.s;
     final id = _friend.id;
-    return [
+    final cast = [
       Positioned.fill(
         child: RoomScene(
           view: _window ?? WindowView.forFriend(_friend),
           time: _time,
           lightsOff: status?.asleep ?? false,
           company: _together,
+          rugScale: _rugScale,
           bottomOverflow: pan,
+          rightOverflow: panX,
         ),
       ),
       Positioned(
@@ -1002,10 +1028,20 @@ class _FriendScreenState extends State<FriendScreen>
       if (_guestEating case final snack?)
         ?_eatingAt(snack, w, h, feet, guest: true),
       if (_performing case final kind?) ?_clipAt(kind, w, h, feet),
+      // In conversation too the friend answers in its balloon; the chat
+      // card keeps the whole conversation beside it.
       if ((_bubble != null || _guestBubble != null || _thinking > 0) &&
           !_welcome &&
           _landed)
         ?_speech(w, h, feet),
+    ];
+    return [
+      Positioned.fill(
+        child: Transform.translate(
+          offset: Offset(-panX, 0),
+          child: Stack(clipBehavior: Clip.none, children: cast),
+        ),
+      ),
       Positioned(
         left: 0,
         right: 0,
@@ -1109,7 +1145,8 @@ class _FriendScreenState extends State<FriendScreen>
             ),
           ),
         ),
-      if (!_chatOpen || MediaQuery.viewInsetsOf(context).bottom == 0)
+      // In conversation the tiles make way: the chat card closes itself.
+      if (!_chatOpen)
         Positioned(
           left: 0,
           right: 0,
@@ -1225,19 +1262,9 @@ class _FriendScreenState extends State<FriendScreen>
       actions: [
         HouseAction(
           icon: svg('house_chat', 31.207, 30.166),
-          label: _chatOpen ? '대화 닫기' : '대화하기',
+          label: '대화하기',
           tint: const Color(0xFFE4E6F5),
-          onTap: () {
-            if (_chatOpen) {
-              _closeChat();
-              return;
-            }
-            setState(() {
-              _chatOpen = true;
-              _snackTray = false;
-              _inviteTray = false;
-            });
-          },
+          onTap: _openChat,
         ),
         HouseAction(
           icon: svg('house_cookie', 36, 36),

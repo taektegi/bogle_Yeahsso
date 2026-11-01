@@ -5,7 +5,7 @@ import 'package:bogle_app/src/models/friend_status.dart';
 import 'package:bogle_app/src/screens/friend_screen.dart';
 import 'package:bogle_app/src/screens/house/figure_motion.dart';
 import 'package:bogle_app/src/screens/house/house_widgets.dart';
-import 'package:bogle_app/src/screens/house/scene_speech.dart';
+import 'package:bogle_app/src/screens/house/chat_panel.dart';
 import 'package:bogle_app/src/theme/bogle_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -89,14 +89,15 @@ void main() {
     await frames(tester, 600);
     await tester.tap(find.widgetWithText(ActionChip, '오늘 뭐 했어?'));
     await frames(tester, 1200);
-    expect(
-      tester.widget<SceneSpeech>(find.byType(SceneSpeech)).text,
-      contains('구름'),
+    final chatPanel = find.byType(ChatPanel);
+    Finder chatSays(String part) => find.descendant(
+      of: chatPanel,
+      matching: find.byWidgetPredicate(
+        (w) => w is Text && (w.semanticsLabel ?? '').contains(part),
+      ),
     );
-    await binding.takeScreenshot('scene-dialogue');
-    await tester.tap(find.byType(SceneSpeech));
-    await frames(tester, 300);
-    await binding.takeScreenshot('next-sentence');
+    expect(chatSays('구름'), findsOneWidget);
+    await binding.takeScreenshot('chat-dialogue');
     await tester.tap(find.byKey(const ValueKey('house-chat-field')));
     await frames(tester, 700);
     await binding.takeScreenshot('keyboard');
@@ -107,11 +108,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.byTooltip('보내기'));
     await frames(tester, 1000);
-    await tester.tap(find.text('이전 이야기'));
-    await frames(tester, 700);
-    await binding.takeScreenshot('history');
-    await tester.tap(find.byTooltip('이전 이야기 닫기'));
-    await frames(tester, 500);
+    expect(chatSays('같이 놀자'), findsWidgets);
     await tester.tap(find.byTooltip('대화 닫기'));
     await frames(tester, 500);
     await tester.tap(find.bySemanticsLabel('배웅하기'));

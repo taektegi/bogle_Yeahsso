@@ -223,9 +223,12 @@ extension on _FriendScreenState {
         : _on(box, _art ?? const Rect.fromLTWH(0, 0, 1, 1));
     final head = _on(box, anchors.head);
     const margin = 16.0, gap = 10.0;
+    // Panned up for the keyboard the header has faded away and the balloon
+    // may use the space; otherwise it stays under the header.
+    final headerGone = _stagePan >= 40 * RoomLayout(_room).s;
     final ceiling =
         _stagePan +
-        (_chatOpen
+        (headerGone
             ? MediaQuery.paddingOf(context).top + 12
             : AppTopBar.bottomFor(MediaQuery.of(context)) + 12);
     final maxWidth = _hasCompany ? 300.0 : SpeechBubble.widest;
@@ -238,17 +241,22 @@ extension on _FriendScreenState {
       tip = Offset(head.right + 12, ceiling + balloon.height);
     }
 
-    // The room left and right at the balloon's height.
-    var lo = margin, hi = w - margin;
-    final band = Rect.fromLTRB(0, tip.dy - balloon.height, w, tip.dy);
+    // The room left and right at the balloon's height. Panned aside for
+    // the conversation, the room shows from [_stagePanX] on (in the room's
+    // own coordinates) and ends at the chat card.
+    final shift = _stagePanX;
+    var lo = shift + margin, hi = w + shift - margin;
+    if (_chatLeft case final chat?) hi = math.min(hi, chat + shift - gap);
+    final band = Rect.fromLTRB(lo, tip.dy - balloon.height, hi, tip.dy);
     for (final card in [
       if (_stagePan < 20) ...[?_card(_namePlate), ?_card(_back)],
     ]) {
-      if (!card.overlaps(band)) continue;
-      if (card.center.dx < w / 2) {
-        lo = math.max(lo, card.right + gap);
+      final placed = card.shift(Offset(shift, 0));
+      if (!placed.overlaps(band)) continue;
+      if (placed.center.dx < (lo + hi) / 2) {
+        lo = math.max(lo, placed.right + gap);
       } else {
-        hi = math.min(hi, card.left - gap);
+        hi = math.min(hi, placed.left - gap);
       }
     }
     final room = math.max(SpeechBubble.narrowest + 40, hi - lo);
@@ -267,20 +275,36 @@ extension on _FriendScreenState {
     var sideTail = false;
     var speechWidth = math.min(maxWidth, room);
     // 키보드로 세로 공간이 줄면 두 친구의 얼굴을 덮지 않고 화자 바깥쪽에 둔다.
+    // 겹침은 서 있는 칸이 아니라 실제로 그려진 몸으로 판단한다. 칸의 빈
+    // 윗부분 때문에 머리 위 자리가 있는데도 옆으로 밀려나지 않게 한다.
     final bodies = [
-      Rect.fromLTWH(
-        _hostCenter(w) - _stageSize / 2,
-        h - feet - _stageSize,
-        _stageSize,
-        _stageSize,
-      ),
-      if (_hasCompany)
+      if (_figure case final hostFigure?)
+        _on(
+          _figureBox(hostFigure, w, h, feet),
+          _art ?? const Rect.fromLTWH(0, 0, 1, 1),
+        )
+      else
         Rect.fromLTWH(
-          _visitorSpot(w).center - _visitorSpot(w).size / 2,
-          h - feet - _visitorSpot(w).size,
-          _visitorSpot(w).size,
-          _visitorSpot(w).size,
+          _hostCenter(w) - _stageSize / 2,
+          h - feet - _stageSize,
+          _stageSize,
+          _stageSize,
         ),
+      if (_hasCompany)
+        if (_guestFigure case final guestFigure?)
+          Rect.fromLTWH(
+            _visitorSpot(w).center - guestFigure.width / 2,
+            h - feet - guestFigure.height,
+            guestFigure.width,
+            guestFigure.height,
+          )
+        else
+          Rect.fromLTWH(
+            _visitorSpot(w).center - _visitorSpot(w).size / 2,
+            h - feet - _visitorSpot(w).size,
+            _visitorSpot(w).size,
+            _visitorSpot(w).size,
+          ),
     ];
     final body = Rect.fromLTWH(
       left,
@@ -288,17 +312,20 @@ extension on _FriendScreenState {
       width,
       balloon.height - SpeechBubble.boxyTailHeight,
     );
-    if (_chatOpen && bodies.any((figure) => body.overlaps(figure.inflate(8)))) {
-      final leftEdge = bodies.map((r) => r.left).reduce(math.min);
-      final rightEdge = bodies.map((r) => r.right).reduce(math.max);
-      final leftRoom = leftEdge - margin - gap;
-      final rightRoom = w - margin - gap - rightEdge;
-      final useLeft = speakingGuest
+    final leftEdge = bodies.map((r) => r.left).reduce(math.min);
+    final rightEdge = bodies.map((r) => r.right).reduce(math.max);
+    final leftRoom = leftEdge - lo - gap;
+    final rightRoom = hi - gap - rightEdge;
+    // Beside the friends only where a balloon fits; squeezed between the
+    // edge of the room and the chat card it stays over their heads.
+    if (_chatOpen &&
+        math.max(leftRoom, rightRoom) >= 150 &&
+        bodies.any((figure) => body.overlaps(figure.inflate(8)))) {
+      var useLeft = speakingGuest
           ? rightRoom < 180 && leftRoom > rightRoom
           : leftRoom >= 180 || leftRoom > rightRoom;
-      speechWidth = math
-          .min(maxWidth, useLeft ? leftRoom : rightRoom)
-          .clamp(150.0, maxWidth);
+      if ((useLeft ? leftRoom : rightRoom) < 150) useLeft = !useLeft;
+      speechWidth = math.min(maxWidth, useLeft ? leftRoom : rightRoom);
       sideTail = true;
       balloon = SceneSpeech.estimate(
         context,
@@ -347,10 +374,29 @@ extension on _FriendScreenState {
             maxWidth: speechWidth,
             sideTail: sideTail,
             tailRight: flip,
+            // In conversation it stays till the next line; in the room it
+            // fades once glanced at.
+            holds: _chatOpen,
+            onFaded: () => _speechFaded(text),
           ),
         ),
       ),
     );
+  }
+}
+
+extension on _FriendScreenState {
+  /// The room's balloon has faded: nobody is saying anything now. Only if
+  /// [text] is still what's said (a newer line keeps its own clock).
+  void _speechFaded(String text) {
+    if (!mounted) return;
+    final showing = _guestSpeaking ? _guestBubble : _bubble;
+    if (showing != text || _thinking > 0) return;
+    _update(() {
+      _bubble = null;
+      _guestBubble = null;
+      _guestSpeaking = false;
+    });
   }
 }
 

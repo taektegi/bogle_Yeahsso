@@ -11,15 +11,19 @@ import '../../widgets/bogle_widgets.dart';
 import 'house_widgets.dart';
 import 'chat_typography.dart';
 
-/// Side conversation. Quick replies come first: tapping is easier than
-/// typing for young children; the text field is there for those who can.
+/// The conversation, beside the friend in its room: every line said so
+/// far, from earlier visits too, scrolls in one tall card, newest at the
+/// bottom like any messenger. Quick replies come first: tapping is easier
+/// than typing for young children; the text field is there for those who
+/// can.
 ///
-/// The history uses Pretendard for both sides of longer conversations,
-/// with white friend balloons and logo-blue child balloons on the
-/// cream of the room's wall. While the friend thinks, three dots bob in a
-/// balloon of its own. The field grows to four lines instead of scrolling
+/// The history uses Pretendard for both sides, with white friend balloons
+/// and logo-blue child balloons on the cream of the room's wall. While the
+/// friend thinks, three dots bob in a balloon of its own and sending waits
+/// for its answer. The field grows to four lines instead of scrolling
 /// sideways, and a tap anywhere in the panel (a quick reply, send) keeps
-/// the keyboard up; a tap outside puts it away.
+/// the keyboard up; a tap outside puts it away. The round × at the top
+/// closes the conversation.
 class ChatPanel extends StatefulWidget {
   const ChatPanel({
     super.key,
@@ -29,7 +33,6 @@ class ChatPanel extends StatefulWidget {
     required this.onClose,
     required this.enabled,
     this.thinking = false,
-    this.readOnly = false,
     this.speakers = const [],
   });
   final CharacterFriend friend;
@@ -43,7 +46,9 @@ class ChatPanel extends StatefulWidget {
 
   /// The friend is working out its answer.
   final bool thinking;
-  final bool readOnly;
+
+  /// The longest line a child can send, in letters as they see them.
+  static const maxLength = 200;
 
   /// The figma "미선택버튼" grey: send with nothing to send.
   static const _idle = Color(0xFFDAD9CD);
@@ -73,11 +78,12 @@ class _ChatPanelState extends State<ChatPanel> {
 
   void _changed() => setState(() {});
 
-  bool get _canSend => widget.enabled && _field.text.trim().isNotEmpty;
+  bool get _canTalk => widget.enabled && !widget.thinking;
+  bool get _canSend => _canTalk && _field.text.trim().isNotEmpty;
 
   void _submit() {
     final text = _field.text.trim();
-    if (text.isEmpty || !widget.enabled) return;
+    if (text.isEmpty || !_canTalk) return;
     widget.onSend(text, null);
     _field.clear();
     // Keep typing: the keyboard stays for the next line.
@@ -89,26 +95,29 @@ class _ChatPanelState extends State<ChatPanel> {
     final friend = widget.friend;
     final accent = Color(friend.accentHex);
     return TextFieldTapRegion(
-      child: Container(
-        decoration: houseCard(24),
-        clipBehavior: Clip.antiAlias,
-        child: LayoutBuilder(
-          // Short (above an 11-inch keyboard): a slimmer header, so the
-          // conversation keeps its room.
-          builder: (context, box) => Column(
-            children: [
-              _header(friend, accent, compact: box.maxHeight < 440),
-              Expanded(
-                child: ColoredBox(
-                  color: BogleColors.cream,
-                  child: _messages(friend, accent),
+      child: Semantics(
+        container: true,
+        label: '${particle(friend.name, '과', '와')} 나누는 이야기',
+        child: Container(
+          decoration: houseCard(28),
+          clipBehavior: Clip.antiAlias,
+          child: LayoutBuilder(
+            // Short (above the keyboard): a slimmer header, so the
+            // conversation keeps its room.
+            builder: (context, box) => Column(
+              children: [
+                _header(friend, accent, compact: box.maxHeight < 440),
+                Expanded(
+                  child: ColoredBox(
+                    color: BogleColors.cream,
+                    child: _messages(friend, accent, box.maxWidth),
+                  ),
                 ),
-              ),
-              // Writing a line of its own, the child doesn't need them.
-              if (!widget.readOnly && widget.enabled && _field.text.isEmpty)
-                _quickReplies(),
-              if (!widget.readOnly) _composer(),
-            ],
+                // Writing a line of its own, the child doesn't need them.
+                if (widget.enabled && _field.text.isEmpty) _quickReplies(),
+                _composer(),
+              ],
+            ),
           ),
         ),
       ),
@@ -120,14 +129,14 @@ class _ChatPanelState extends State<ChatPanel> {
     Color accent, {
     required bool compact,
   }) => Container(
-    padding: EdgeInsets.fromLTRB(16, compact ? 8 : 12, 12, compact ? 8 : 12),
+    padding: EdgeInsets.fromLTRB(18, compact ? 8 : 14, 14, compact ? 8 : 14),
     decoration: const BoxDecoration(
       color: Colors.white,
       border: Border(bottom: BorderSide(color: Color(0xFFF0EEDF))),
     ),
     child: Row(
       children: [
-        _Avatar(friend: friend, accent: accent, size: compact ? 34 : 42),
+        _Avatar(friend: friend, accent: accent, size: compact ? 40 : 52),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -140,7 +149,7 @@ class _ChatPanelState extends State<ChatPanel> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontFamily: bogleDisplayFont,
-                  fontSize: compact ? 20 : 22,
+                  fontSize: compact ? 21 : 24,
                   height: 1.2,
                   letterSpacing: -.6,
                   color: BogleColors.text,
@@ -149,35 +158,38 @@ class _ChatPanelState extends State<ChatPanel> {
               if (!compact) ...[
                 const SizedBox(height: 2),
                 Text(
-                  widget.readOnly
-                      ? '지금까지 나눈 이야기'
-                      : widget.enabled
-                      ? '${particle(friend.name, '과', '와')} 이야기하는 중'
-                      : '쿨쿨 자는 중이에요',
+                  !widget.enabled
+                      ? '쿨쿨 자는 중이에요'
+                      : widget.thinking
+                      ? '대답을 생각하고 있어요'
+                      : '${particle(friend.name, '과', '와')} 이야기하는 중',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: HouseChatType.meta,
                 ),
               ],
             ],
           ),
         ),
-        TextButton.icon(
-          key: const ValueKey('house-history-return'),
+        const SizedBox(width: 8),
+        IconButton.filledTonal(
+          key: const ValueKey('house-chat-return'),
+          tooltip: '대화 닫기',
           onPressed: widget.onClose,
-          style: TextButton.styleFrom(
+          style: IconButton.styleFrom(
             backgroundColor: BogleColors.blueSoft,
             foregroundColor: BogleColors.text,
-            minimumSize: const Size(0, 52),
-            textStyle: HouseChatType.action,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            minimumSize: const Size.square(52),
           ),
-          icon: const Icon(Icons.arrow_back_rounded, size: 22),
-          label: Text(widget.readOnly ? '대화로 돌아가기' : '집으로 돌아가기'),
+          icon: const Icon(Icons.close_rounded, size: 28),
         ),
       ],
     ),
   );
 
-  Widget _messages(CharacterFriend friend, Color accent) {
+  Widget _messages(CharacterFriend friend, Color accent, double width) {
+    // Balloons take up to three quarters of the card, as in a messenger.
+    final balloon = math.max(220.0, width * .74);
     final lines = widget.lines.reversed.toList();
     final thinking = widget.thinking && widget.enabled;
     final count = lines.length + (thinking ? 1 : 0);
@@ -185,7 +197,7 @@ class _ChatPanelState extends State<ChatPanel> {
       key: const ValueKey('house-chat'),
       reverse: true,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-      padding: const EdgeInsets.fromLTRB(14, 16, 14, 12),
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
       itemCount: count,
       itemBuilder: (context, i) {
         if (thinking && i == 0) {
@@ -223,7 +235,12 @@ class _ChatPanelState extends State<ChatPanel> {
             padding: gap,
             child: Align(
               alignment: Alignment.centerRight,
-              child: _Balloon(text: line.text, mine: true, tail: endsRun),
+              child: _Balloon(
+                text: line.text,
+                mine: true,
+                tail: endsRun,
+                maxWidth: balloon,
+              ),
             ),
           );
         }
@@ -237,6 +254,7 @@ class _ChatPanelState extends State<ChatPanel> {
               text: line.text,
               mine: false,
               tail: endsRun && !(thinking && at == 0),
+              maxWidth: balloon,
             ),
           ),
         );
@@ -244,31 +262,31 @@ class _ChatPanelState extends State<ChatPanel> {
     );
   }
 
-  /// One row of quick replies, sliding sideways when they don't fit.
+  /// The quick replies, all in sight: they wrap onto a second line rather
+  /// than hide off the side. They wait, greyed, while the friend thinks of
+  /// its answer.
   Widget _quickReplies() => Container(
     key: const ValueKey('house-chat-quick-row'),
+    width: double.infinity,
     color: Colors.white,
-    height: 54,
-    child: ListView(
+    padding: const EdgeInsets.fromLTRB(14, 12, 14, 2),
+    child: Wrap(
       key: const ValueKey('house-chat-quick'),
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+      spacing: 8,
+      runSpacing: 8,
       children: [
         for (final (topic, label) in quickTalks)
-          Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: ActionChip(
-              label: Text(label),
-              labelStyle: HouseChatType.quick,
-              backgroundColor: ChatPanel._chip,
-              side: BorderSide.none,
-              shape: const StadiumBorder(),
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-              visualDensity: VisualDensity.compact,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              onPressed: () => widget.onSend(label, topic),
-            ),
+          ActionChip(
+            label: Text(label),
+            labelStyle: HouseChatType.quick,
+            backgroundColor: ChatPanel._chip,
+            disabledColor: const Color(0xFFF1F1EA),
+            side: BorderSide.none,
+            shape: const StadiumBorder(),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            onPressed: _canTalk ? () => widget.onSend(label, topic) : null,
           ),
       ],
     ),
@@ -281,7 +299,7 @@ class _ChatPanelState extends State<ChatPanel> {
     return Container(
       key: const ValueKey('house-chat-composer'),
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -305,6 +323,7 @@ class _ChatPanelState extends State<ChatPanel> {
                 enabled: widget.enabled,
                 minLines: 1,
                 maxLines: 4,
+                maxLength: ChatPanel.maxLength,
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _submit(),
@@ -312,10 +331,13 @@ class _ChatPanelState extends State<ChatPanel> {
                 scrollPadding: EdgeInsets.zero,
                 style: HouseChatType.input,
                 decoration: InputDecoration(
-                  hintText: widget.enabled
-                      ? '하고 싶은 말을 적어 봐요'
-                      : '지금은 자고 있어요. 내일 또 이야기해요',
+                  hintText: !widget.enabled
+                      ? '지금은 자고 있어요. 내일 또 이야기해요'
+                      : widget.thinking
+                      ? '친구가 생각하고 있어요…'
+                      : '하고 싶은 말을 적어 봐요',
                   hintStyle: HouseChatType.hint,
+                  counterText: '',
                   filled: false,
                   isDense: true,
                   border: InputBorder.none,
@@ -332,20 +354,21 @@ class _ChatPanelState extends State<ChatPanel> {
             padding: const EdgeInsets.only(bottom: 1),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 160),
-              width: 48,
-              height: 48,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 color: _canSend ? BogleColors.logo : ChatPanel._idle,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
+                key: const ValueKey('house-chat-send'),
                 tooltip: '보내기',
                 // Grey until there is something to send, but always
                 // listening: [_submit] skips an empty field.
-                onPressed: widget.enabled ? _submit : null,
+                onPressed: _canTalk ? _submit : null,
                 color: Colors.white,
                 disabledColor: Colors.white,
-                icon: const Icon(Icons.arrow_upward_rounded, size: 26),
+                icon: const Icon(Icons.arrow_upward_rounded, size: 28),
               ),
             ),
           ),
@@ -393,7 +416,7 @@ class _FriendRow extends StatelessWidget {
   final bool showAvatar;
   final Widget child;
 
-  static const _avatar = 34.0;
+  static const _avatar = 40.0;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -412,19 +435,25 @@ class _FriendRow extends StatelessWidget {
 }
 
 class _Balloon extends StatelessWidget {
-  const _Balloon({required this.text, required this.mine, required this.tail});
+  const _Balloon({
+    required this.text,
+    required this.mine,
+    required this.tail,
+    required this.maxWidth,
+  });
   final String text;
   final bool mine;
+  final double maxWidth;
 
   /// The last of a run points at its speaker with a tucked corner.
   final bool tail;
 
   @override
   Widget build(BuildContext context) {
-    const round = Radius.circular(20), tucked = Radius.circular(6);
+    const round = Radius.circular(22), tucked = Radius.circular(6);
     return Container(
-      constraints: const BoxConstraints(maxWidth: 300),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: BoxDecoration(
         color: mine ? BogleColors.logo : Colors.white,
         borderRadius: BorderRadius.only(
